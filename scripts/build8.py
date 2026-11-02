@@ -24,6 +24,11 @@ def dur(f):
                          capture_output=True, text=True).stdout.strip()
     return float(out)
 
+JV0 = __import__('os').environ.get('JV', 'a')
+if JV0 == 'm':
+    _tm = json.load(open(ROOT / 'narr' / 't_m.json', encoding='utf-8'))
+    for x in narr:
+        if x['id'] in _tm: x['t'] = _tm[x['id']]
 for x in narr:
     # one picture for both voices: captions hold until the longer of the two readings ends
     x['d'] = round(max(dur(ROOT / 'narr' / 'v8p' / v / f"{x['id']}.wav") for v in ('bomi', 'kanika')), 2)
@@ -163,7 +168,7 @@ for x in [n for n in narr if n['id'] != 'L15']:
     caps.append(f'<div class="ncap{lt}" id="c-{x["id"]}">{lines}</div>')
 
 # ------------------------------------------------------------------ font subset
-chars = set(''.join(TXT.values()) + ''.join(IT.values()) + ''.join(NAMES) + ''.join(x['text'] for x in narr) + ''.join(p['cap'] for r in regions for p in r['photos']) + '0123456789·,.- ')
+chars = set(''.join(TXT.values()) + ''.join(IT.values()) + '주민자치 2026제8회경상남도박람회' + ''.join(NAMES) + ''.join(x['text'] for x in narr) + ''.join(p['cap'] for r in regions for p in r['photos']) + '0123456789·,.- ')
 FONTS = VID / 'assets' / 'fonts'
 (ROOT / 'fonts_dl' / 'chars.txt').write_text(''.join(sorted(chars)), encoding='utf-8')
 (ROOT / 'fonts_dl' / 'chars_cap.txt').write_text(''.join(sorted(set(''.join(x['text'] for x in narr) + ''.join(TXT.values()) + ''.join(IT.values()) + ''.join(p['cap'] for r in regions for p in r['photos']) + '0123456789,.!?&·()/- '))), encoding='utf-8')
@@ -203,7 +208,7 @@ def cframe(id_, x, y, w, h, photo, color):
     return f'<div class="cf" id="{id_}" style="left:{x}px;top:{y}px;width:{w}px;height:{h}px;--c:{color}"><img src="assets/photos/{photo}" alt=""><i></i></div>'
 
 ALLPH = [(k, j, regions[k]['photos'][j]['file']) for j in range(3) for k in range(18)]
-if JV in ('a', 'g'):
+if JV in ('a', 'g', 'gv', 'm'):
     # the camera glides over the very same quilt cloth the regions are later laid on (same image, light, tilt)
     P0, P1 = (3400, 1250), (6600, 1300)
     th_x0, th_y0 = 1800, 900
@@ -228,6 +233,25 @@ if JV in ('a', 'g'):
 </div>'''
     INTRO_DATA = {'P0': P0, 'P1': P1}
     ENDBG = '<div id="s6bg" class="layer"><img id="ebg" src="assets/img/end_quilt.jpg" alt=""></div>'
+    if JV == 'gv':
+        # 2안: Grok Imagine video clips (no people) for L01/L02; the ending clip floats the jogakbo in the sky
+        INTRO = INTRO.replace('<div class="dof top"></div>', vid('g1', 'v21_o1_dawn.mp4', 0, 7.8, 0, 'vw gv') + vid('g2', 'v21_o2_drop.mp4', 7.0, 7.4, 0, 'vw gv') + '<div class="dof top"></div>', 1)
+        ENDBG = '<div id="s6bg" class="layer">' + vid('g9', 'v21_e1_sky.mp4', T['fin'] - 0.2, T['end'] - T['fin'] + 0.2, 0, 'vw gve') + '</div>'
+    if JV == 'm':
+        # 3안: "주민자치" letters as a window onto real region photos (after video-shotcraft text-as-mask, Apache-2.0),
+        # then real photos for L01/L02, then the same quilt pull-back as 1안; the ending sits on one more real photo
+        MASK = f'''<div id="mk" class="layer">
+  <div id="mk-photo"><img src="assets/img/v21m_strip.jpg" alt=""></div>
+  <div id="mk-stage"><svg viewBox="0 0 1920 1080"><defs><mask id="mk-hole" maskUnits="userSpaceOnUse" x="-100000" y="-100000" width="200000" height="200000">
+    <rect x="-100000" y="-100000" width="200000" height="200000" fill="#fff"/>
+    <g id="mk-word"><text x="960" y="700" text-anchor="middle" font-family="Pretendard" font-weight="700" font-size="400" letter-spacing="-8" fill="#000">주민자치</text></g>
+  </mask></defs><rect x="-100000" y="-100000" width="200000" height="200000" fill="#f3efe6" mask="url(#mk-hole)"/></svg></div>
+  <div id="mk-eyebrow" class="mkcap">2026 제8회 경상남도</div>
+  <div id="mk-sub" class="mkcap">주민자치 박람회</div>
+</div>'''
+        gimg = lambda id_, f: f'<div class="vw gv" id="{id_}-w"><img id="{id_}" src="assets/img/{f}" alt=""></div>'
+        INTRO = INTRO.replace('<div class="dof top"></div>', gimg('m1', 'v21m_p1.jpg') + gimg('m2', 'v21m_p2.jpg') + gimg('m3', 'v21m_p3.jpg') + MASK + '<div class="dof top"></div>', 1)
+        ENDBG = '<div id="s6bg" class="layer">' + gimg('m9', 'v21m_end.jpg') + '</div>'
     if JV == 'g':
         # v21g: Grok clips (no people) carry the narration L01/L02, then the camera pulls back over the quilt (from 13.4 s);
         # the ending plays a clip of the finished jogakbo floating in the sky under the title

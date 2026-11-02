@@ -179,3 +179,12 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0f0a0
 
 /* v21g: Grok stills */
 .gv img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+/* v21 3안: "주민자치" letter window (after video-shotcraft text-as-mask) */
+#mk { background: #f3efe6; }
+#mk-photo { position: absolute; left: 0; top: 0; width: 7680px; height: 1080px; transform-origin: 0 0; }
+#mk-photo img { display: block; width: 7680px; height: 1080px; filter: saturate(1.12) contrast(1.06); }
+#mk-stage { position: absolute; inset: 0; }
+#mk-stage svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+.mkcap { position: absolute; left: 0; right: 0; text-align: center; font-family: "Pretendard", sans-serif; color: #2a1a0c; opacity: 0; }
+#mk-eyebrow { top: 230px; font-size: 40px; font-weight: 600; letter-spacing: .32em; }
+#mk-sub { top: 800px; font-size: 52px; font-weight: 700; letter-spacing: .5em; color: #7a5420; }

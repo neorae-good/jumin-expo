@@ -7,6 +7,16 @@ WET_DB = None if sys.argv[3] == 'off' else float(sys.argv[3])  # room level rela
 RT60 = float(sys.argv[4]) if len(sys.argv) > 4 else 0.7
 BGM = sys.argv[5] if len(sys.argv) > 5 else 'bgm4_fast.wav'  # v20: faster music (scripts/music_fast.py); v19 used bgm3.wav
 SR = 48000
+
+# optional per-variant start times (e.g. NARR_T=narr/t_m.json for 3안, where L01/L02 follow the title card)
+def _narr_lines(path):
+    import json as _j, os as _o
+    L = _j.load(open(path, encoding='utf-8'))
+    if _o.environ.get('NARR_T'):
+        o = _j.load(open(_o.path.join(R if 'R' in globals() else str(ROOT), _o.environ['NARR_T']), encoding='utf-8'))
+        for x in L:
+            if x['id'] in o: x['t'] = o[x['id']]
+    return L
 def load(f, af=None):
     cmd = ['ffmpeg', '-v', 'error', '-i', f]
     if af: cmd += ['-af', af]
@@ -24,7 +34,7 @@ bgm = np.pad(bgm, ((0, N - len(bgm)), (0, 0)))
 # v17: natural, unprocessed-sounding voice (no slap echo); a soft synthetic room is added below
 NAF = 'highpass=f=75,equalizer=f=200:t=q:w=1:g=1.0,equalizer=f=3000:t=q:w=1.2:g=2.5,equalizer=f=9000:t=q:w=1:g=0.5,deesser=i=0.3,acompressor=threshold=-20dB:ratio=3:attack=10:release=150:makeup=2.5,loudnorm=I=-15:TP=-1.5:LRA=7'
 nar = np.zeros((N, 2), np.float32)
-for x in json.load(open(R + '/narr/script6.json', encoding='utf-8')):
+for x in _narr_lines(R + '/narr/script6.json'):
     _p = R + '/narr/v8p/' + VN + '/' + x['id'] + '.wav'
     if not os.path.exists(_p): print('SKIP', x['id']); continue
     a = load(_p, NAF)
@@ -62,7 +72,7 @@ gmid = 1 - 0.72 * gate
 rmsdb = lambda a: 10 * np.log10((a.astype(np.float64) ** 2).mean() + 1e-12)
 nmid = band(nar)
 extra = np.zeros(N, np.float32)
-for x in json.load(open(R + '/narr/script6.json', encoding='utf-8')):
+for x in _narr_lines(R + '/narr/script6.json'):
     _p = R + '/narr/v8p/' + VN + '/' + x['id'] + '.wav'
     if not os.path.exists(_p): continue
     i0 = int(x['t'] * SR); i1 = min(N, i0 + int((float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', _p], capture_output=True, text=True).stdout) + 0.45) * SR))

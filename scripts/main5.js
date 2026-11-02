@@ -66,7 +66,7 @@ const tagIn = (id, t, d = 0.7) => {
   stitch(id, t + 0.35, 0.9);
 };
 const tagOut = (id, t) => tl.to('#' + id, { opacity: 0, y: 20, duration: 0.6, ease: 'power2.in' }, t);
-if (D.jv === 'a' || D.jv === 'g') {
+if (['a', 'g', 'gv', 'm'].includes(D.jv)) {
   const { M, CW, CH, WW } = D;
   const P0 = D.intro.P0, P1 = D.intro.P1;
   const at = (x, y) => ({ x: 960 - x, y: 540 - y - 40 });
@@ -97,6 +97,39 @@ if (D.jv === 'a' || D.jv === 'g') {
   tl.fromTo('#it3', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', immediateRender: false }, 14.8);
   stitch('it3', 15.1, 0.9);
   tagOut('it3', 18.0);
+  if (D.jv === 'gv') {
+    // 2안: Grok clips over the cloth: dawn + threaded needle (L01), drop -> golden stitch (L02); then the quilt pull-back
+    tl.set(['#it1', '#it2', '#ip0', '#ip1', '#ip2', '.ith'], { visibility: 'hidden' }, 0);
+    tl.set('#g1-w', { opacity: 1 }, 0); push('#g1-w', 0, 7.8, 1.0, 1.06);
+    fadeIn('#g2-w', 7.0, 0.8); push('#g2-w', 7.0, 7.4, 1.0, 1.06);
+    tl.to('#g2-w', { opacity: 0, duration: 1.0, ease: 'power1.inOut' }, 13.4);
+  }
+  if (D.jv === 'm') {
+    // 3안: letters as a window onto real photos -> inhale -> rush through a stroke -> the photo takes the frame
+    tl.set(['#it1', '#it2', '#ip0', '#ip1', '#ip2', '.ith'], { visibility: 'hidden' }, 0);
+    const O = { x: 1230, y: 537 };
+    tl.fromTo('#mk-word', { y: 120, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55, ease: 'power3.out', immediateRender: false }, 0.05);
+    tl.fromTo('#mk-eyebrow', { opacity: 0, letterSpacing: '0.6em' }, { opacity: 1, letterSpacing: '0.32em', duration: 0.7, ease: 'power2.out', immediateRender: false }, 0.25);
+    tl.fromTo('#mk-sub', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', immediateRender: false }, 0.4);
+    tl.fromTo('#mk-photo', { x: -300 }, { x: -1500, duration: 2.75, ease: 'sine.inOut', immediateRender: false }, 0);
+    tl.to('#mk-word', { scale: 0.965, svgOrigin: O.x + ' ' + O.y, duration: 0.3, ease: 'power2.inOut' }, 2.45);
+    tl.to(['#mk-eyebrow', '#mk-sub'], { opacity: 0, duration: 0.3, ease: 'power2.in' }, 2.45);
+    const rush = { t: 0 };
+    tl.to(rush, { t: 1, duration: 0.8, ease: 'none', onUpdate: () => {
+      const k = Math.pow(rush.t, 1.8);
+      gsap.set('#mk-word', { scale: 0.965 * Math.pow(46 / 0.965, k), svgOrigin: O.x + ' ' + O.y, x: (960 - O.x) * rush.t, y: (540 - O.y) * rush.t });
+    } }, 2.75);
+    tl.to('#mk-photo', { x: -1920, duration: 0.9, ease: 'expo.out' }, 2.75);
+    tl.to('#mk-stage', { opacity: 0, duration: 0.25, ease: 'none' }, 3.3);
+    // hand over to the same photo as its own layer (identical framing), then the L01/L02 photos
+    tl.set('#m1-w', { opacity: 1 }, 3.6); tl.set('#mk', { opacity: 0 }, 3.62);
+    tl.fromTo('#m1', { scale: 1.0 }, { scale: 1.10, duration: 6.6, ease: 'sine.inOut', immediateRender: false }, 3.6);
+    fadeIn('#m2-w', 9.7, 0.8);
+    tl.fromTo('#m2', { scale: 1.08, xPercent: 1.5 }, { scale: 1.0, xPercent: -1.0, duration: 3.6, ease: 'sine.inOut', immediateRender: false }, 9.7);
+    fadeIn('#m3-w', 12.6, 0.8);
+    tl.fromTo('#m3', { scale: 1.0 }, { scale: 1.08, duration: 3.0, ease: 'sine.inOut', immediateRender: false }, 12.6);
+    tl.to(['#m2-w', '#m3-w', '#m1-w'], { opacity: 0, duration: 1.0, ease: 'power1.inOut' }, 14.6);
+  }
   if (D.jv === 'g') {
     // Grok clips over the cloth: dawn + threaded needle (L01), drop -> golden stitch (L02); then reveal the quilt pull-back
     tl.set(['#it1', '#it2', '#ip0', '#ip1', '#ip2', '.ith'], { visibility: 'hidden' }, 0);
@@ -209,7 +242,12 @@ tl.to('#ph2', { opacity: 0, duration: 1.0, ease: 'sine.inOut' }, T.fin - 0.2);
 leak('lk6', T.fin - 0.8, 2.6, 0.4);
 // v21: the ending sits on the finished quilt (a) or the photo wall (b)
 tl.fromTo('#s6bg', { opacity: 0 }, { opacity: 1, duration: 1.0, ease: 'power1.inOut', immediateRender: false }, T.fin - 0.2);
-if (D.jv === 'g') {
+if (D.jv === 'gv') {
+  tl.set('#g9-w', { opacity: 1 }, T.fin - 0.2); push('#g9-w', T.fin - 0.2, T.end - T.fin + 0.2, 1.0, 1.05);
+} else if (D.jv === 'm') {
+  tl.set('#m9-w', { opacity: 1 }, T.fin - 0.2);
+  tl.fromTo('#m9', { scale: 1.0 }, { scale: 1.08, duration: T.end - T.fin + 0.2, ease: 'sine.inOut', immediateRender: false }, T.fin - 0.2);
+} else if (D.jv === 'g') {
   tl.set('#g9-w', { opacity: 1 }, T.fin - 0.2);
   tl.fromTo('#g9', { scale: 1.02, yPercent: 1.5 }, { scale: 1.12, yPercent: -1.5, duration: T.end - T.fin + 0.2, ease: 'sine.inOut', immediateRender: false }, T.fin - 0.2);
 } else if (D.jv === 'a') {
