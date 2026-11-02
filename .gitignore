@@ -14,3 +14,5 @@ render_*.log
 deliverables/**/*.mp4
 snap*/
 parts/
+intro_mask/snap*/
+intro_mask/out_silent.mp4
