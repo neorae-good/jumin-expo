@@ -37,13 +37,13 @@ TXT = {
     'fin2': '경상남도가 도약하다',
     'fin3': '2026년 제8회 경상남도 주민자치 박람회',
 }
-# v20: PPT-style template screens that replace the AI clips at the start (0-19 s) and the end (162.4-178 s)
-TPL = {
-    'hd': '제8회 경상남도 주민자치 박람회',
-    'eb1': '기 · 첫 바늘땀', 'h1': '첫 땀', 'p1': '새벽을 여는 손끝에서',
-    'eb2': '기 · 땀 한 방울', 'h2': '땀 한 방울', 'p2': '우리 마을을 잇는 첫 바늘땀',
-    'eb3': '기 · 조각보', 'h3a': '한 조각씩,', 'h3b': '하나의 천으로', 'p3': '경상남도 18개 시군의 이야기',
-}
+# v21: opening (0-19 s) and ending (162.4-178 s) built from the quilt itself, no AI clips.
+# Two design variants for review:  JV=a python scripts/build8.py  (quilt cloth, default)
+#                                  JV=b python scripts/build8.py  (photo collage)
+import os
+JV = os.environ.get('JV', 'a')
+IT = {'t1': '첫 땀', 's1': '새벽을 여는 손끝에서', 't2': '땀 한 방울', 's2': '마을을 잇는 첫 바늘땀',
+      't3a': '한 조각씩,', 't3b': '하나의 천으로'}
 
 # ------------------------------------------------------------------ 승: 3D quilt world
 M = 2400                     # decorative margin around the 3x3 cells
@@ -158,15 +158,15 @@ def hl(s):
     return re.sub(r'\[([^\]]+)\]', r'<em>\1</em>', s)
 for x in [n for n in narr if n['id'] != 'L15']:
     lines = ''.join('<div class="cl">' + ' '.join(f'<span class="cu">{hl(u)}</span>' for u in line) + '</div>' for line in CAPL[x['id']])
-    lt = ' lt' if x['t'] < T['s2'] or x['t'] >= T['fin'] else ''
-    x['lt'] = bool(lt)
+    lt = ''  # v21: opening/ending are photo/cloth scenes again -> normal light captions
+    x['lt'] = False
     caps.append(f'<div class="ncap{lt}" id="c-{x["id"]}">{lines}</div>')
 
 # ------------------------------------------------------------------ font subset
-chars = set(''.join(TXT.values()) + ''.join(TPL.values()) + '/' + ''.join(NAMES) + ''.join(x['text'] for x in narr) + ''.join(p['cap'] for r in regions for p in r['photos']) + '0123456789·,.- ')
+chars = set(''.join(TXT.values()) + ''.join(IT.values()) + ''.join(NAMES) + ''.join(x['text'] for x in narr) + ''.join(p['cap'] for r in regions for p in r['photos']) + '0123456789·,.- ')
 FONTS = VID / 'assets' / 'fonts'
 (ROOT / 'fonts_dl' / 'chars.txt').write_text(''.join(sorted(chars)), encoding='utf-8')
-(ROOT / 'fonts_dl' / 'chars_cap.txt').write_text(''.join(sorted(set(''.join(x['text'] for x in narr) + ''.join(TXT.values()) + ''.join(TPL.values()) + ''.join(p['cap'] for r in regions for p in r['photos']) + '0123456789,.!?&·()/- '))), encoding='utf-8')
+(ROOT / 'fonts_dl' / 'chars_cap.txt').write_text(''.join(sorted(set(''.join(x['text'] for x in narr) + ''.join(TXT.values()) + ''.join(IT.values()) + ''.join(p['cap'] for r in regions for p in r['photos']) + '0123456789,.!?&·()/- '))), encoding='utf-8')
 subprocess.run([sys.executable, '-I', '-m', 'fontTools.subset', str(ROOT / 'fonts_dl' / 'pre' / 'Pretendard-Bold.ttf'),
                 f'--text-file={ROOT / "fonts_dl" / "chars_cap.txt"}', '--flavor=woff2', f'--output-file={FONTS / "pretendard-bold.woff2"}',
                 '--layout-features=*'], check=True, capture_output=True)
@@ -190,23 +190,63 @@ def flare(id_, x, y):
 def leak(id_):
     return f'<div class="leak" id="{id_}"><i class="la"></i><i class="lr"></i><i class="lg"></i></div>'
 
-# 조각보 patch layout (600 x 600 units, 10-unit seams) for the opening template
-QB = [(0, 0, 250, 190), (260, 0, 340, 110), (260, 120, 160, 180), (430, 120, 170, 300), (0, 200, 120, 220),
-      (130, 200, 120, 100), (130, 310, 290, 110), (0, 430, 300, 170), (310, 430, 290, 170)]
-def qpatch(id_, x, y, w, h, color, label=''):
-    return f'''<div class="tq" id="{id_}" style="left:{x}px;top:{y}px;width:{w}px;height:{h}px;--c:{color}">{f'<span>{label}</span>' if label else ''}
-  <svg viewBox="0 0 {w} {h}"><defs><mask id="{id_}-m"><rect x="8" y="8" width="{w-16}" height="{h-16}" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="{id_}-mr"/></mask></defs><rect class="sd" x="8" y="8" width="{w-16}" height="{h-16}" mask="url(#{id_}-m)"/></svg></div>'''
-def band():
-    cells, x, k = [], 0, 0
-    widths = [96, 64, 128, 80, 112, 72, 104, 88, 120]
-    while x < 1920:
-        w = widths[k % len(widths)]
-        cells.append(f'<i style="left:{x}px;width:{w - 4}px;background:{COLORS[(k * 4) % len(COLORS)]}"></i>')
-        x += w; k += 1
-    return ''.join(cells)
-TPL_BG = f'<div class="tpl"><div class="tband top">{band()}</div><div class="tband bot">{band()}</div></div>'
-S1_QUILT = ''.join(qpatch(f'tq{i}', x, y, w, h, COLORS[(i * 4 + 1) % len(COLORS)]) for i, (x, y, w, h) in enumerate(QB))
-FIN_QUILT = ''.join(qpatch(f'fq{k}', (k % 9) * 166, (k // 9) * 106, 156, 96, COLORS[(k * 4 + 1 + (k // 9) * 2) % len(COLORS)], NAMES[k]) for k in range(18))
+def itag(id_, x, y, w, h, title, sub, cls=''):
+    """linen name-tag patch (same look as the region tags) carrying the opening words"""
+    sub_html = f'<span class="its">{sub}</span>' if sub else ''
+    return f'''<div class="qt itag {cls}" id="{id_}" style="left:{x}px;top:{y}px;width:{w}px;height:{h}px">
+  <div class="qt-in itag-in"><span class="itt">{title}</span>{sub_html}</div>
+  {stitch_svg(id_, w, h, inset=16, color='#b8862e', glow=False)}
+</div>'''
+
+def cframe(id_, x, y, w, h, photo, color):
+    """small fabric-framed photo for the collage variant"""
+    return f'<div class="cf" id="{id_}" style="left:{x}px;top:{y}px;width:{w}px;height:{h}px;--c:{color}"><img src="assets/photos/{photo}" alt=""><i></i></div>'
+
+ALLPH = [(k, j, regions[k]['photos'][j]['file']) for j in range(3) for k in range(18)]
+if JV == 'a':
+    # the camera glides over the very same quilt cloth the regions are later laid on (same image, light, tilt)
+    P0, P1 = (3400, 1250), (6600, 1300)
+    th_x0, th_y0 = 1800, 900
+    TH = 'M0,700 C800,200 1300,900 1900,650 S3400,300 4300,700 S5300,1000 5900,420'
+    intro_world = (f'''<svg class="ith" style="left:{th_x0}px;top:{th_y0}px" width="6000" height="1100" viewBox="0 0 6000 1100">
+  <defs><mask id="ith-m" maskUnits="userSpaceOnUse" x="0" y="0" width="6000" height="1100"><path id="ith-mr" d="{TH}" fill="none" stroke="#fff" stroke-width="40" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/></mask></defs>
+  <path class="ithp" d="{TH}" mask="url(#ith-m)"/></svg>'''
+        + itag('it1', P0[0] - 520, P0[1] - 190, 1040, 330, IT['t1'], IT['s1'])
+        + itag('it2', P1[0] - 520, P1[1] - 540, 1040, 300, IT['t2'], IT['s2'])
+        + photo_patch('ip0', P1[0] - 960, P1[1] - 160, 600, 450, regions[8]['photos'][0]['file'], COLORS[1], regions[8]['photos'][0]['cap'])
+        + photo_patch('ip1', P1[0] - 300, P1[1] - 160, 600, 450, regions[6]['photos'][2]['file'], COLORS[3], regions[6]['photos'][2]['cap'])
+        + photo_patch('ip2', P1[0] + 360, P1[1] - 160, 600, 450, regions[4]['photos'][2]['file'], COLORS[5], regions[4]['photos'][2]['cap']))
+    INTRO = f'''<div id="s1" class="layer clip va" data-start="0" data-duration="19.6" data-track-index="1">
+  <div id="i-cam" class="layer"><div id="i-tilt"><div id="i-world">
+    <img class="wfab" src="assets/img/quilt_base2.jpg" alt="" style="width:{WW}px;height:{WH}px">
+    {intro_world}
+  </div></div></div>
+  <div class="dof top"></div><div class="dof bot"></div>
+  <div id="i-far" class="layer"></div>
+  <div id="i-lamp" class="lamp"></div>
+  {itag('it3', 960 - 560, 330, 1120, 330, IT['t3a'] + ' ' + IT['t3b'], '', 'scr')}
+</div>'''
+    INTRO_DATA = {'P0': P0, 'P1': P1}
+    ENDBG = '<div id="s6bg" class="layer"><img id="ebg" src="assets/img/end_quilt.jpg" alt=""></div>'
+else:
+    # a wall of real photos in fabric frames, stitched in one by one on the same quilt cloth
+    cw, chh, g = 300, 214, 22
+    cells = [(c, r) for r in range(4) for c in range(6)]
+    order = sorted(range(24), key=lambda i: (abs(cells[i][0] - 2.5) + abs(cells[i][1] - 1.5) * 1.3, i))
+    pick = [ALLPH[(i * 7) % len(ALLPH)][2] for i in range(24)]
+    wall = ''.join(cframe(f'cf{i}', cells[i][0] * (cw + g), cells[i][1] * (chh + g), cw, chh, pick[i], COLORS[(i * 4 + 1) % len(COLORS)]) for i in range(24))
+    INTRO = f'''<div id="s1" class="layer clip vb" data-start="0" data-duration="20.0" data-track-index="1">
+  <img class="cbg" src="assets/img/quilt_base2.jpg" alt="">
+  <div id="c-cam" class="layer"><div id="c-tilt"><div id="c-wall" style="width:{6 * cw + 5 * g}px;height:{4 * chh + 3 * g}px">{wall}</div></div></div>
+  <div id="i-lamp" class="lamp"></div>
+  {itag('it1', 960 - 520, 360, 1040, 330, IT['t1'], IT['s1'], 'scr')}
+  {itag('it2', 960 - 520, 360, 1040, 330, IT['t2'], IT['s2'], 'scr')}
+  {itag('it3', 960 - 560, 360, 1120, 330, IT['t3a'] + ' ' + IT['t3b'], '', 'scr')}
+</div>'''
+    INTRO_DATA = {'order': order}
+    ew, eh, eg = 204, 168, 10
+    ewall = ''.join(cframe(f'ef{i}', (i % 9) * (ew + eg), (i // 9) * (eh + eg), ew, eh, ALLPH[(i * 5) % 54][2], COLORS[(i * 4 + 2) % len(COLORS)]) for i in range(54))
+    ENDBG = f'<div id="s6bg" class="layer"><img class="cbg" src="assets/img/quilt_base2.jpg" alt=""><div id="ewall" style="width:{9 * ew + 8 * eg}px;height:{6 * eh + 5 * eg}px">{ewall}</div></div>'
 
 CSS = (ROOT / 'scripts' / 'style5.css').read_text(encoding='utf-8')
 CSS = CSS.replace('__WW__', str(WW)).replace('__WH__', str(WH)).replace('__MAPW__', f'{MAP_W:.0f}').replace('__MAPH__', f'{MAP_H:.0f}')
@@ -225,15 +265,8 @@ html = f'''<!doctype html>
 <div id="root" data-composition-id="main" data-start="0" data-duration="{TOTAL}" data-width="1920" data-height="1080">
 <audio id="mix" src="assets/audio/master_mix9_less.m4a" data-start="0" data-duration="{TOTAL}" data-track-index="0" data-volume="1"></audio>
 
-<!-- 기 0-19: v20 template slides (replaces the AI clips v13_g1_hands / v14_face0 / v13_g3_stitch) -->
-<div id="s1" class="layer clip" data-start="0" data-duration="20.4" data-track-index="1">
-  {TPL_BG}
-  <div class="thd"><span class="thl">{TPL['hd']}</span><span class="thr"><b class="pg" id="pg1">01</b><b class="pg" id="pg2">02</b><b class="pg" id="pg3">03</b><span class="pgt">/ 03</span></span></div>
-  <div class="ts" id="ts1"><span class="eb">{TPL['eb1']}</span><h1>{TPL['h1']}</h1><i class="rule"></i><p>{TPL['p1']}</p></div>
-  <div class="ts" id="ts2"><span class="eb">{TPL['eb2']}</span><h1>{TPL['h2']}</h1><i class="rule"></i><p>{TPL['p2']}</p></div>
-  <div class="ts" id="ts3"><span class="eb">{TPL['eb3']}</span><h1>{TPL['h3a']}<br>{TPL['h3b']}</h1><i class="rule"></i><p>{TPL['p3']}</p></div>
-  <div id="s1q"><div id="s1q-in">{S1_QUILT}<svg id="s1q-ol" viewBox="0 0 600 600"><rect id="s1q-olr" x="-16" y="-16" width="632" height="632" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/></svg></div></div>
-</div>
+<!-- 기 0-19: v21 opening built from the quilt (variant JV) -->
+{INTRO}
 
 <!-- 승 25-123 -->
 <div id="s2" class="layer clip" data-start="19.0" data-duration="121.5" data-track-index="2">
@@ -263,12 +296,13 @@ html = f'''<!doctype html>
   <div class="phs" id="ph2"><div class="phbg" style="background-image:url('assets/photos/end-miryang.jpg')"></div><div class="phfr"><img src="assets/photos/end-miryang.jpg" alt=""><i class="phst"></i></div></div>
 </div>
 <div id="s6" class="layer clip" data-start="{T['fin']}" data-duration="{T['end'] - T['fin']}" data-track-index="6">
-  <div id="s6bg" class="layer">{TPL_BG}</div>
-  <div id="fq">{FIN_QUILT}</div>
+  {ENDBG}
+  <div id="s6g"></div>
   <div id="finline" class="fl"><i class="flt"></i></div>
   <div id="fin2" class="fin"><span class="f2"><span class="l1">주민의 힘으로,</span><span class="l2">경상남도가 <em>도약</em>하다</span></span><span class="f2s" aria-hidden="true"><span class="l1">주민의 힘으로,</span><span class="l2">경상남도가 도약하다</span></span></div>
   <div id="fin3" class="fin">{TXT['fin3']}</div>
   <img id="gnlogo" src="assets/img/gn_logo_color.svg" alt="경상남도">
+  {flare('fl6', 975, 360)}
 </div>
 
 <!-- overlays -->
@@ -283,7 +317,7 @@ html = f'''<!doctype html>
 </div>
 </div>
 <script>
-const DATA = {json.dumps({'cells': s2_cells, 'M': M, 'CW': CW, 'CH': CH, 'WW': WW, 'WH': WH, 'narr': [{k: v for k, v in x.items() if k != 'tts'} for x in narr if x['id'] != 'L15'], 'T': T, 'map': map_regs, 'opts': outline_pts, 'dust': DUST, 'mapW': MAP_W, 'mapH': MAP_H}, ensure_ascii=False)};
+const DATA = {json.dumps({'cells': s2_cells, 'M': M, 'CW': CW, 'CH': CH, 'WW': WW, 'WH': WH, 'narr': [{k: v for k, v in x.items() if k != 'tts'} for x in narr if x['id'] != 'L15'], 'T': T, 'map': map_regs, 'opts': outline_pts, 'dust': DUST, 'jv': JV, 'intro': INTRO_DATA, 'mapW': MAP_W, 'mapH': MAP_H}, ensure_ascii=False)};
 </script>
 <script>
 {{MAINJS}}

@@ -60,32 +60,59 @@ capOn.forEach(([a, b], i) => {
 });
 
 // ------------------------------------------------------------------ 기
-// v20: three clean template slides (PPT-like) instead of the AI clips.
-// slide k: text rises in from the left, page number turns; the 조각보 on the right grows 3 patches per slide
-{
-  const S = [0.6, 6.8, 13.4];            // slide starts (narration L01 at 1.0 s, L02 at 8.2 s)
-  const drawPatch = (id, t) => {
-    tl.fromTo('#' + id, { opacity: 0, scale: 0.92, y: -18 }, { opacity: 1, scale: 1, y: 0, duration: 0.7, ease: 'power3.out', immediateRender: false }, t);
-    stitch(id, t + 0.3, 0.9);
-  };
-  S.forEach((t, k) => {
-    const el = '#ts' + (k + 1);
-    tl.fromTo(el, { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out', immediateRender: false }, t);
-    tl.fromTo(el + ' .rule', { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'power2.inOut', immediateRender: false }, t + 0.3);
-    tl.fromTo(el + ' p', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, t + 0.55);
-    tl.fromTo('#pg' + (k + 1), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'sine.out', immediateRender: false }, t + 0.1);
-    if (k < 2) {
-      tl.to(el, { opacity: 0, x: 30, duration: 0.5, ease: 'power2.in' }, S[k + 1] - 0.45);
-      tl.to('#pg' + (k + 1), { opacity: 0, y: -10, duration: 0.4, ease: 'sine.in' }, S[k + 1] - 0.3);
-    }
-    for (let j = 0; j < 3; j++) drawPatch('tq' + (k * 3 + j), t + 0.5 + j * 1.0);
+// v21: opening without AI clips. JV a = camera over the same quilt cloth, b = photo wall on the cloth.
+const tagIn = (id, t, d = 0.7) => {
+  tl.fromTo('#' + id, { opacity: 0, scale: 1.12, y: -40 }, { opacity: 1, scale: 1, y: 0, duration: d, ease: 'power3.out', immediateRender: false }, t);
+  stitch(id, t + 0.35, 0.9);
+};
+const tagOut = (id, t) => tl.to('#' + id, { opacity: 0, y: 20, duration: 0.6, ease: 'power2.in' }, t);
+if (D.jv === 'a') {
+  const { M, CW, CH, WW } = D;
+  const P0 = D.intro.P0, P1 = D.intro.P1;
+  const at = (x, y) => ({ x: 960 - x, y: 540 - y - 40 });
+  const half1 = { x: 960 - WW / 2, y: 540 - (M + 1.5 * CH) };
+  tl.set('#i-tilt', { rotationX: 14, rotationZ: -2, scale: 0.95 }, 0);
+  tl.set('#i-world', at(P0[0] - 120, P0[1] + 40), 0);
+  // slow drift over the cloth while the gold thread is sewn across it
+  tl.to('#i-world', { ...at(P0[0] + 160, P0[1] + 60), duration: 6.4, ease: 'none' }, 0);
+  tl.to('#i-tilt', { rotationZ: 0, duration: 6.4, ease: 'none' }, 0);
+  tl.fromTo('#ith-mr', { attr: { 'stroke-dashoffset': 1 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 12.0, ease: 'none', immediateRender: false }, 0.4);
+  tagIn('it1', 1.0);
+  // glide along the thread to the next stretch of cloth
+  tl.to('#i-world', { ...at(P1[0], P1[1] - 90), duration: 1.4, ease: 'power3.inOut' }, 6.4);
+  tl.to('#i-tilt', { scale: 0.86, rotationX: 17, duration: 0.7, ease: 'power2.in' }, 6.4);
+  tl.to('#i-tilt', { scale: 0.95, rotationX: 14, duration: 0.7, ease: 'power2.out' }, 7.1);
+  tl.to('#i-world', { ...at(P1[0] + 140, P1[1] - 70), duration: 5.6, ease: 'none' }, 7.8);
+  tagIn('it2', 7.4);
+  ['ip0', 'ip1', 'ip2'].forEach((pid, j) => {
+    const tj = 8.6 + j * 0.9;
+    tl.fromTo('#' + pid, { opacity: 0, scale: 1.14, y: -70, rotation: (j - 1) * 2.5 }, { opacity: 1, scale: 1, y: 0, rotation: 0, duration: 0.7, ease: 'power3.out', immediateRender: false }, tj);
+    stitch(pid, tj + 0.35, 0.9);
+    tl.fromTo('#' + pid + '-img', { scale: 1.14 }, { scale: 1.0, duration: 6, ease: 'none', immediateRender: false }, tj);
   });
-  // the finished square gets one gold stitch around it, then gently comes forward into the quilt world (승 at 19 s)
-  tl.fromTo('#s1q-olr', { attr: { 'stroke-dashoffset': 1 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.4, ease: 'power1.inOut', immediateRender: false }, 17.0);
-  tl.fromTo('#s1q-in', { scale: 1 }, { scale: 1.05, duration: 19.0, ease: 'none', immediateRender: false }, 0);
-  tl.to('#s1q', { x: -40, y: 10, scale: 1.12, duration: 2.0, ease: 'power2.in' }, 18.0);
+  // pull back: the whole cloth comes into view, then the region pieces start (승, 19 s) from this exact framing
+  tl.to('#i-tilt', { rotationX: 40, rotationZ: -10, scale: 0.34, duration: 5.0, ease: 'power3.inOut' }, 13.4);
+  tl.to('#i-world', { x: half1.x + 300, y: half1.y + 200, duration: 5.0, ease: 'power3.inOut' }, 13.4);
+  tl.to(['#it1', '#it2', '#ip0', '#ip1', '#ip2', '.ith'], { opacity: 0, duration: 1.0, ease: 'sine.inOut' }, 13.6);
+  tl.fromTo('#it3', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', immediateRender: false }, 14.8);
+  stitch('it3', 15.1, 0.9);
+  tagOut('it3', 18.0);
+} else {
+  const o = D.intro.order;
+  tl.set('#c-tilt', { rotationX: 18, rotationZ: -3, scale: 1.25 }, 0);
+  tl.to('#c-tilt', { rotationX: 10, rotationZ: 0, scale: 1.08, duration: 13.4, ease: 'sine.inOut' }, 0);
+  o.forEach((i, k) => {
+    const t = k < 4 ? 1.2 + k * 0.9 : (k < 12 ? 7.4 + (k - 4) * 0.6 : 13.0 + (k - 12) * 0.22);
+    tl.fromTo('#cf' + i, { opacity: 0, scale: 1.16, y: -50, rotation: ((i % 3) - 1) * 3 }, { opacity: 1, scale: 1, y: 0, rotation: 0, duration: 0.7, ease: 'power3.out', immediateRender: false }, t);
+  });
+  tagIn('it1', 0.8); tagOut('it1', 6.3);
+  tagIn('it2', 6.9); tagOut('it2', 12.9);
+  tagIn('it3', 13.6); tagOut('it3', 17.8);
+  // pull back and tilt like the quilt world before the region pieces start
+  tl.to('#c-tilt', { rotationX: 40, rotationZ: -10, scale: 0.5, duration: 4.0, ease: 'power3.inOut' }, 15.6);
+  tl.to('#c-cam', { opacity: 0, duration: 1.0, ease: 'sine.in' }, 18.4);
+  leak('lk1', 18.3, 2.4, 0.45);
 }
-
 // ------------------------------------------------------------------ 승 + 전: one quilt, 18 regions
 {
   const { M, CW, CH, WW, WH } = D;
@@ -93,9 +120,9 @@ capOn.forEach(([a, b], i) => {
   const half1 = { x: 960 - WW / 2, y: 540 - (M + 1.5 * CH) };
   const whole = { x: 960 - WW / 2, y: 540 - WH / 2 };
   const a = T.s2;
-  leak('lk2', a - 0.7, 2.4, 0.45);
-  tl.set(['#s2-cam', '.dof', '#s2-lamp', '#s2-far'], { opacity: 0 }, 0);
-  tl.fromTo(['#s2-cam', '.dof', '#s2-lamp', '#s2-far'], { opacity: 0 }, { opacity: 1, duration: 0.9, immediateRender: false }, a);
+  if (D.jv !== 'a') leak('lk2', a - 0.7, 2.4, 0.45);
+  tl.set(['#s2-cam', '#s2 .dof', '#s2-lamp', '#s2-far'], { opacity: 0 }, 0);
+  tl.fromTo(['#s2-cam', '#s2 .dof', '#s2-lamp', '#s2-far'], { opacity: 0 }, { opacity: 1, duration: D.jv === 'a' ? 0.04 : 0.9, immediateRender: false }, a);
   tl.set('#s2-tilt', { rotationX: 40, rotationZ: -10, scale: 0.34 }, 0);
   document.querySelectorAll('.qcap span').forEach((sp) => { const box = sp.parentElement.clientWidth - 48; let f = 34; while (sp.scrollWidth > box && f > 22) { f -= 1; sp.style.fontSize = f + 'px'; } });
   tl.set('#s2-world', { x: half1.x + 300, y: half1.y + 200 }, 0);
@@ -166,13 +193,15 @@ leak('lk4', T.throw - 0.8, 2.4, 0.4);
 });
 tl.to('#ph2', { opacity: 0, duration: 1.0, ease: 'sine.inOut' }, T.fin - 0.2);
 leak('lk6', T.fin - 0.8, 2.6, 0.4);
-// v20: the ending sits on the same ivory template (the AI island clip is gone)
+// v21: the ending sits on the finished quilt (a) or the photo wall (b)
 tl.fromTo('#s6bg', { opacity: 0 }, { opacity: 1, duration: 1.0, ease: 'power1.inOut', immediateRender: false }, T.fin - 0.2);
-for (let k = 0; k < 18; k++) {
-  const t = T.fin + 0.6 + k * 0.08;
-  tl.fromTo('#fq' + k, { opacity: 0, scale: 0.9, y: -14 }, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'power3.out', immediateRender: false }, t);
-  stitch('fq' + k, t + 0.25, 0.8);
+if (D.jv === 'a') {
+  tl.fromTo('#ebg', { scale: 1.08 }, { scale: 1.0, duration: T.end - T.fin + 0.2, ease: 'none', immediateRender: false }, T.fin - 0.2);
+} else {
+  tl.fromTo('#ewall', { scale: 1.1 }, { scale: 1.0, duration: T.end - T.fin + 0.2, ease: 'none', immediateRender: false }, T.fin - 0.2);
+  for (let i = 0; i < 54; i++) tl.set('#ef' + i, { opacity: 1 }, 0);
 }
+tl.fromTo('#s6g', { opacity: 0 }, { opacity: 1, duration: 1.4, ease: 'power1.inOut', immediateRender: false }, T.fin);
 // main title: a fine gold thread is drawn first, then the words rise; a single light sweep
 tl.set('#finline', { opacity: 1 }, T.fin + 1.2);
 tl.fromTo('#finline', { '--fx': 0 }, { '--fx': 1, duration: 1.4, ease: 'power1.inOut', immediateRender: false }, T.fin + 1.2);
@@ -185,5 +214,7 @@ tl.fromTo('#fin2 .f2 .l2', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 
 tl.fromTo('#fin3', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, T.fin + 3.6);
 tl.fromTo('#fin2 .f2s', { backgroundPosition: '100% 0' }, { backgroundPosition: '0% 0', duration: 1.6, ease: 'power1.inOut', immediateRender: false }, T.fin + 4.0);
 tl.fromTo('#gnlogo', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, T.fin + 5.4);
+flare('fl6', T.fin + 0.4, T.end, 0.5);
+leak('lk6', T.fin + 3.0, 3.0, 0.45);
 
 window.__timelines['main'] = tl;
