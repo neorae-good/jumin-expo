@@ -1,0 +1,14 @@
+# 한컴 함초롬바탕: 재배포 불가 (fonts_dl/README.txt 대로 각자 받기)
+fonts_dl/HCRBatang*.ttf
+fonts_dl/HancomFont.zip
+video/assets/fonts/hcr-batang*.woff2
+# 렌더 중간물·임시 파일
+video/renders/
+audio/mix3_raw.wav
+audio/_stt_window.wav
+snap/
+snap20a/
+snap20b/
+render_*.log
+# 완성 영상(100MB 초과)은 저장소 대신 GitHub Release 첨부파일로 올림
+deliverables/**/*.mp4

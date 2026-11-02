@@ -1,0 +1,14 @@
+{
+ "boom": {
+  "file": "sfx/boom3.ogg",
+  "peak": 0.0
+ },
+ "whoosh": {
+  "file": "sfx/whoosh1.ogg",
+  "peak": 1.6500000000000001
+ },
+ "shimmer": {
+  "file": "sfx/shimmer3.ogg",
+  "peak": 0.15000000000000002
+ }
+}

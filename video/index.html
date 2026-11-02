@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="assets/gsap.min.js"></script>
+<style>
+@font-face { font-family: "Pretendard"; src: url("assets/fonts/pretendard-semibold.woff2") format("woff2"); font-weight: 600; }
+@font-face { font-family: "Pretendard"; src: url("assets/fonts/pretendard-bold.woff2") format("woff2"); font-weight: 700; }
+@font-face { font-family: "HCR Batang"; src: url("assets/fonts/hcr-batang.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "HCR Batang"; src: url("assets/fonts/hcr-batang-bold.woff2") format("woff2"); font-weight: 700; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0f0a06; }
+#root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #0f0a06; font-family: "HCR Batang", serif; color: #fbf3e2; }
+.layer { position: absolute; inset: 0; overflow: hidden; }
+.vw { position: absolute; inset: 0; opacity: 0; overflow: hidden; }
+.vw video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- 승: 3D quilt */
+#s2-bg { opacity: 1; }
+#s2-bg img { position: absolute; inset: -4%; width: 108%; height: 108%; object-fit: cover; filter: brightness(.85); }
+#s2-cam { perspective: 1500px; perspective-origin: 960px 380px; overflow: visible; }
+#s2-tilt { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 420px; transform-style: flat; }
+#s2-world { position: absolute; left: 0; top: 0; width: 10560px; height: 11280px; }
+.wfab { position: absolute; left: 0; top: 0; }
+#s2-far { background: linear-gradient(to bottom, rgba(18, 10, 4, .55) 0%, rgba(18, 10, 4, 0) 22%); pointer-events: none; }
+#s2-blur { opacity: 0; backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); pointer-events: none; }
+.fill { position: absolute; background: var(--c) url("assets/img/linen.jpg") 0 0 / 400px 400px; background-blend-mode: multiply; outline: 2px dashed rgba(255, 214, 140, .55); outline-offset: -14px; }
+.qp, .qt { position: absolute; opacity: 0; }
+.qfab { position: absolute; inset: 0; background: var(--c) url("assets/img/linen.jpg") 0 0 / 400px 400px; background-blend-mode: multiply; box-shadow: 0 30px 50px rgba(30, 15, 5, .55); }
+.qph { position: absolute; left: 22px; right: 22px; top: 22px; bottom: 96px; overflow: hidden; background: #222; }
+.qcap { position: absolute; left: 22px; right: 22px; bottom: 20px; height: 66px; display: flex; align-items: center; justify-content: center; padding: 0 24px; background: #f1e6cc url("assets/img/linen.jpg") 0 0 / 400px 400px; background-blend-mode: multiply; outline: 2px dashed rgba(150, 105, 40, .75); outline-offset: -7px; }
+.qcap span { font-size: 34px; font-weight: 700; color: #2b1b0c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -.01em; }
+.qph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(1.12) contrast(1.05); }
+.st { position: absolute; inset: 0; overflow: visible; }
+.glowst { filter: drop-shadow(0 0 4px rgba(255, 196, 90, .95)) drop-shadow(0 0 12px rgba(255, 170, 60, .6)); }
+.qt-in { position: absolute; inset: 0; display: flex; align-items: center; gap: 34px; padding: 0 70px; background: #efe2c4 url("assets/img/linen.jpg") 0 0 / 400px 400px; background-blend-mode: multiply; box-shadow: 0 26px 44px rgba(30, 15, 5, .5); }
+.qt .num { font-size: 60px; font-weight: 700; color: #7a5420; }
+.qt .nm { font-size: 132px; font-weight: 700; color: #2a1a0c; letter-spacing: .04em; }
+.dof { position: absolute; left: 0; right: 0; pointer-events: none; backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px); }
+.dof.top { top: 0; height: 180px; -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.6) 45%, transparent 100%); mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.6) 45%, transparent 100%); }
+.dof.bot { bottom: 0; height: 90px; -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 100%); mask-image: linear-gradient(to top, #000 0%, transparent 100%); }
+.sweep { position: absolute; top: -20%; left: -60%; width: 60%; height: 140%; background: linear-gradient(100deg, transparent 0%, rgba(255, 200, 110, .0) 30%, rgba(255, 226, 160, .55) 50%, rgba(255, 200, 110, 0) 70%, transparent 100%); mix-blend-mode: screen; transform: skewX(-12deg); opacity: 0; pointer-events: none; }
+.lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 85% 8%, rgba(255, 196, 110, .38), transparent 60%), radial-gradient(ellipse 80% 60% at 10% 100%, rgba(30, 12, 0, .45), transparent 70%); mix-blend-mode: screen; pointer-events: none; }
+
+/* ---------- 전: cloth */
+#cloth { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+#swirls { position: absolute; inset: 0; overflow: visible; }
+.swirl { fill: none; stroke: #ffd27a; stroke-width: 4; stroke-linecap: round; filter: drop-shadow(0 0 6px #ffc35e) drop-shadow(0 0 18px rgba(255, 170, 60, .8)); }
+#s3-tags { position: absolute; left: 90px; bottom: 120px; width: 700px; height: 220px; }
+.ltag { position: absolute; left: 0; bottom: 0; display: flex; align-items: baseline; gap: 22px; padding: 26px 48px 22px; background: #efe2c4 url("assets/img/linen.jpg") 0 0 / 400px 400px; background-blend-mode: multiply; outline: 3px dashed #b8862e; outline-offset: -12px; box-shadow: 0 18px 40px rgba(0, 0, 0, .45); opacity: 0; }
+.ltag .num { font-size: 44px; font-weight: 700; color: #7a5420; }
+.ltag .nm { font-size: 96px; font-weight: 700; color: #2a1a0c; letter-spacing: .04em; }
+
+/* ---------- 결: map */
+#s4-cam, #s5-cam { perspective: 1600px; perspective-origin: 960px 300px; }
+#s4-tilt, #s5-tilt { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 560px; }
+#s4-map, #s5-map { position: absolute; left: calc(960px - 855px / 2); top: calc(560px - 826px / 2); width: 855px; height: 826px; }
+.mreg { position: absolute; overflow: visible; opacity: 0; filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .45)); }
+#s5-map .mreg { opacity: 1; }
+#s4-ol, #s5-ol { position: absolute; left: 0; top: 0; overflow: visible; }
+#ol-gold, #ol5-gold { fill: none; stroke: #ffd77e; stroke-width: 4.5; stroke-linejoin: round; filter: drop-shadow(0 0 4px #ffcf6b) drop-shadow(0 0 14px rgba(255, 180, 70, .9)); }
+#ol-glow, #ol5-glow { fill: none; stroke: #ffbf55; stroke-width: 26; opacity: 0; filter: blur(14px); }
+#olspark { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+.osp { position: absolute; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: radial-gradient(circle, #fff 0 20%, #ffe09a 40%, rgba(255, 190, 80, 0) 70%); box-shadow: 0 0 22px 8px rgba(255, 200, 100, .6); opacity: 0; }
+#trails { position: absolute; inset: 0; overflow: visible; }
+.trail { fill: none; stroke: #ffe1a0; stroke-width: 5; stroke-linecap: round; filter: drop-shadow(0 0 6px #ffcf6b) drop-shadow(0 0 20px rgba(255, 170, 60, .9)); }
+.drop { position: absolute; left: 0; top: 0; width: 34px; height: 46px; margin: -46px 0 0 -17px; border-radius: 50% 50% 50% 50% / 62% 62% 40% 40%; background: radial-gradient(circle at 35% 30%, #fff 0 12%, rgba(230, 240, 255, .9) 30%, rgba(160, 190, 220, .6) 70%, rgba(120, 150, 180, .4)); box-shadow: 0 0 22px rgba(255, 240, 200, .8); opacity: 0; }
+.ring { position: absolute; left: 0; top: 0; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; border: 4px solid #ffe2a0; box-shadow: 0 0 30px rgba(255, 200, 100, .8); opacity: 0; }
+
+/* ---------- final */
+#s6g { position: absolute; opacity: 0; left: 0; right: 0; top: 0; height: 560px; background: radial-gradient(ellipse 60% 80% at 50% 30%, rgba(10, 5, 0, .5), rgba(10, 5, 0, .22) 60%, transparent 85%); }
+.fin { position: absolute; left: 154px; right: 154px; text-align: center; opacity: 0; word-break: keep-all; font-family: "Pretendard", sans-serif; text-shadow: 0 1px 4px rgba(0, 0, 0, .5), 0 0 18px rgba(40, 15, 0, .35); }
+#fin1 { top: 140px; font-size: 44px; font-weight: 600; color: var(--cw); line-height: 1.5; }
+#fin2 { top: 232px; font-size: 104px; font-weight: 700; color: var(--cw); line-height: 1.3; letter-spacing: -.01em; }
+#fin2 em { font-style: normal; color: var(--cg); }
+#fin2 .f2, #fin2 .f2s { display: block; }
+#fin2 .f2s { position: absolute; left: 0; right: 0; top: 0; color: transparent; text-shadow: none; background: linear-gradient(100deg, transparent 0%, transparent 42%, rgba(255, 248, 228, .85) 50%, transparent 58%, transparent 100%); background-size: 300% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; }
+#fin3 { top: 400px; font-size: 38px; font-weight: 600; color: var(--cw); letter-spacing: .02em; }
+
+#gnlogo { position: absolute; left: 50%; top: 905px; width: 300px; height: 105px; margin-left: -150px; opacity: 0; filter: drop-shadow(0 4px 16px rgba(0, 0, 0, .6)); }
+
+/* ---------- effects */
+.flare { position: absolute; width: 0; height: 0; opacity: 0; mix-blend-mode: screen; pointer-events: none; }
+.flare i { position: absolute; display: block; }
+.fcore { left: -170px; top: -170px; width: 340px; height: 340px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 240, 1) 0%, rgba(255, 228, 160, .85) 12%, rgba(255, 170, 70, .35) 35%, transparent 70%); }
+.fstreak { left: -900px; top: -5px; width: 1800px; height: 10px; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(255, 240, 210, .95) 0%, rgba(255, 190, 110, .45) 30%, transparent 70%); filter: blur(2px); }
+.fhalo { border-radius: 50%; border: 2px solid rgba(255, 210, 150, .25); background: radial-gradient(circle, transparent 55%, rgba(255, 190, 120, .12) 70%, transparent 80%); }
+.fhalo.h1 { left: -330px; top: 150px; width: 120px; height: 120px; }
+.fhalo.h2 { left: -620px; top: 310px; width: 220px; height: 220px; border-color: rgba(180, 220, 255, .18); }
+.fhalo.h3 { left: -880px; top: 470px; width: 70px; height: 70px; background: rgba(255, 200, 140, .12); }
+.leak { position: absolute; inset: -16%; opacity: 0; overflow: hidden; pointer-events: none; mix-blend-mode: screen; }
+.leak i { position: absolute; inset: -20%; display: block; }
+.leak .la { background: radial-gradient(ellipse 52% 110% at 10% 58%, rgb(255 241 197 / 92%), transparent 45%), radial-gradient(ellipse 72% 120% at 24% 54%, rgb(255 126 57 / 78%), transparent 66%); filter: blur(52px); }
+.leak .lr { background: radial-gradient(ellipse 58% 105% at 78% 34%, rgb(255 79 61 / 60%), rgb(255 44 92 / 22%) 48%, transparent 76%); filter: blur(70px); }
+.leak .lg { background: linear-gradient(104deg, transparent 24%, rgb(255 144 62 / 30%) 40%, rgb(255 247 205 / 72%) 51%, rgb(255 124 48 / 22%) 62%, transparent 78%); filter: blur(36px); }
+#dust { position: absolute; inset: 0; mix-blend-mode: screen; opacity: 0; }
+.dp { position: absolute; display: block; border-radius: 50%; background: radial-gradient(circle, #fff7dd 0 30%, rgba(255, 200, 110, .8) 50%, transparent 72%); box-shadow: 0 0 10px 3px rgba(255, 190, 90, .55); }
+.vig { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 80% 75% at 50% 50%, transparent 65%, rgba(10, 5, 0, .35) 100%); }
+#grain { position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: .09; mix-blend-mode: overlay; }
+#grain .gt { position: absolute; left: -50%; top: -50%; width: 200%; height: 200%; background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* ---------- text */
+.chap { position: absolute; left: 110px; top: 90px; opacity: 0; text-shadow: 0 4px 24px rgba(0, 0, 0, .75); }
+.chap .cb { display: block; font-size: 150px; font-weight: 700; line-height: 1; color: #fff3d6; }
+.chap .cr { display: block; width: 140px; height: 3px; margin: 26px 0 22px; background: repeating-linear-gradient(90deg, #ffd27a 0 14px, transparent 14px 22px); box-shadow: 0 0 10px rgba(255, 200, 100, .7); }
+.chap .cs { display: block; font-size: 58px; font-weight: 700; color: #ffe2a6; letter-spacing: .06em; }
+
+#fade { background: #000; opacity: 1; pointer-events: none; }
+
+/* captions: restrained broadcast style */
+:root { --cw: #f6efe2; --cg: #dcc48e; }
+#capbg { position: absolute; left: 0; right: 0; bottom: 0; height: 330px; opacity: 0; background: linear-gradient(to top, rgba(8, 5, 2, .58) 0%, rgba(8, 5, 2, .32) 45%, rgba(8, 5, 2, 0) 100%); pointer-events: none; }
+.ncap { position: absolute; left: 154px; right: 154px; bottom: 96px; text-align: center; opacity: 0; }
+.ncap .cl { display: block; margin-top: 10px; }
+.ncap .cu { opacity: 0; display: inline-block; font-family: "Pretendard", sans-serif; font-size: 46px; font-weight: 600; line-height: 1.5; color: var(--cw); letter-spacing: -.005em; word-break: keep-all; text-shadow: 0 1px 3px rgba(0, 0, 0, .55), 0 0 12px rgba(0, 0, 0, .3); }
+.ncap em { font-style: normal; color: var(--cg); }
+.fl { position: absolute; left: 50%; top: 214px; width: 560px; height: 2px; margin-left: -280px; opacity: 0; --fx: 0; }
+.fl::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(203, 178, 124, 0), var(--cg) 15%, var(--cg) 85%, rgba(203, 178, 124, 0)); transform-origin: 0 50%; transform: scaleX(var(--fx)); }
+.fl .flt { position: absolute; top: -3px; left: 0; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: #f3e3b8; box-shadow: 0 0 6px rgba(240, 215, 150, .8); }
+.qcap span { font-family: "Pretendard", sans-serif !important; font-weight: 600 !important; }
+
+/* ending photos */
+.phs { position: absolute; inset: 0; opacity: 0; overflow: hidden; }
+.phbg { position: absolute; inset: -6%; background-size: cover; background-position: center; filter: blur(34px) brightness(.45) saturate(1.1); }
+.phfr { position: absolute; left: 50%; top: 50%; width: 1440px; height: 810px; margin: -430px 0 0 -720px; padding: 14px; background: #efe2c4; box-shadow: 0 30px 60px rgba(0, 0, 0, .55); }
+.phfr img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.phst { position: absolute; inset: 6px; display: block; border: 2px dashed rgba(184, 134, 46, .8); pointer-events: none; }
+#fin2 .l1, #fin2 .l2 { display: block; }
+#fin2 { top: 150px; }
+#fin3 { top: 440px; }
+.fl { top: 132px; }
+
+.qt-in { padding: 0 40px; gap: 22px; }
+.qt .nm { font-size: 104px; white-space: nowrap; }
+.qt .num { font-size: 48px; }
+
+/* ---- v13 bright daylight grading ---- */
+.leak .la { background: radial-gradient(ellipse 52% 110% at 10% 58%, rgb(255 255 255 / 85%), transparent 45%), radial-gradient(ellipse 72% 120% at 24% 54%, rgb(190 225 255 / 55%), transparent 66%); }
+.leak .lr { background: radial-gradient(ellipse 58% 105% at 78% 34%, rgb(200 230 255 / 50%), rgb(255 255 255 / 20%) 48%, transparent 76%); }
+.leak .lg { background: linear-gradient(104deg, transparent 24%, rgb(220 240 255 / 30%) 40%, rgb(255 255 255 / 70%) 51%, rgb(210 235 255 / 22%) 62%, transparent 78%); }
+.dp { background: radial-gradient(circle, #ffffff 0 30%, rgba(210, 235, 255, .8) 50%, transparent 72%); box-shadow: 0 0 10px 3px rgba(220, 240, 255, .55); }
+.vig { background: none; }
+#s2-far { background: linear-gradient(to bottom, rgba(236, 246, 255, .55) 0%, rgba(236, 246, 255, 0) 24%); }
+.lamp { background: radial-gradient(ellipse 70% 70% at 80% 0%, rgba(255, 255, 255, .35), transparent 60%); mix-blend-mode: screen; }
+.sweep { background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .55) 50%, rgba(255, 255, 255, 0) 70%, transparent 100%); }
+.fcore { background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(235, 245, 255, .8) 14%, rgba(200, 225, 255, .3) 36%, transparent 70%); }
+.fstreak { background: radial-gradient(ellipse at center, rgba(255, 255, 255, .9) 0%, rgba(210, 232, 255, .4) 30%, transparent 70%); }
+.phbg { filter: blur(34px) brightness(1.05) saturate(1.05); }
+.phs::after { content: ""; position: absolute; inset: 0; background: rgba(235, 245, 255, .25); pointer-events: none; }
+.phfr { background: #ffffff; box-shadow: 0 24px 50px rgba(20, 50, 90, .35); }
+.phst { border-color: rgba(120, 160, 210, .7); }
+#s6g { background: radial-gradient(ellipse 60% 75% at 50% 28%, rgba(10, 35, 70, .42), rgba(10, 35, 70, .18) 60%, transparent 85%); }
+
+#s2 { background: linear-gradient(to bottom, #dfeaf4 0%, #eef3f6 40%, #e9e4d8 100%); }
+#gnlogo { background: rgba(255, 255, 255, .9); border-radius: 14px; padding: 10px 22px; width: 300px; height: 105px; box-sizing: border-box; box-shadow: 0 6px 18px rgba(20, 50, 90, .25); filter: none; }
+
+/* ================= v20: clean PPT-style template (opening 0-19 s, ending 162.4-178 s) ================= */
+:root { --iv: #f5efe1; --ink: #2a1a0c; --ink2: #5b4630; --gd: #a8762a; --gdl: #c9a35c; }
+.tpl { position: absolute; inset: 0; background: var(--iv); }
+.tpl::before { content: ""; position: absolute; inset: 0; background: url("assets/img/linen.jpg") 0 0 / 520px 520px; opacity: .16; mix-blend-mode: multiply; }
+.tband { position: absolute; left: 0; right: 0; height: 14px; overflow: hidden; }
+.tband.top { top: 0; } .tband.bot { bottom: 0; }
+.tband i { position: absolute; top: 0; bottom: 0; display: block; }
+.thd { position: absolute; left: 110px; right: 110px; top: 50px; height: 50px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(168, 118, 42, .35); font-family: "Pretendard", sans-serif; font-weight: 600; color: var(--ink2); }
+.thl { font-size: 26px; letter-spacing: .04em; padding-bottom: 14px; }
+.thr { position: relative; font-size: 26px; padding-bottom: 14px; padding-left: 44px; }
+.thr .pg { position: absolute; left: 0; top: 0; font-weight: 700; color: var(--gd); opacity: 0; }
+.ts { position: absolute; left: 150px; top: 300px; width: 860px; opacity: 0; }
+.ts .eb { display: block; font-family: "Pretendard", sans-serif; font-weight: 600; font-size: 30px; letter-spacing: .08em; color: var(--gd); }
+.ts h1 { margin-top: 28px; font-family: "HCR Batang", serif; font-weight: 700; font-size: 132px; line-height: 1.18; letter-spacing: -.01em; color: var(--ink); word-break: keep-all; }
+.ts .rule { display: block; width: 180px; height: 3px; margin: 40px 0 34px; background: repeating-linear-gradient(90deg, var(--gd) 0 16px, transparent 16px 26px); transform-origin: 0 50%; }
+.ts p { font-family: "HCR Batang", serif; font-weight: 400; font-size: 48px; color: var(--ink2); letter-spacing: .01em; }
+#ts3 h1 { font-size: 112px; }
+#ts3 { top: 250px; }
+#s1q { position: absolute; left: 1150px; top: 230px; width: 600px; height: 600px; }
+#s1q-in { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.tq { position: absolute; opacity: 0; background: var(--c) url("assets/img/linen.jpg") 0 0 / 400px 400px; background-blend-mode: multiply; box-shadow: 0 10px 22px rgba(60, 40, 15, .18); }
+.tq svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.tq .sd { fill: none; stroke: #f3dfae; stroke-width: 2.4; stroke-dasharray: 9 7; stroke-linecap: round; }
+.tq span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: "HCR Batang", serif; font-weight: 700; font-size: 34px; color: #fbf3e2; letter-spacing: .04em; }
+#s1q-ol { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+#s1q-ol rect { fill: none; stroke: var(--gd); stroke-width: 3; }
+/* ending on the template */
+#s6bg { opacity: 0; }
+#fq { position: absolute; left: 220px; top: 590px; width: 1484px; height: 202px; }
+#fq .tq span { font-size: 32px; }
+#s6 .fin { text-shadow: none; }
+#s6 #fin2 { color: var(--ink); }
+#s6 #fin2 em { color: var(--gd); }
+#s6 #fin2 .f2s { background: linear-gradient(100deg, transparent 0%, transparent 42%, rgba(255, 236, 190, .9) 50%, transparent 58%, transparent 100%); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; }
+#s6 #fin3 { color: var(--ink2); }
+#s6 .fl { --cg: var(--gd); }
+#s6 .fl .flt { background: var(--gd); box-shadow: 0 0 6px rgba(168, 118, 42, .6); }
+#gnlogo { box-shadow: 0 4px 14px rgba(90, 60, 20, .15); }
+/* captions on the light template: dark ink, no glow, no dark gradient */
+.ncap.lt .cu { color: var(--ink); text-shadow: none; }
+.ncap.lt em { color: var(--gd); }
+
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="178" data-width="1920" data-height="1080">
+<audio id="mix" src="assets/audio/master_mix9_less.m4a" data-start="0" data-duration="178" data-track-index="0" data-volume="1"></audio>
+
+<!-- 기 0-19: v20 template slides (replaces the AI clips v13_g1_hands / v14_face0 / v13_g3_stitch) -->
+<div id="s1" class="layer clip" data-start="0" data-duration="20.4" data-track-index="1">
+  <div class="tpl"><div class="tband top"><i style="left:0px;width:92px;background:#2f4f7f"></i><i style="left:96px;width:60px;background:#7d4466"></i><i style="left:160px;width:124px;background:#a8763a"></i><i style="left:288px;width:76px;background:#5f8048"></i><i style="left:368px;width:108px;background:#4a5f8f"></i><i style="left:480px;width:68px;background:#d29f36"></i><i style="left:552px;width:100px;background:#c4705f"></i><i style="left:656px;width:84px;background:#b5473c"></i><i style="left:744px;width:116px;background:#3e7f7a"></i><i style="left:864px;width:92px;background:#2f4f7f"></i><i style="left:960px;width:60px;background:#7d4466"></i><i style="left:1024px;width:124px;background:#a8763a"></i><i style="left:1152px;width:76px;background:#5f8048"></i><i style="left:1232px;width:108px;background:#4a5f8f"></i><i style="left:1344px;width:68px;background:#d29f36"></i><i style="left:1416px;width:100px;background:#c4705f"></i><i style="left:1520px;width:84px;background:#b5473c"></i><i style="left:1608px;width:116px;background:#3e7f7a"></i><i style="left:1728px;width:92px;background:#2f4f7f"></i><i style="left:1824px;width:60px;background:#7d4466"></i><i style="left:1888px;width:124px;background:#a8763a"></i></div><div class="tband bot"><i style="left:0px;width:92px;background:#2f4f7f"></i><i style="left:96px;width:60px;background:#7d4466"></i><i style="left:160px;width:124px;background:#a8763a"></i><i style="left:288px;width:76px;background:#5f8048"></i><i style="left:368px;width:108px;background:#4a5f8f"></i><i style="left:480px;width:68px;background:#d29f36"></i><i style="left:552px;width:100px;background:#c4705f"></i><i style="left:656px;width:84px;background:#b5473c"></i><i style="left:744px;width:116px;background:#3e7f7a"></i><i style="left:864px;width:92px;background:#2f4f7f"></i><i style="left:960px;width:60px;background:#7d4466"></i><i style="left:1024px;width:124px;background:#a8763a"></i><i style="left:1152px;width:76px;background:#5f8048"></i><i style="left:1232px;width:108px;background:#4a5f8f"></i><i style="left:1344px;width:68px;background:#d29f36"></i><i style="left:1416px;width:100px;background:#c4705f"></i><i style="left:1520px;width:84px;background:#b5473c"></i><i style="left:1608px;width:116px;background:#3e7f7a"></i><i style="left:1728px;width:92px;background:#2f4f7f"></i><i style="left:1824px;width:60px;background:#7d4466"></i><i style="left:1888px;width:124px;background:#a8763a"></i></div></div>
+  <div class="thd"><span class="thl">제8회 경상남도 주민자치 박람회</span><span class="thr"><b class="pg" id="pg1">01</b><b class="pg" id="pg2">02</b><b class="pg" id="pg3">03</b><span class="pgt">/ 03</span></span></div>
+  <div class="ts" id="ts1"><span class="eb">기 · 첫 바늘땀</span><h1>첫 땀</h1><i class="rule"></i><p>새벽을 여는 손끝에서</p></div>
+  <div class="ts" id="ts2"><span class="eb">기 · 땀 한 방울</span><h1>땀 한 방울</h1><i class="rule"></i><p>우리 마을을 잇는 첫 바늘땀</p></div>
+  <div class="ts" id="ts3"><span class="eb">기 · 조각보</span><h1>한 조각씩,<br>하나의 천으로</h1><i class="rule"></i><p>경상남도 18개 시군의 이야기</p></div>
+  <div id="s1q"><div id="s1q-in"><div class="tq" id="tq0" style="left:0px;top:0px;width:250px;height:190px;--c:#b5473c">
+  <svg viewBox="0 0 250 190"><defs><mask id="tq0-m"><rect x="8" y="8" width="234" height="174" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="tq0-mr"/></mask></defs><rect class="sd" x="8" y="8" width="234" height="174" mask="url(#tq0-m)"/></svg></div><div class="tq" id="tq1" style="left:260px;top:0px;width:340px;height:110px;--c:#3e7f7a">
+  <svg viewBox="0 0 340 110"><defs><mask id="tq1-m"><rect x="8" y="8" width="324" height="94" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="tq1-mr"/></mask></defs><rect class="sd" x="8" y="8" width="324" height="94" mask="url(#tq1-m)"/></svg></div><div class="tq" id="tq2" style="left:260px;top:120px;width:160px;height:180px;--c:#2f4f7f">
+  <svg viewBox="0 0 160 180"><defs><mask id="tq2-m"><rect x="8" y="8" width="144" height="164" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="tq2-mr"/></mask></defs><rect class="sd" x="8" y="8" width="144" height="164" mask="url(#tq2-m)"/></svg></div><div class="tq" id="tq3" style="left:430px;top:120px;width:170px;height:300px;--c:#7d4466">
+  <svg viewBox="0 0 170 300"><defs><mask id="tq3-m"><rect x="8" y="8" width="154" height="284" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="tq3-mr"/></mask></defs><rect class="sd" x="8" y="8" width="154" height="284" mask="url(#tq3-m)"/></svg></div><div class="tq" id="tq4" style="left:0px;top:200px;width:120px;height:220px;--c:#a8763a">
+  <svg viewBox="0 0 120 220"><defs><mask id="tq4-m"><rect x="8" y="8" width="104" height="204" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="tq4-mr"/></mask></defs><rect class="sd" x="8" y="8" width="104" height="204" mask="url(#tq4-m)"/></svg></div><div class="tq" id="tq5" style="left:130px;top:200px;width:120px;height:100px;--c:#5f8048">
+  <svg viewBox="0 0 120 100"><defs><mask id="tq5-m"><rect x="8" y="8" width="104" height="84" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="tq5-mr"/></mask></defs><rect class="sd" x="8" y="8" width="104" height="84" mask="url(#tq5-m)"/></svg></div><div class="tq" id="tq6" style="left:130px;top:310px;width:290px;height:110px;--c:#4a5f8f">
+  <svg viewBox="0 0 290 110"><defs><mask id="tq6-m"><rect x="8" y="8" width="274" height="94" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="tq6-mr"/></mask></defs><rect class="sd" x="8" y="8" width="274" height="94" mask="url(#tq6-m)"/></svg></div><div class="tq" id="tq7" style="left:0px;top:430px;width:300px;height:170px;--c:#d29f36">
+  <svg viewBox="0 0 300 170"><defs><mask id="tq7-m"><rect x="8" y="8" width="284" height="154" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="tq7-mr"/></mask></defs><rect class="sd" x="8" y="8" width="284" height="154" mask="url(#tq7-m)"/></svg></div><div class="tq" id="tq8" style="left:310px;top:430px;width:290px;height:170px;--c:#c4705f">
+  <svg viewBox="0 0 290 170"><defs><mask id="tq8-m"><rect x="8" y="8" width="274" height="154" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="tq8-mr"/></mask></defs><rect class="sd" x="8" y="8" width="274" height="154" mask="url(#tq8-m)"/></svg></div><svg id="s1q-ol" viewBox="0 0 600 600"><rect id="s1q-olr" x="-16" y="-16" width="632" height="632" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/></svg></div></div>
+</div>
+
+<!-- 승 25-123 -->
+<div id="s2" class="layer clip" data-start="19.0" data-duration="121.5" data-track-index="2">
+  <div id="s2-cam" class="layer">
+    <div id="s2-tilt">
+      <div id="s2-world">
+        <img class="wfab" src="assets/img/quilt_base2.jpg" alt="" style="width:10560px;height:11280px">
+        <div class="qp" id="q00" style="left:2440px;top:2650px;width:720px;height:790px;--c:#2f4f7f">
+  <div class="qfab"></div><div class="qph"><img id="q00-img" src="assets/photos/changwon-0.jpg" alt=""></div>
+  <div class="qcap"><span>월영동 주민총회</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q00-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q00-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q00-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q01" style="left:3184px;top:2440px;width:1096px;height:500px;--c:#b5473c">
+  <div class="qfab"></div><div class="qph"><img id="q01-img" src="assets/photos/changwon-1.jpg" alt=""></div>
+  <div class="qcap"><span>마산회원구 주민자치센터 프로그램 발표회</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q01-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q01-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q01-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q02" style="left:3184px;top:2960px;width:1096px;height:500px;--c:#d29f36">
+  <div class="qfab"></div><div class="qph"><img id="q02-img" src="assets/photos/changwon-2.jpg" alt=""></div>
+  <div class="qcap"><span>경화동 지신밟기</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q02-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q02-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q02-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt0" style="left:2440px;top:2440px;width:560px;height:190px;--c:#d29f36">
+  <div class="qt-in"><span class="num">01</span><span class="nm">창원시</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt0-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt0-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt0-m)" class=""/>
+</svg>
+</div><div class="qp" id="q10" style="left:5480px;top:2650px;width:720px;height:790px;--c:#5f8048">
+  <div class="qfab"></div><div class="qph"><img id="q10-img" src="assets/photos/jinju-0.jpg" alt=""></div>
+  <div class="qcap"><span>상평동 주민총회 및 주민화합문화축제</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q10-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q10-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q10-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q11" style="left:4360px;top:2440px;width:1096px;height:500px;--c:#7d4466">
+  <div class="qfab"></div><div class="qph"><img id="q11-img" src="assets/photos/jinju-1.jpg" alt=""></div>
+  <div class="qcap"><span>충무공동 주민자치 홍보부스 운영</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q11-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q11-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q11-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q12" style="left:4360px;top:2960px;width:1096px;height:500px;--c:#3e7f7a">
+  <div class="qfab"></div><div class="qph"><img id="q12-img" src="assets/photos/jinju-2.jpg" alt=""></div>
+  <div class="qcap"><span>상봉동 도 주민자치 박람회 우수사례 우수상 수상</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q12-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q12-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q12-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt1" style="left:5640px;top:2440px;width:560px;height:190px;--c:#3e7f7a">
+  <div class="qt-in"><span class="num">02</span><span class="nm">진주시</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt1-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt1-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt1-m)" class=""/>
+</svg>
+</div><div class="qp" id="q20" style="left:6280px;top:2650px;width:720px;height:790px;--c:#c4705f">
+  <div class="qfab"></div><div class="qph"><img id="q20-img" src="assets/photos/tongyeong-0.jpg" alt=""></div>
+  <div class="qcap"><span>통영시 주민자치협의회 선진지 견학</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q20-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q20-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q20-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q21" style="left:7024px;top:2440px;width:1096px;height:500px;--c:#4a5f8f">
+  <div class="qfab"></div><div class="qph"><img id="q21-img" src="assets/photos/tongyeong-1.jpg" alt=""></div>
+  <div class="qcap"><span>경상남도 주민자치박람회 우수동아리 경연대회 대상</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q21-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q21-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q21-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q22" style="left:7024px;top:2960px;width:1096px;height:500px;--c:#a8763a">
+  <div class="qfab"></div><div class="qph"><img id="q22-img" src="assets/photos/tongyeong-2.jpg" alt=""></div>
+  <div class="qcap"><span>제9회 통영시 주민자치 문화제</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q22-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q22-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q22-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt2" style="left:6280px;top:2440px;width:560px;height:190px;--c:#a8763a">
+  <div class="qt-in"><span class="num">03</span><span class="nm">통영시</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt2-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt2-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt2-m)" class=""/>
+</svg>
+</div><div class="qp" id="q30" style="left:7400px;top:3730px;width:720px;height:790px;--c:#2f4f7f">
+  <div class="qfab"></div><div class="qph"><img id="q30-img" src="assets/photos/sacheon-0.jpg" alt=""></div>
+  <div class="qcap"><span>벌용동 벌용음악회</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q30-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q30-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q30-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q31" style="left:6280px;top:3520px;width:1096px;height:500px;--c:#b5473c">
+  <div class="qfab"></div><div class="qph"><img id="q31-img" src="assets/photos/sacheon-1.jpg" alt=""></div>
+  <div class="qcap"><span>동서금동 안전한골목길 조성사업</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q31-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q31-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q31-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q32" style="left:6280px;top:4040px;width:1096px;height:500px;--c:#d29f36">
+  <div class="qfab"></div><div class="qph"><img id="q32-img" src="assets/photos/sacheon-2.jpg" alt=""></div>
+  <div class="qcap"><span>사천읍 신년기원제</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q32-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q32-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q32-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt3" style="left:7560px;top:3520px;width:560px;height:190px;--c:#d29f36">
+  <div class="qt-in"><span class="num">04</span><span class="nm">사천시</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt3-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt3-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt3-m)" class=""/>
+</svg>
+</div><div class="qp" id="q40" style="left:4360px;top:3730px;width:720px;height:790px;--c:#5f8048">
+  <div class="qfab"></div><div class="qph"><img id="q40-img" src="assets/photos/gimhae-0.jpg" alt=""></div>
+  <div class="qcap"><span>장유1동 교양강좌 경진대회</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q40-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q40-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q40-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q41" style="left:5104px;top:3520px;width:1096px;height:500px;--c:#7d4466">
+  <div class="qfab"></div><div class="qph"><img id="q41-img" src="assets/photos/gimhae-1.jpg" alt=""></div>
+  <div class="qcap"><span>장유1동 수변축제&작품발표회</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q41-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q41-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q41-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q42" style="left:5104px;top:4040px;width:1096px;height:500px;--c:#3e7f7a">
+  <div class="qfab"></div><div class="qph"><img id="q42-img" src="assets/photos/gimhae-2.jpg" alt=""></div>
+  <div class="qcap"><span>북부동 추석맞이 대청소</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q42-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q42-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q42-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt4" style="left:4360px;top:3520px;width:560px;height:190px;--c:#3e7f7a">
+  <div class="qt-in"><span class="num">05</span><span class="nm">김해시</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt4-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt4-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt4-m)" class=""/>
+</svg>
+</div><div class="qp" id="q50" style="left:3560px;top:3730px;width:720px;height:790px;--c:#c4705f">
+  <div class="qfab"></div><div class="qph"><img id="q50-img" src="assets/photos/miryang-0.jpg" alt=""></div>
+  <div class="qcap"><span>주민자치의 꽃 주민총회 개최</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q50-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q50-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q50-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q51" style="left:2440px;top:3520px;width:1096px;height:500px;--c:#4a5f8f">
+  <div class="qfab"></div><div class="qph"><img id="q51-img" src="assets/photos/miryang-1.jpg" alt=""></div>
+  <div class="qcap"><span>밀양시 주민자치 프로그램 경연대회</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q51-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q51-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q51-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q52" style="left:2440px;top:4040px;width:1096px;height:500px;--c:#a8763a">
+  <div class="qfab"></div><div class="qph"><img id="q52-img" src="assets/photos/miryang-2.jpg" alt=""></div>
+  <div class="qcap"><span>밀양시 주민자치 위원 단합</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q52-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q52-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q52-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt5" style="left:3720px;top:3520px;width:560px;height:190px;--c:#a8763a">
+  <div class="qt-in"><span class="num">06</span><span class="nm">밀양시</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt5-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt5-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt5-m)" class=""/>
+</svg>
+</div><div class="qp" id="q60" style="left:2440px;top:4810px;width:720px;height:790px;--c:#2f4f7f">
+  <div class="qfab"></div><div class="qph"><img id="q60-img" src="assets/photos/geoje-0.jpg" alt=""></div>
+  <div class="qcap"><span>아름다운 꽃섬가꾸기</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q60-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q60-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q60-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q61" style="left:3184px;top:4600px;width:1096px;height:500px;--c:#b5473c">
+  <div class="qfab"></div><div class="qph"><img id="q61-img" src="assets/photos/geoje-1.jpg" alt=""></div>
+  <div class="qcap"><span>주민이 직접 만들고 결정하는 풀뿌리 민주주의의 장</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q61-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q61-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q61-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q62" style="left:3184px;top:5120px;width:1096px;height:500px;--c:#d29f36">
+  <div class="qfab"></div><div class="qph"><img id="q62-img" src="assets/photos/geoje-2.jpg" alt=""></div>
+  <div class="qcap"><span>우리가 스스로, 깨끗하게 가꿔나가는 우리 동네</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q62-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q62-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q62-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt6" style="left:2440px;top:4600px;width:560px;height:190px;--c:#d29f36">
+  <div class="qt-in"><span class="num">07</span><span class="nm">거제시</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt6-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt6-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt6-m)" class=""/>
+</svg>
+</div><div class="qp" id="q70" style="left:5480px;top:4810px;width:720px;height:790px;--c:#5f8048">
+  <div class="qfab"></div><div class="qph"><img id="q70-img" src="assets/photos/yangsan-0.jpg" alt=""></div>
+  <div class="qcap"><span>물금읍 LED등 교체 사업</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q70-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q70-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q70-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q71" style="left:4360px;top:4600px;width:1096px;height:500px;--c:#7d4466">
+  <div class="qfab"></div><div class="qph"><img id="q71-img" src="assets/photos/yangsan-1.jpg" alt=""></div>
+  <div class="qcap"><span>상북면 펫티켓 홍보 캠페인</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q71-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q71-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q71-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q72" style="left:4360px;top:5120px;width:1096px;height:500px;--c:#3e7f7a">
+  <div class="qfab"></div><div class="qph"><img id="q72-img" src="assets/photos/yangsan-2.jpg" alt=""></div>
+  <div class="qcap"><span>평산동 방범순찰 캠페인</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q72-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q72-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q72-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt7" style="left:5640px;top:4600px;width:560px;height:190px;--c:#3e7f7a">
+  <div class="qt-in"><span class="num">08</span><span class="nm">양산시</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt7-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt7-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt7-m)" class=""/>
+</svg>
+</div><div class="qp" id="q80" style="left:6280px;top:4810px;width:720px;height:790px;--c:#c4705f">
+  <div class="qfab"></div><div class="qph"><img id="q80-img" src="assets/photos/uiryeong-0.jpg" alt=""></div>
+  <div class="qcap"><span>마을주변 환경정화활동</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q80-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q80-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q80-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q81" style="left:7024px;top:4600px;width:1096px;height:500px;--c:#4a5f8f">
+  <div class="qfab"></div><div class="qph"><img id="q81-img" src="assets/photos/uiryeong-1.jpg" alt=""></div>
+  <div class="qcap"><span>지정면 주민자치회 선진지 견학</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q81-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q81-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q81-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q82" style="left:7024px;top:5120px;width:1096px;height:500px;--c:#a8763a">
+  <div class="qfab"></div><div class="qph"><img id="q82-img" src="assets/photos/uiryeong-2.jpg" alt=""></div>
+  <div class="qcap"><span>주민자치프로그램 댄스공연</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q82-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q82-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q82-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt8" style="left:6280px;top:4600px;width:560px;height:190px;--c:#a8763a">
+  <div class="qt-in"><span class="num">09</span><span class="nm">의령군</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt8-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt8-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt8-m)" class=""/>
+</svg>
+</div><div class="qp" id="q90" style="left:7400px;top:5890px;width:720px;height:790px;--c:#2f4f7f">
+  <div class="qfab"></div><div class="qph"><img id="q90-img" src="assets/photos/haman-0.jpg" alt=""></div>
+  <div class="qcap"><span>주민자치박람회 동아리 경연대회</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q90-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q90-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q90-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q91" style="left:6280px;top:5680px;width:1096px;height:500px;--c:#b5473c">
+  <div class="qfab"></div><div class="qph"><img id="q91-img" src="assets/photos/haman-1.jpg" alt=""></div>
+  <div class="qcap"><span>주민자치박람회 작품전시</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q91-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q91-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q91-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q92" style="left:6280px;top:6200px;width:1096px;height:500px;--c:#d29f36">
+  <div class="qfab"></div><div class="qph"><img id="q92-img" src="assets/photos/haman-2.jpg" alt=""></div>
+  <div class="qcap"><span>주민자치박람회 읍면부스 운영</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q92-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q92-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q92-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt9" style="left:7560px;top:5680px;width:560px;height:190px;--c:#d29f36">
+  <div class="qt-in"><span class="num">10</span><span class="nm">함안군</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt9-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt9-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt9-m)" class=""/>
+</svg>
+</div><div class="qp" id="q100" style="left:4360px;top:5890px;width:720px;height:790px;--c:#5f8048">
+  <div class="qfab"></div><div class="qph"><img id="q100-img" src="assets/photos/changnyeong-0.jpg" alt=""></div>
+  <div class="qcap"><span>세종시 부강면과 주민자치 교류의 장 마련</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q100-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q100-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q100-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q101" style="left:5104px;top:5680px;width:1096px;height:500px;--c:#7d4466">
+  <div class="qfab"></div><div class="qph"><img id="q101-img" src="assets/photos/changnyeong-1.jpg" alt=""></div>
+  <div class="qcap"><span>창녕읍 주민자치회 전등 교체 사업 실시</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q101-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q101-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q101-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q102" style="left:5104px;top:6200px;width:1096px;height:500px;--c:#3e7f7a">
+  <div class="qfab"></div><div class="qph"><img id="q102-img" src="assets/photos/changnyeong-2.jpg" alt=""></div>
+  <div class="qcap"><span>영산면 주민자치회 깨끗한거리 환경조성 캠페인</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q102-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q102-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q102-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt10" style="left:4360px;top:5680px;width:560px;height:190px;--c:#3e7f7a">
+  <div class="qt-in"><span class="num">11</span><span class="nm">창녕군</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt10-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt10-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt10-m)" class=""/>
+</svg>
+</div><div class="qp" id="q110" style="left:3560px;top:5890px;width:720px;height:790px;--c:#c4705f">
+  <div class="qfab"></div><div class="qph"><img id="q110-img" src="assets/photos/goseong-0.jpg" alt=""></div>
+  <div class="qcap"><span>첫돌맞은 대가면 주민총회</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q110-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q110-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q110-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q111" style="left:2440px;top:5680px;width:1096px;height:500px;--c:#4a5f8f">
+  <div class="qfab"></div><div class="qph"><img id="q111-img" src="assets/photos/goseong-1.jpg" alt=""></div>
+  <div class="qcap"><span>촌스런 축제 공연</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q111-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q111-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q111-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q112" style="left:2440px;top:6200px;width:1096px;height:500px;--c:#a8763a">
+  <div class="qfab"></div><div class="qph"><img id="q112-img" src="assets/photos/goseong-2.jpg" alt=""></div>
+  <div class="qcap"><span>싱싱텃밭 꽃모종 육모사업</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q112-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q112-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q112-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt11" style="left:3720px;top:5680px;width:560px;height:190px;--c:#a8763a">
+  <div class="qt-in"><span class="num">12</span><span class="nm">고성군</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt11-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt11-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt11-m)" class=""/>
+</svg>
+</div><div class="qp" id="q120" style="left:2440px;top:6970px;width:720px;height:790px;--c:#2f4f7f">
+  <div class="qfab"></div><div class="qph"><img id="q120-img" src="assets/photos/namhae-0.jpg" alt=""></div>
+  <div class="qcap"><span>창선면 주민자치회 고사리밭길 걷기 행사</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q120-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q120-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q120-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q121" style="left:3184px;top:6760px;width:1096px;height:500px;--c:#b5473c">
+  <div class="qfab"></div><div class="qph"><img id="q121-img" src="assets/photos/namhae-1.jpg" alt=""></div>
+  <div class="qcap"><span>대덕구 오정동 자매결연지 견학</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q121-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q121-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q121-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q122" style="left:3184px;top:7280px;width:1096px;height:500px;--c:#d29f36">
+  <div class="qfab"></div><div class="qph"><img id="q122-img" src="assets/photos/namhae-2.jpg" alt=""></div>
+  <div class="qcap"><span>2026 상주면 바래길 플로깅&돗자리 영화관 행사</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q122-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q122-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q122-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt12" style="left:2440px;top:6760px;width:560px;height:190px;--c:#d29f36">
+  <div class="qt-in"><span class="num">13</span><span class="nm">남해군</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt12-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt12-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt12-m)" class=""/>
+</svg>
+</div><div class="qp" id="q130" style="left:5480px;top:6970px;width:720px;height:790px;--c:#5f8048">
+  <div class="qfab"></div><div class="qph"><img id="q130-img" src="assets/photos/hadong-0.jpg" alt=""></div>
+  <div class="qcap"><span>양보면 주민자치회 선진지 견학</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q130-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q130-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q130-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q131" style="left:4360px;top:6760px;width:1096px;height:500px;--c:#7d4466">
+  <div class="qfab"></div><div class="qph"><img id="q131-img" src="assets/photos/hadong-1.jpg" alt=""></div>
+  <div class="qcap"><span>제24회 금성면민 한가위 노래자랑</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q131-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q131-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q131-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q132" style="left:4360px;top:7280px;width:1096px;height:500px;--c:#3e7f7a">
+  <div class="qfab"></div><div class="qph"><img id="q132-img" src="assets/photos/hadong-2.jpg" alt=""></div>
+  <div class="qcap"><span>예쁜 금남만들기</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q132-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q132-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q132-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt13" style="left:5640px;top:6760px;width:560px;height:190px;--c:#3e7f7a">
+  <div class="qt-in"><span class="num">14</span><span class="nm">하동군</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt13-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt13-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt13-m)" class=""/>
+</svg>
+</div><div class="qp" id="q140" style="left:6280px;top:6970px;width:720px;height:790px;--c:#c4705f">
+  <div class="qfab"></div><div class="qph"><img id="q140-img" src="assets/photos/sancheong-0.jpg" alt=""></div>
+  <div class="qcap"><span>산청군 주민자치연합회 창립총회</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q140-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q140-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q140-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q141" style="left:7024px;top:6760px;width:1096px;height:500px;--c:#4a5f8f">
+  <div class="qfab"></div><div class="qph"><img id="q141-img" src="assets/photos/sancheong-1.jpg" alt=""></div>
+  <div class="qcap"><span>주민자치연합회 군수실 내방</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q141-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q141-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q141-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q142" style="left:7024px;top:7280px;width:1096px;height:500px;--c:#a8763a">
+  <div class="qfab"></div><div class="qph"><img id="q142-img" src="assets/photos/sancheong-2.jpg" alt=""></div>
+  <div class="qcap"><span>삼장면 주민자치회 캐릭터 우편함 설치</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q142-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q142-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q142-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt14" style="left:6280px;top:6760px;width:560px;height:190px;--c:#a8763a">
+  <div class="qt-in"><span class="num">15</span><span class="nm">산청군</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt14-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt14-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt14-m)" class=""/>
+</svg>
+</div><div class="qp" id="q150" style="left:7400px;top:8050px;width:720px;height:790px;--c:#2f4f7f">
+  <div class="qfab"></div><div class="qph"><img id="q150-img" src="assets/photos/hamyang-0.jpg" alt=""></div>
+  <div class="qcap"><span>주민총회 개최</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q150-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q150-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q150-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q151" style="left:6280px;top:7840px;width:1096px;height:500px;--c:#b5473c">
+  <div class="qfab"></div><div class="qph"><img id="q151-img" src="assets/photos/hamyang-1.jpg" alt=""></div>
+  <div class="qcap"><span>자원순환 한마당</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q151-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q151-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q151-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q152" style="left:6280px;top:8360px;width:1096px;height:500px;--c:#d29f36">
+  <div class="qfab"></div><div class="qph"><img id="q152-img" src="assets/photos/hamyang-2.jpg" alt=""></div>
+  <div class="qcap"><span>서하면민체육대회 행사 지원(라인댄스)</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q152-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q152-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q152-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt15" style="left:7560px;top:7840px;width:560px;height:190px;--c:#d29f36">
+  <div class="qt-in"><span class="num">16</span><span class="nm">함양군</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt15-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt15-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt15-m)" class=""/>
+</svg>
+</div><div class="qp" id="q160" style="left:4360px;top:8050px;width:720px;height:790px;--c:#5f8048">
+  <div class="qfab"></div><div class="qph"><img id="q160-img" src="assets/photos/geochang-0.jpg" alt=""></div>
+  <div class="qcap"><span>거창읍 주민총회</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q160-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q160-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q160-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q161" style="left:5104px;top:7840px;width:1096px;height:500px;--c:#7d4466">
+  <div class="qfab"></div><div class="qph"><img id="q161-img" src="assets/photos/geochang-1.jpg" alt=""></div>
+  <div class="qcap"><span>위천면 주민총회</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q161-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q161-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q161-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q162" style="left:5104px;top:8360px;width:1096px;height:500px;--c:#3e7f7a">
+  <div class="qfab"></div><div class="qph"><img id="q162-img" src="assets/photos/geochang-2.jpg" alt=""></div>
+  <div class="qcap"><span>주상면 주민총회 및 프로그램발표회</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q162-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q162-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q162-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt16" style="left:4360px;top:7840px;width:560px;height:190px;--c:#3e7f7a">
+  <div class="qt-in"><span class="num">17</span><span class="nm">거창군</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt16-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt16-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt16-m)" class=""/>
+</svg>
+</div><div class="qp" id="q170" style="left:3560px;top:8050px;width:720px;height:790px;--c:#c4705f">
+  <div class="qfab"></div><div class="qph"><img id="q170-img" src="assets/photos/hapcheon-0.jpg" alt=""></div>
+  <div class="qcap"><span>주민자치역량강화 워크숍</span></div>
+  <svg class="st" viewBox="0 0 720 790" width="720" height="790">
+  <defs><mask id="q170-m"><rect x="11" y="11" width="698" height="768" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q170-mr"/></mask></defs>
+  <rect x="11" y="11" width="698" height="768" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q170-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q171" style="left:2440px;top:7840px;width:1096px;height:500px;--c:#4a5f8f">
+  <div class="qfab"></div><div class="qph"><img id="q171-img" src="assets/photos/hapcheon-1.jpg" alt=""></div>
+  <div class="qcap"><span>주민자치협의회 선진지견학</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q171-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q171-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q171-m)" class="glowst"/>
+</svg>
+</div><div class="qp" id="q172" style="left:2440px;top:8360px;width:1096px;height:500px;--c:#a8763a">
+  <div class="qfab"></div><div class="qph"><img id="q172-img" src="assets/photos/hapcheon-2.jpg" alt=""></div>
+  <div class="qcap"><span>초계면 주민총회</span></div>
+  <svg class="st" viewBox="0 0 1096 500" width="1096" height="500">
+  <defs><mask id="q172-m"><rect x="11" y="11" width="1074" height="478" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="q172-mr"/></mask></defs>
+  <rect x="11" y="11" width="1074" height="478" fill="none" stroke="#ffd27a" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#q172-m)" class="glowst"/>
+</svg>
+</div><div class="qt" id="qt17" style="left:3720px;top:7840px;width:560px;height:190px;--c:#a8763a">
+  <div class="qt-in"><span class="num">18</span><span class="nm">합천군</span></div>
+  <svg class="st" viewBox="0 0 560 190" width="560" height="190">
+  <defs><mask id="qt17-m"><rect x="16" y="16" width="528" height="158" fill="none" stroke="#fff" stroke-width="10" pathLength="1" stroke-dasharray="1 0" stroke-dashoffset="1" id="qt17-mr"/></mask></defs>
+  <rect x="16" y="16" width="528" height="158" fill="none" stroke="#b8862e" stroke-width="3.2" stroke-dasharray="12 8" stroke-linecap="round" mask="url(#qt17-m)" class=""/>
+</svg>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="dof top"></div><div class="dof bot"></div>
+  <div id="s2-far" class="layer"></div>
+  <div id="s2-blur" class="layer"></div>
+  <div id="s2-sweep" class="sweep"></div>
+  <div id="s2-lamp" class="lamp"></div>
+</div>
+
+<!-- 전 122.5-207 -->
+<div class="vw" id="v5-w"><video id="v5" class="clip" src="assets/video/v13_c5_thread.mp4" muted playsinline data-start="74.6" data-duration="9.6" data-media-start="0" data-track-index="1"></video></div>
+
+<!-- 결: throw, three photos, title -->
+<div class="vw" id="v11-w"><video id="v11" class="clip" src="assets/video/v13_c11_throw.mp4" muted playsinline data-start="139.2" data-duration="12.0" data-media-start="0" data-track-index="1"></video></div>
+<div id="s7" class="layer clip" data-start="149.0" data-duration="14.400000000000011" data-track-index="4">
+  <div class="phs" id="ph0"><div class="phbg" style="background-image:url('assets/photos/end-uiryeong.jpg')"></div><div class="phfr"><img src="assets/photos/end-uiryeong.jpg" alt=""><i class="phst"></i></div></div>
+  <div class="phs" id="ph1"><div class="phbg" style="background-image:url('assets/photos/end-changwon.jpg')"></div><div class="phfr"><img src="assets/photos/end-changwon.jpg" alt=""><i class="phst"></i></div></div>
+  <div class="phs" id="ph2"><div class="phbg" style="background-image:url('assets/photos/end-miryang.jpg')"></div><div class="phfr"><img src="assets/photos/end-miryang.jpg" alt=""><i class="phst"></i></div></div>
+</div>
+<div id="s6" class="layer clip" data-start="162.4" data-duration="15.599999999999994" data-track-index="6">
+  <div id="s6bg" class="layer"><div class="tpl"><div class="tband top"><i style="left:0px;width:92px;background:#2f4f7f"></i><i style="left:96px;width:60px;background:#7d4466"></i><i style="left:160px;width:124px;background:#a8763a"></i><i style="left:288px;width:76px;background:#5f8048"></i><i style="left:368px;width:108px;background:#4a5f8f"></i><i style="left:480px;width:68px;background:#d29f36"></i><i style="left:552px;width:100px;background:#c4705f"></i><i style="left:656px;width:84px;background:#b5473c"></i><i style="left:744px;width:116px;background:#3e7f7a"></i><i style="left:864px;width:92px;background:#2f4f7f"></i><i style="left:960px;width:60px;background:#7d4466"></i><i style="left:1024px;width:124px;background:#a8763a"></i><i style="left:1152px;width:76px;background:#5f8048"></i><i style="left:1232px;width:108px;background:#4a5f8f"></i><i style="left:1344px;width:68px;background:#d29f36"></i><i style="left:1416px;width:100px;background:#c4705f"></i><i style="left:1520px;width:84px;background:#b5473c"></i><i style="left:1608px;width:116px;background:#3e7f7a"></i><i style="left:1728px;width:92px;background:#2f4f7f"></i><i style="left:1824px;width:60px;background:#7d4466"></i><i style="left:1888px;width:124px;background:#a8763a"></i></div><div class="tband bot"><i style="left:0px;width:92px;background:#2f4f7f"></i><i style="left:96px;width:60px;background:#7d4466"></i><i style="left:160px;width:124px;background:#a8763a"></i><i style="left:288px;width:76px;background:#5f8048"></i><i style="left:368px;width:108px;background:#4a5f8f"></i><i style="left:480px;width:68px;background:#d29f36"></i><i style="left:552px;width:100px;background:#c4705f"></i><i style="left:656px;width:84px;background:#b5473c"></i><i style="left:744px;width:116px;background:#3e7f7a"></i><i style="left:864px;width:92px;background:#2f4f7f"></i><i style="left:960px;width:60px;background:#7d4466"></i><i style="left:1024px;width:124px;background:#a8763a"></i><i style="left:1152px;width:76px;background:#5f8048"></i><i style="left:1232px;width:108px;background:#4a5f8f"></i><i style="left:1344px;width:68px;background:#d29f36"></i><i style="left:1416px;width:100px;background:#c4705f"></i><i style="left:1520px;width:84px;background:#b5473c"></i><i style="left:1608px;width:116px;background:#3e7f7a"></i><i style="left:1728px;width:92px;background:#2f4f7f"></i><i style="left:1824px;width:60px;background:#7d4466"></i><i style="left:1888px;width:124px;background:#a8763a"></i></div></div></div>
+  <div id="fq"><div class="tq" id="fq0" style="left:0px;top:0px;width:156px;height:96px;--c:#b5473c"><span>창원시</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq0-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq0-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq0-m)"/></svg></div><div class="tq" id="fq1" style="left:166px;top:0px;width:156px;height:96px;--c:#3e7f7a"><span>진주시</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq1-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq1-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq1-m)"/></svg></div><div class="tq" id="fq2" style="left:332px;top:0px;width:156px;height:96px;--c:#2f4f7f"><span>통영시</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq2-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq2-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq2-m)"/></svg></div><div class="tq" id="fq3" style="left:498px;top:0px;width:156px;height:96px;--c:#7d4466"><span>사천시</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq3-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq3-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq3-m)"/></svg></div><div class="tq" id="fq4" style="left:664px;top:0px;width:156px;height:96px;--c:#a8763a"><span>김해시</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq4-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq4-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq4-m)"/></svg></div><div class="tq" id="fq5" style="left:830px;top:0px;width:156px;height:96px;--c:#5f8048"><span>밀양시</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq5-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq5-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq5-m)"/></svg></div><div class="tq" id="fq6" style="left:996px;top:0px;width:156px;height:96px;--c:#4a5f8f"><span>거제시</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq6-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq6-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq6-m)"/></svg></div><div class="tq" id="fq7" style="left:1162px;top:0px;width:156px;height:96px;--c:#d29f36"><span>양산시</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq7-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq7-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq7-m)"/></svg></div><div class="tq" id="fq8" style="left:1328px;top:0px;width:156px;height:96px;--c:#c4705f"><span>의령군</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq8-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq8-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq8-m)"/></svg></div><div class="tq" id="fq9" style="left:0px;top:106px;width:156px;height:96px;--c:#5f8048"><span>함안군</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq9-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq9-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq9-m)"/></svg></div><div class="tq" id="fq10" style="left:166px;top:106px;width:156px;height:96px;--c:#4a5f8f"><span>창녕군</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq10-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq10-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq10-m)"/></svg></div><div class="tq" id="fq11" style="left:332px;top:106px;width:156px;height:96px;--c:#d29f36"><span>고성군</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq11-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq11-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq11-m)"/></svg></div><div class="tq" id="fq12" style="left:498px;top:106px;width:156px;height:96px;--c:#c4705f"><span>남해군</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq12-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq12-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq12-m)"/></svg></div><div class="tq" id="fq13" style="left:664px;top:106px;width:156px;height:96px;--c:#b5473c"><span>하동군</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq13-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq13-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq13-m)"/></svg></div><div class="tq" id="fq14" style="left:830px;top:106px;width:156px;height:96px;--c:#3e7f7a"><span>산청군</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq14-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq14-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq14-m)"/></svg></div><div class="tq" id="fq15" style="left:996px;top:106px;width:156px;height:96px;--c:#2f4f7f"><span>함양군</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq15-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq15-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq15-m)"/></svg></div><div class="tq" id="fq16" style="left:1162px;top:106px;width:156px;height:96px;--c:#7d4466"><span>거창군</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq16-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq16-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq16-m)"/></svg></div><div class="tq" id="fq17" style="left:1328px;top:106px;width:156px;height:96px;--c:#a8763a"><span>합천군</span>
+  <svg viewBox="0 0 156 96"><defs><mask id="fq17-m"><rect x="8" y="8" width="140" height="80" fill="none" stroke="#fff" stroke-width="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" id="fq17-mr"/></mask></defs><rect class="sd" x="8" y="8" width="140" height="80" mask="url(#fq17-m)"/></svg></div></div>
+  <div id="finline" class="fl"><i class="flt"></i></div>
+  <div id="fin2" class="fin"><span class="f2"><span class="l1">주민의 힘으로,</span><span class="l2">경상남도가 <em>도약</em>하다</span></span><span class="f2s" aria-hidden="true"><span class="l1">주민의 힘으로,</span><span class="l2">경상남도가 도약하다</span></span></div>
+  <div id="fin3" class="fin">2026년 제8회 경상남도 주민자치 박람회</div>
+  <img id="gnlogo" src="assets/img/gn_logo_color.svg" alt="경상남도">
+</div>
+
+<!-- overlays -->
+<div id="ov" class="layer clip" data-start="0" data-duration="178" data-track-index="7">
+  <div id="dust"><i class="dp" id="dp0" style="left:1748px;top:680px;width:5.2px;height:5.2px"></i><i class="dp" id="dp1" style="left:1571px;top:736px;width:4.1px;height:4.1px"></i><i class="dp" id="dp2" style="left:1891px;top:144px;width:4.8px;height:4.8px"></i><i class="dp" id="dp3" style="left:1698px;top:517px;width:5.3px;height:5.3px"></i><i class="dp" id="dp4" style="left:348px;top:450px;width:3.1px;height:3.1px"></i><i class="dp" id="dp5" style="left:762px;top:758px;width:2.6px;height:2.6px"></i><i class="dp" id="dp6" style="left:650px;top:914px;width:3.2px;height:3.2px"></i><i class="dp" id="dp7" style="left:242px;top:1074px;width:4.2px;height:4.2px"></i><i class="dp" id="dp8" style="left:35px;top:617px;width:2.6px;height:2.6px"></i><i class="dp" id="dp9" style="left:313px;top:798px;width:4.6px;height:4.6px"></i><i class="dp" id="dp10" style="left:819px;top:556px;width:4.2px;height:4.2px"></i><i class="dp" id="dp11" style="left:881px;top:109px;width:5.1px;height:5.1px"></i><i class="dp" id="dp12" style="left:1479px;top:456px;width:3.6px;height:3.6px"></i><i class="dp" id="dp13" style="left:1172px;top:510px;width:3.7px;height:3.7px"></i><i class="dp" id="dp14" style="left:1682px;top:977px;width:2.6px;height:2.6px"></i><i class="dp" id="dp15" style="left:331px;top:847px;width:5.8px;height:5.8px"></i><i class="dp" id="dp16" style="left:1402px;top:321px;width:2.2px;height:2.2px"></i><i class="dp" id="dp17" style="left:1589px;top:1005px;width:5.0px;height:5.0px"></i><i class="dp" id="dp18" style="left:1413px;top:1051px;width:4.1px;height:4.1px"></i><i class="dp" id="dp19" style="left:1786px;top:283px;width:2.3px;height:2.3px"></i><i class="dp" id="dp20" style="left:1612px;top:755px;width:5.2px;height:5.2px"></i><i class="dp" id="dp21" style="left:250px;top:324px;width:4.3px;height:4.3px"></i><i class="dp" id="dp22" style="left:124px;top:355px;width:4.4px;height:4.4px"></i><i class="dp" id="dp23" style="left:1799px;top:777px;width:3.6px;height:3.6px"></i><i class="dp" id="dp24" style="left:783px;top:554px;width:5.0px;height:5.0px"></i><i class="dp" id="dp25" style="left:1911px;top:12px;width:5.7px;height:5.7px"></i><i class="dp" id="dp26" style="left:1541px;top:49px;width:3.0px;height:3.0px"></i><i class="dp" id="dp27" style="left:525px;top:233px;width:2.6px;height:2.6px"></i><i class="dp" id="dp28" style="left:262px;top:730px;width:3.8px;height:3.8px"></i><i class="dp" id="dp29" style="left:206px;top:911px;width:5.3px;height:5.3px"></i><i class="dp" id="dp30" style="left:499px;top:896px;width:5.1px;height:5.1px"></i><i class="dp" id="dp31" style="left:1018px;top:95px;width:4.8px;height:4.8px"></i><i class="dp" id="dp32" style="left:1679px;top:958px;width:5.8px;height:5.8px"></i><i class="dp" id="dp33" style="left:312px;top:1054px;width:2.4px;height:2.4px"></i><i class="dp" id="dp34" style="left:698px;top:582px;width:4.6px;height:4.6px"></i><i class="dp" id="dp35" style="left:1017px;top:980px;width:5.1px;height:5.1px"></i><i class="dp" id="dp36" style="left:1649px;top:731px;width:3.8px;height:3.8px"></i><i class="dp" id="dp37" style="left:40px;top:699px;width:5.7px;height:5.7px"></i><i class="dp" id="dp38" style="left:366px;top:1076px;width:2.1px;height:2.1px"></i><i class="dp" id="dp39" style="left:762px;top:811px;width:4.9px;height:4.9px"></i><i class="dp" id="dp40" style="left:1108px;top:303px;width:3.0px;height:3.0px"></i><i class="dp" id="dp41" style="left:269px;top:697px;width:2.1px;height:2.1px"></i><i class="dp" id="dp42" style="left:248px;top:774px;width:3.8px;height:3.8px"></i><i class="dp" id="dp43" style="left:33px;top:458px;width:5.7px;height:5.7px"></i><i class="dp" id="dp44" style="left:983px;top:290px;width:2.5px;height:2.5px"></i><i class="dp" id="dp45" style="left:959px;top:262px;width:3.1px;height:3.1px"></i><i class="dp" id="dp46" style="left:117px;top:655px;width:5.2px;height:5.2px"></i><i class="dp" id="dp47" style="left:972px;top:661px;width:3.2px;height:3.2px"></i><i class="dp" id="dp48" style="left:1905px;top:310px;width:5.7px;height:5.7px"></i><i class="dp" id="dp49" style="left:27px;top:714px;width:5.5px;height:5.5px"></i><i class="dp" id="dp50" style="left:1093px;top:233px;width:2.7px;height:2.7px"></i><i class="dp" id="dp51" style="left:1898px;top:1073px;width:2.9px;height:2.9px"></i><i class="dp" id="dp52" style="left:791px;top:895px;width:5.5px;height:5.5px"></i><i class="dp" id="dp53" style="left:56px;top:589px;width:3.0px;height:3.0px"></i><i class="dp" id="dp54" style="left:161px;top:748px;width:3.9px;height:3.9px"></i><i class="dp" id="dp55" style="left:400px;top:821px;width:3.3px;height:3.3px"></i><i class="dp" id="dp56" style="left:506px;top:323px;width:2.8px;height:2.8px"></i><i class="dp" id="dp57" style="left:1618px;top:356px;width:5.7px;height:5.7px"></i><i class="dp" id="dp58" style="left:1319px;top:582px;width:5.6px;height:5.6px"></i><i class="dp" id="dp59" style="left:716px;top:38px;width:4.6px;height:4.6px"></i><i class="dp" id="dp60" style="left:121px;top:1002px;width:5.9px;height:5.9px"></i><i class="dp" id="dp61" style="left:751px;top:97px;width:5.8px;height:5.8px"></i><i class="dp" id="dp62" style="left:496px;top:1044px;width:3.9px;height:3.9px"></i><i class="dp" id="dp63" style="left:1700px;top:944px;width:2.6px;height:2.6px"></i><i class="dp" id="dp64" style="left:642px;top:466px;width:2.8px;height:2.8px"></i><i class="dp" id="dp65" style="left:1784px;top:226px;width:2.9px;height:2.9px"></i><i class="dp" id="dp66" style="left:350px;top:163px;width:5.3px;height:5.3px"></i><i class="dp" id="dp67" style="left:389px;top:636px;width:2.5px;height:2.5px"></i><i class="dp" id="dp68" style="left:1558px;top:847px;width:5.8px;height:5.8px"></i><i class="dp" id="dp69" style="left:106px;top:723px;width:4.9px;height:4.9px"></i></div>
+  <div class="leak" id="lk1"><i class="la"></i><i class="lr"></i><i class="lg"></i></div><div class="leak" id="lk2"><i class="la"></i><i class="lr"></i><i class="lg"></i></div><div class="leak" id="lk3"><i class="la"></i><i class="lr"></i><i class="lg"></i></div><div class="leak" id="lk4"><i class="la"></i><i class="lr"></i><i class="lg"></i></div><div class="leak" id="lk5"><i class="la"></i><i class="lr"></i><i class="lg"></i></div><div class="leak" id="lk6"><i class="la"></i><i class="lr"></i><i class="lg"></i></div>
+  <div class="vig"></div>
+  <div id="grain"><div class="gt"></div></div>
+  <div id="capbg"></div>
+  <div class="ncap lt" id="c-L01"><div class="cl"><span class="cu">새벽을 여는 손끝에서,</span></div><div class="cl"><span class="cu">오늘도 <em>첫 땀</em>이 시작됩니다.</span></div></div><div class="ncap lt" id="c-L02"><div class="cl"><span class="cu">이마에 맺힌 <em>땀 한 방울</em>은,</span></div><div class="cl"><span class="cu">우리 마을을 잇는</span> <span class="cu"><em>첫 바늘땀</em>이 되었습니다.</span></div></div><div class="ncap" id="c-L03"><div class="cl"><span class="cu"><em>창원</em>에서 <em>의령</em>까지!</span> <span class="cu">주민의 손으로 가꾼 하루하루가,</span></div><div class="cl"><span class="cu">한 조각씩 천 위에 놓입니다.</span></div></div><div class="ncap" id="c-L04"><div class="cl"><span class="cu">우리 동네를</span> <span class="cu">더 살기 좋은 곳으로</span></div><div class="cl"><span class="cu">만들고 싶은</span> <span class="cu"><em>작은 마음</em> 하나.</span></div></div><div class="ncap" id="c-L05"><div class="cl"><span class="cu">그 <em>마음</em>이 모여</span> <span class="cu">마을을 바꿉니다.</span></div></div><div class="ncap" id="c-L06"><div class="cl"><span class="cu">골목을 가꾸고,</span></div><div class="cl"><span class="cu">함께 마주 앉아</span> <span class="cu"><em>머리를 맞댄</em> 시간들.</span></div></div><div class="ncap" id="c-L07"><div class="cl"><span class="cu">작은 <em>조각</em>들이 모여,</span></div><div class="cl"><span class="cu">어느새 우리 동네의</span> <span class="cu"><em>이야기</em>가 되었습니다.</span></div></div><div class="ncap" id="c-L08"><div class="cl"><span class="cu">함안에서 합천까지.</span></div><div class="cl"><span class="cu"><em>실 한 가닥</em>이</span> <span class="cu">마을과 마을을 잇습니다.</span></div></div><div class="ncap" id="c-L09"><div class="cl"><span class="cu">그 안에서 우리는</span> <span class="cu">서로의 <em>온기</em>를 나누며,</span></div><div class="cl"><span class="cu">마을의 <em>내일</em>을</span> <span class="cu">함께 그려갑니다.</span></div></div><div class="ncap" id="c-L10"><div class="cl"><span class="cu">매일 마주하는 깨끗한 골목.</span></div><div class="cl"><span class="cu">이웃의 다정한 인사와</span> <span class="cu">아이들의 <em>웃음소리</em>.</span></div></div><div class="ncap" id="c-L11"><div class="cl"><span class="cu">주민 한 사람 한 사람의 실천이</span> <span class="cu"><em>한 땀 한 땀</em> 모여 수놓은,</span></div><div class="cl"><span class="cu">바로 우리 마을의 <em>오늘</em>입니다.</span></div></div><div class="ncap" id="c-L12"><div class="cl"><span class="cu">18개 시군의 열여덟 조각이</span></div><div class="cl"><span class="cu">마침내 <em>하나의 천</em>이 되었습니다!</span></div></div><div class="ncap" id="c-L13"><div class="cl"><span class="cu">이제, 우리가 함께 지은 꿈을</span></div><div class="cl"><span class="cu"><em>더 넓은 하늘</em>로 펼쳐 올립니다.</span></div></div><div class="ncap" id="c-L14"><div class="cl"><span class="cu">주민의 손끝에서 시작된 작은 변화가,</span></div><div class="cl"><span class="cu">경남을 움직이는</span> <span class="cu"><em>커다란 힘</em>이 됩니다.</span></div></div>
+  <div id="fade" class="layer"></div>
+</div>
+</div>
+<script>
+const DATA = {"cells": [{"cx": 0, "cy": 0, "p": ["q00", "q01", "q02"], "t": "qt0", "flip": false}, {"cx": 1, "cy": 0, "p": ["q10", "q11", "q12"], "t": "qt1", "flip": true}, {"cx": 2, "cy": 0, "p": ["q20", "q21", "q22"], "t": "qt2", "flip": false}, {"cx": 2, "cy": 1, "p": ["q30", "q31", "q32"], "t": "qt3", "flip": true}, {"cx": 1, "cy": 1, "p": ["q40", "q41", "q42"], "t": "qt4", "flip": false}, {"cx": 0, "cy": 1, "p": ["q50", "q51", "q52"], "t": "qt5", "flip": true}, {"cx": 0, "cy": 2, "p": ["q60", "q61", "q62"], "t": "qt6", "flip": false}, {"cx": 1, "cy": 2, "p": ["q70", "q71", "q72"], "t": "qt7", "flip": true}, {"cx": 2, "cy": 2, "p": ["q80", "q81", "q82"], "t": "qt8", "flip": false}, {"cx": 2, "cy": 3, "p": ["q90", "q91", "q92"], "t": "qt9", "flip": true}, {"cx": 1, "cy": 3, "p": ["q100", "q101", "q102"], "t": "qt10", "flip": false}, {"cx": 0, "cy": 3, "p": ["q110", "q111", "q112"], "t": "qt11", "flip": true}, {"cx": 0, "cy": 4, "p": ["q120", "q121", "q122"], "t": "qt12", "flip": false}, {"cx": 1, "cy": 4, "p": ["q130", "q131", "q132"], "t": "qt13", "flip": true}, {"cx": 2, "cy": 4, "p": ["q140", "q141", "q142"], "t": "qt14", "flip": false}, {"cx": 2, "cy": 5, "p": ["q150", "q151", "q152"], "t": "qt15", "flip": true}, {"cx": 1, "cy": 5, "p": ["q160", "q161", "q162"], "t": "qt16", "flip": false}, {"cx": 0, "cy": 5, "p": ["q170", "q171", "q172"], "t": "qt17", "flip": true}], "M": 2400, "CW": 1920, "CH": 1080, "WW": 10560, "WH": 11280, "narr": [{"id": "L01", "t": 1.0, "tc": "00:00", "add": false, "text": "새벽을 여는 손끝에서, 오늘도 첫 땀이 시작됩니다.", "d": 4.9, "lt": true}, {"id": "L02", "t": 8.2, "tc": "00:09", "add": false, "text": "이마에 맺힌 땀 한 방울은, 우리 마을을 잇는 첫 바늘땀이 되었습니다.", "d": 5.74, "lt": true}, {"id": "L03", "t": 19.6, "tc": "00:20", "add": false, "text": "창원에서 의령까지! 주민의 손으로 가꾼 하루하루가, 한 조각씩 천 위에 놓입니다.", "d": 7.44, "lt": false}, {"id": "L04", "t": 32.0, "tc": "00:32", "add": true, "text": "우리 동네를 더 살기 좋은 곳으로 만들고 싶은 작은 마음 하나.", "d": 4.7, "lt": false}, {"id": "L05", "t": 43.0, "tc": "00:43", "add": false, "text": "그 마음이 모여 마을을 바꿉니다.", "d": 2.6, "lt": false}, {"id": "L06", "t": 55.0, "tc": "00:55", "add": true, "text": "골목을 가꾸고, 함께 마주 앉아 머리를 맞댄 시간들.", "d": 5.03, "lt": false}, {"id": "L07", "t": 66.0, "tc": "01:07", "add": false, "text": "작은 조각들이 모여, 어느새 우리 동네의 이야기가 되었습니다.", "d": 5.09, "lt": false}, {"id": "L08", "t": 76.0, "tc": "01:17", "add": false, "text": "함안에서 합천까지. 실 한 가닥이 마을과 마을을 잇습니다.", "d": 5.28, "lt": false}, {"id": "L09", "t": 89.0, "tc": "01:29", "add": true, "text": "그 안에서 우리는 서로의 온기를 나누며, 마을의 내일을 함께 그려갑니다.", "d": 6.31, "lt": false}, {"id": "L10", "t": 104.0, "tc": "01:43", "add": false, "text": "매일 마주하는 깨끗한 골목. 이웃의 다정한 인사와 아이들의 웃음소리.", "d": 6.01, "lt": false}, {"id": "L11", "t": 117.0, "tc": "01:57", "add": true, "text": "주민 한 사람 한 사람의 실천이 한 땀 한 땀 모여 수놓은, 바로 우리 마을의 오늘입니다.", "d": 7.58, "lt": false}, {"id": "L12", "t": 133.5, "tc": "02:14", "add": false, "text": "18개 시군의 열여덟 조각이 마침내 하나의 천이 되었습니다!", "d": 5.48, "lt": false}, {"id": "L13", "t": 141.5, "tc": "02:22", "add": false, "text": "이제, 우리가 함께 지은 꿈을 더 넓은 하늘로 펼쳐 올립니다.", "d": 5.41, "lt": false}, {"id": "L14", "t": 151.0, "tc": "02:34", "add": false, "text": "주민의 손끝에서 시작된 작은 변화가, 경남을 움직이는 커다란 힘이 됩니다.", "d": 6.4, "lt": false}], "T": {"s2": 19.0, "a0": 23.4, "astep": 5.4, "pb": 70.0, "s2end": 75.5, "v5": 74.6, "v5d": 9.6, "big": 83.3, "flsw": 120.6, "wide0": 131.0, "s3end": 140.0, "s3": 83.3, "b0": 86.6, "bstep": 5.0, "throw": 139.2, "ph": 149.6, "phd": 4.6, "fin": 162.4, "end": 178}, "map": [{"k": 0, "from": [-701, 226, -16.5]}, {"k": 1, "from": [-665, -15, -0.6]}, {"k": 2, "from": [-45, -58, -23.5]}, {"k": 3, "from": [-542, 269, -17.6]}, {"k": 4, "from": [385, 402, 36.6]}, {"k": 5, "from": [977, -372, -26.3]}, {"k": 6, "from": [517, 106, -29.8]}, {"k": 7, "from": [391, 523, 33.6]}, {"k": 8, "from": [-625, -281, -49.3]}, {"k": 9, "from": [1046, -391, 22.7]}, {"k": 10, "from": [83, 131, 2.7]}, {"k": 11, "from": [716, 140, -19.7]}, {"k": 12, "from": [-847, -32, 42.3]}, {"k": 13, "from": [-781, 258, 13.1]}, {"k": 14, "from": [-747, -410, 18.6]}, {"k": 15, "from": [-139, -130, -2.0]}, {"k": 16, "from": [-877, 286, 8.8]}, {"k": 17, "from": [75, -225, 31.2]}], "opts": [[0.0, 386.1], [23.4, 363.4], [44.1, 316.1], [30.9, 278.0], [24.3, 242.8], [17.1, 209.9], [22.3, 173.5], [43.4, 130.0], [73.9, 74.6], [109.5, 40.2], [160.6, 12.8], [185.8, 36.5], [212.3, 36.5], [246.6, 54.2], [284.5, 58.8], [305.7, 96.5], [325.1, 146.7], [316.1, 163.7], [364.8, 167.5], [408.4, 192.0], [452.3, 176.0], [484.9, 153.0], [499.6, 185.2], [528.4, 210.3], [579.6, 204.1], [615.7, 220.9], [653.9, 202.2], [694.5, 176.4], [742.1, 187.7], [726.3, 226.2], [795.8, 267.5], [824.1, 305.5], [845.9, 335.8], [816.8, 351.7], [786.4, 389.9], [739.1, 433.5], [673.5, 454.8], [658.8, 482.3], [652.9, 500.4], [625.3, 517.8], [577.7, 489.2], [538.2, 488.5], [531.3, 450.5], [532.7, 497.9], [551.3, 539.7], [511.4, 538.8], [489.9, 521.2], [460.4, 538.7], [481.6, 573.8], [451.2, 587.9], [444.6, 610.3], [443.0, 657.7], [463.9, 654.6], [449.8, 693.6], [431.5, 734.4], [416.3, 700.7], [415.6, 659.6], [380.1, 641.2], [376.9, 623.7], [358.1, 638.6], [322.6, 623.9], [281.3, 633.0], [246.2, 596.4], [234.2, 562.4], [200.1, 590.6], [181.1, 578.7], [169.9, 609.5], [183.6, 637.3], [190.0, 693.5], [212.8, 687.1], [208.7, 659.2], [239.4, 647.8], [246.3, 689.5], [252.0, 710.8], [233.3, 762.1], [197.1, 768.2], [191.7, 725.8], [160.9, 760.2], [134.7, 742.1], [119.2, 673.9], [142.0, 644.3], [134.8, 615.1], [104.2, 590.5], [99.5, 551.5], [73.6, 530.9], [42.8, 482.3], [20.6, 449.0], [9.5, 412.0]], "dust": [{"i": 0, "dx": -19, "dy": -77, "p": 4.29, "ph": 1.75}, {"i": 1, "dx": 42, "dy": -61, "p": 4.33, "ph": 0.78}, {"i": 2, "dx": 54, "dy": -132, "p": 4.89, "ph": 1.25}, {"i": 3, "dx": -16, "dy": -96, "p": 3.47, "ph": 1.4}, {"i": 4, "dx": 21, "dy": -58, "p": 4.96, "ph": 0.69}, {"i": 5, "dx": -26, "dy": -137, "p": 3.59, "ph": 0.92}, {"i": 6, "dx": -14, "dy": -47, "p": 6.02, "ph": 2.76}, {"i": 7, "dx": -1, "dy": -137, "p": 5.28, "ph": 2.09}, {"i": 8, "dx": 59, "dy": -132, "p": 6.05, "ph": 2.88}, {"i": 9, "dx": -13, "dy": -98, "p": 3.43, "ph": 2.01}, {"i": 10, "dx": -53, "dy": -66, "p": 6.02, "ph": 2.49}, {"i": 11, "dx": 41, "dy": -152, "p": 6.5, "ph": 2.12}, {"i": 12, "dx": 54, "dy": -52, "p": 4.92, "ph": 2.57}, {"i": 13, "dx": -36, "dy": -44, "p": 5.7, "ph": 2.44}, {"i": 14, "dx": 6, "dy": -91, "p": 3.97, "ph": 2.4}, {"i": 15, "dx": 3, "dy": -133, "p": 6.02, "ph": 1.75}, {"i": 16, "dx": -9, "dy": -63, "p": 4.69, "ph": 2.03}, {"i": 17, "dx": 5, "dy": -116, "p": 4.42, "ph": 1.77}, {"i": 18, "dx": -38, "dy": -139, "p": 4.26, "ph": 2.14}, {"i": 19, "dx": -37, "dy": -68, "p": 4.31, "ph": 2.84}, {"i": 20, "dx": -47, "dy": -58, "p": 6.3, "ph": 2.49}, {"i": 21, "dx": 16, "dy": -124, "p": 6.83, "ph": 0.67}, {"i": 22, "dx": 24, "dy": -111, "p": 3.28, "ph": 1.24}, {"i": 23, "dx": -22, "dy": -65, "p": 3.83, "ph": 2.48}, {"i": 24, "dx": -56, "dy": -150, "p": 5.49, "ph": 2.79}, {"i": 25, "dx": 14, "dy": -141, "p": 6.65, "ph": 2.02}, {"i": 26, "dx": -59, "dy": -144, "p": 4.56, "ph": 1.59}, {"i": 27, "dx": 8, "dy": -60, "p": 5.46, "ph": 2.88}, {"i": 28, "dx": -11, "dy": -119, "p": 5.64, "ph": 2.7}, {"i": 29, "dx": -8, "dy": -154, "p": 4.52, "ph": 0.61}, {"i": 30, "dx": 48, "dy": -121, "p": 4.82, "ph": 1.85}, {"i": 31, "dx": -53, "dy": -149, "p": 5.07, "ph": 0.76}, {"i": 32, "dx": -53, "dy": -71, "p": 5.94, "ph": 1.84}, {"i": 33, "dx": -45, "dy": -62, "p": 6.98, "ph": 0.33}, {"i": 34, "dx": 22, "dy": -154, "p": 3.44, "ph": 1.0}, {"i": 35, "dx": 56, "dy": -105, "p": 5.16, "ph": 2.66}, {"i": 36, "dx": -13, "dy": -125, "p": 3.33, "ph": 0.7}, {"i": 37, "dx": 14, "dy": -54, "p": 6.95, "ph": 0.79}, {"i": 38, "dx": 20, "dy": -122, "p": 5.23, "ph": 0.05}, {"i": 39, "dx": 52, "dy": -66, "p": 6.03, "ph": 1.91}, {"i": 40, "dx": -14, "dy": -59, "p": 5.03, "ph": 1.99}, {"i": 41, "dx": -27, "dy": -138, "p": 5.87, "ph": 0.95}, {"i": 42, "dx": -55, "dy": -124, "p": 4.69, "ph": 0.57}, {"i": 43, "dx": -43, "dy": -74, "p": 4.85, "ph": 1.52}, {"i": 44, "dx": 26, "dy": -154, "p": 5.07, "ph": 2.96}, {"i": 45, "dx": -27, "dy": -76, "p": 3.71, "ph": 1.14}, {"i": 46, "dx": -6, "dy": -134, "p": 3.95, "ph": 1.0}, {"i": 47, "dx": -3, "dy": -113, "p": 4.98, "ph": 0.75}, {"i": 48, "dx": 5, "dy": -68, "p": 4.88, "ph": 1.08}, {"i": 49, "dx": 39, "dy": -85, "p": 4.99, "ph": 0.93}, {"i": 50, "dx": 55, "dy": -146, "p": 6.69, "ph": 0.92}, {"i": 51, "dx": 50, "dy": -155, "p": 5.78, "ph": 1.43}, {"i": 52, "dx": 14, "dy": -150, "p": 4.5, "ph": 1.09}, {"i": 53, "dx": 7, "dy": -74, "p": 6.8, "ph": 0.88}, {"i": 54, "dx": -54, "dy": -138, "p": 6.66, "ph": 1.65}, {"i": 55, "dx": 20, "dy": -40, "p": 6.18, "ph": 1.77}, {"i": 56, "dx": 33, "dy": -140, "p": 6.28, "ph": 0.52}, {"i": 57, "dx": 46, "dy": -58, "p": 5.28, "ph": 0.84}, {"i": 58, "dx": -45, "dy": -101, "p": 3.84, "ph": 1.1}, {"i": 59, "dx": -42, "dy": -150, "p": 6.17, "ph": 2.35}, {"i": 60, "dx": 11, "dy": -85, "p": 6.27, "ph": 1.78}, {"i": 61, "dx": 16, "dy": -153, "p": 3.31, "ph": 2.08}, {"i": 62, "dx": 5, "dy": -126, "p": 6.24, "ph": 1.39}, {"i": 63, "dx": 10, "dy": -45, "p": 4.78, "ph": 2.67}, {"i": 64, "dx": 0, "dy": -80, "p": 5.98, "ph": 1.53}, {"i": 65, "dx": 4, "dy": -56, "p": 6.05, "ph": 1.84}, {"i": 66, "dx": 25, "dy": -129, "p": 5.23, "ph": 2.51}, {"i": 67, "dx": 27, "dy": -48, "p": 3.22, "ph": 0.5}, {"i": 68, "dx": -33, "dy": -46, "p": 6.59, "ph": 0.81}, {"i": 69, "dx": -52, "dy": -120, "p": 6.32, "ph": 2.51}], "mapW": 854.754, "mapH": 825.6};
+</script>
+<script>
+const tl = gsap.timeline({ paused: true });
+const $ = (s) => document.querySelector(s);
+const D = DATA;
+const T = D.T;
+
+// ------------------------------------------------------------------ helpers
+const fadeIn = (sel, t, d = 1, to = 1) => tl.fromTo(sel, { opacity: 0 }, { opacity: to, duration: d, ease: 'power1.inOut', immediateRender: false }, t);
+const push = (sel, t, d, a = 1, b = 1.08) => tl.fromTo(sel, { scale: a }, { scale: b, duration: d, ease: 'none', immediateRender: false }, t);
+function leak(id, t, d = 2.6, peak = 0.85) {
+  const el = '#' + id;
+  tl.fromTo(el, { opacity: 0 }, { opacity: peak, duration: d * 0.3, ease: 'sine.out', immediateRender: false }, t);
+  tl.to(el, { opacity: 0, duration: d * 0.45, ease: 'sine.in' }, t + d * 0.55);
+  tl.fromTo(el + ' .la', { xPercent: -22, rotation: -4 }, { xPercent: 20, rotation: 3, duration: d, ease: 'sine.inOut', immediateRender: false }, t);
+  tl.fromTo(el + ' .lr', { xPercent: 18, yPercent: -8 }, { xPercent: -16, yPercent: 8, duration: d, ease: 'sine.inOut', immediateRender: false }, t);
+  tl.fromTo(el + ' .lg', { xPercent: -30, rotation: -6 }, { xPercent: 26, rotation: 4, duration: d, ease: 'sine.inOut', immediateRender: false }, t);
+}
+function flare(id, t0, t1, peak = 0.9) {
+  const el = '#' + id;
+  tl.fromTo(el, { opacity: 0 }, { opacity: peak, duration: 1.2, ease: 'sine.out', immediateRender: false }, t0);
+  const n = Math.max(1, Math.floor((t1 - t0 - 2.2) / 2.2));
+  tl.fromTo(el + ' .fcore', { scale: 0.92 }, { scale: 1.08, duration: 1.1, ease: 'sine.inOut', yoyo: true, repeat: n * 2 - 1, immediateRender: false }, t0);
+  tl.fromTo(el + ' .fstreak', { scaleX: 0.85, opacity: 0.8 }, { scaleX: 1.1, opacity: 1, duration: 1.1, ease: 'sine.inOut', yoyo: true, repeat: n * 2 - 1, immediateRender: false }, t0);
+  tl.to(el, { opacity: 0, duration: 1.0, ease: 'sine.in' }, t1 - 1.0);
+}
+const stitch = (id, t, d = 1.0) => tl.fromTo('#' + id + '-mr', { attr: { 'stroke-dashoffset': 1 } }, { attr: { 'stroke-dashoffset': 0 }, duration: d, ease: 'power1.inOut', immediateRender: false }, t);
+
+// ------------------------------------------------------------------ global
+tl.fromTo('#fade', { opacity: 1 }, { opacity: 0, duration: 1.4, ease: 'power1.out' }, 0);
+tl.fromTo('#fade', { opacity: 0 }, { opacity: 1, duration: 3.0, ease: 'power1.in', immediateRender: false }, T.end - 3.0);
+tl.fromTo('#dust', { opacity: 0 }, { opacity: 0.55, duration: 3, ease: 'none' }, 0.5);
+tl.to('#dust', { opacity: 0.4, duration: 2 }, T.s2);
+tl.to('#dust', { opacity: 0.6, duration: 2 }, T.s3);
+tl.to('#dust', { opacity: 0.9, duration: 2 }, T.throw);
+D.dust.forEach((p) => {
+  const reps = Math.max(1, Math.floor(T.end / p.p) - 1);
+  tl.fromTo('#dp' + p.i, { x: 0, y: 0, opacity: 0.15 }, { x: p.dx, y: p.dy, opacity: 1, duration: p.p, ease: 'sine.inOut', yoyo: true, repeat: reps }, p.ph);
+});
+tl.fromTo('#grain .gt', { x: 0, y: 0 }, { x: -60, y: 40, duration: 0.1, ease: 'steps(1)', yoyo: true, repeat: Math.floor(T.end * 10) - 1 }, 0);
+// captions: units rise 20px over 0.6s, 0.3s apart; hold >= 3s; 0.5s fade out; fixed while readable
+const capOn = [];
+D.narr.forEach((n, i) => {
+  const el = '#c-' + n.id;
+  const units = document.querySelectorAll(el + ' .cu');
+  const t0 = n.t - 0.15;
+  const next = D.narr[i + 1] ? D.narr[i + 1].t - 0.6 : 999;
+  const t1 = Math.min(next, Math.max(t0 + 0.3 * (units.length - 1) + 0.6 + 3.0, n.t + n.d + 0.5));
+  tl.set(units, { opacity: 0, y: 20 }, 0);
+  tl.set(el, { opacity: 0 }, 0);
+  tl.set(el, { opacity: 1 }, t0);
+  units.forEach((u, k) => {
+    tl.fromTo(u, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, t0 + 0.3 * k);
+  });
+  tl.fromTo(el, { opacity: 1 }, { opacity: 0, duration: 0.5, ease: 'sine.inOut', immediateRender: false }, t1);
+  capOn.push([t0, t1 + 0.5]);
+});
+capOn.forEach(([a, b], i) => {
+  if (D.narr[i].lt) return; // v20: no dark caption gradient on the light template
+  tl.fromTo('#capbg', { opacity: 0 }, { opacity: 1, duration: 0.5, immediateRender: false }, a);
+  tl.to('#capbg', { opacity: 0, duration: 0.5 }, b - 0.5);
+});
+
+// ------------------------------------------------------------------ 기
+// v20: three clean template slides (PPT-like) instead of the AI clips.
+// slide k: text rises in from the left, page number turns; the 조각보 on the right grows 3 patches per slide
+{
+  const S = [0.6, 6.8, 13.4];            // slide starts (narration L01 at 1.0 s, L02 at 8.2 s)
+  const drawPatch = (id, t) => {
+    tl.fromTo('#' + id, { opacity: 0, scale: 0.92, y: -18 }, { opacity: 1, scale: 1, y: 0, duration: 0.7, ease: 'power3.out', immediateRender: false }, t);
+    stitch(id, t + 0.3, 0.9);
+  };
+  S.forEach((t, k) => {
+    const el = '#ts' + (k + 1);
+    tl.fromTo(el, { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out', immediateRender: false }, t);
+    tl.fromTo(el + ' .rule', { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'power2.inOut', immediateRender: false }, t + 0.3);
+    tl.fromTo(el + ' p', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, t + 0.55);
+    tl.fromTo('#pg' + (k + 1), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'sine.out', immediateRender: false }, t + 0.1);
+    if (k < 2) {
+      tl.to(el, { opacity: 0, x: 30, duration: 0.5, ease: 'power2.in' }, S[k + 1] - 0.45);
+      tl.to('#pg' + (k + 1), { opacity: 0, y: -10, duration: 0.4, ease: 'sine.in' }, S[k + 1] - 0.3);
+    }
+    for (let j = 0; j < 3; j++) drawPatch('tq' + (k * 3 + j), t + 0.5 + j * 1.0);
+  });
+  // the finished square gets one gold stitch around it, then gently comes forward into the quilt world (승 at 19 s)
+  tl.fromTo('#s1q-olr', { attr: { 'stroke-dashoffset': 1 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.4, ease: 'power1.inOut', immediateRender: false }, 17.0);
+  tl.fromTo('#s1q-in', { scale: 1 }, { scale: 1.05, duration: 19.0, ease: 'none', immediateRender: false }, 0);
+  tl.to('#s1q', { x: -40, y: 10, scale: 1.12, duration: 2.0, ease: 'power2.in' }, 18.0);
+}
+
+// ------------------------------------------------------------------ 승 + 전: one quilt, 18 regions
+{
+  const { M, CW, CH, WW, WH } = D;
+  const cellPos = (c) => ({ x: 960 - (M + c.cx * CW + CW / 2), y: 540 - (M + c.cy * CH + CH / 2) - 40 });
+  const half1 = { x: 960 - WW / 2, y: 540 - (M + 1.5 * CH) };
+  const whole = { x: 960 - WW / 2, y: 540 - WH / 2 };
+  const a = T.s2;
+  leak('lk2', a - 0.7, 2.4, 0.45);
+  tl.set(['#s2-cam', '.dof', '#s2-lamp', '#s2-far'], { opacity: 0 }, 0);
+  tl.fromTo(['#s2-cam', '.dof', '#s2-lamp', '#s2-far'], { opacity: 0 }, { opacity: 1, duration: 0.9, immediateRender: false }, a);
+  tl.set('#s2-tilt', { rotationX: 40, rotationZ: -10, scale: 0.34 }, 0);
+  document.querySelectorAll('.qcap span').forEach((sp) => { const box = sp.parentElement.clientWidth - 48; let f = 34; while (sp.scrollWidth > box && f > 22) { f -= 1; sp.style.fontSize = f + 'px'; } });
+  tl.set('#s2-world', { x: half1.x + 300, y: half1.y + 200 }, 0);
+  tl.to('#s2-tilt', { rotationX: 12, rotationZ: -2, scale: 0.98, duration: 3.8, ease: 'power3.inOut' }, a + 0.1);
+  tl.to('#s2-world', { ...cellPos(D.cells[0]), duration: 3.8, ease: 'power3.inOut' }, a + 0.1);
+  const at = (k) => (k < 9 ? T.a0 + T.astep * k : T.b0 + T.bstep * (k - 9));
+  const step = (k) => (k < 9 ? T.astep : T.bstep);
+  D.cells.forEach((c, k) => {
+    const t = at(k);
+    const p = cellPos(c);
+    const dir = c.flip ? -1 : 1;
+    if (k > 0 && k !== 9) {
+      const prev = cellPos(D.cells[k - 1]);
+      tl.fromTo('#s2-world', { x: prev.x + 24, y: prev.y + 4 }, { x: p.x, y: p.y, duration: 0.9, ease: 'power3.inOut', immediateRender: false }, t - 0.9);
+      tl.to('#s2-tilt', { scale: 0.9, rotationZ: 1.2 * dir, rotationX: 15, duration: 0.45, ease: 'power2.in' }, t - 0.9);
+      tl.to('#s2-tilt', { scale: 0.98, rotationZ: -2 * dir, rotationX: 12, duration: 0.45, ease: 'power2.out' }, t - 0.45);
+      tl.fromTo('#s2-blur', { opacity: 0 }, { opacity: 1, duration: 0.3, yoyo: true, repeat: 1, ease: 'sine.inOut', immediateRender: false }, t - 0.75);
+    }
+    if (k === 9) {
+      // resume on the lower half after the thread close-up
+      tl.set('#s2-world', { x: p.x - 160, y: p.y - 60 }, T.s3 - 0.4);
+      tl.set('#s2-tilt', { rotationX: 22, rotationZ: -4, scale: 0.8 }, T.s3 - 0.4);
+      tl.to('#s2-world', { x: p.x, y: p.y, duration: t - T.s3 + 0.4, ease: 'power3.out' }, T.s3 - 0.4);
+      tl.to('#s2-tilt', { rotationX: 12, rotationZ: -2, scale: 0.98, duration: t - T.s3 + 0.4, ease: 'power3.out' }, T.s3 - 0.4);
+    }
+    tl.fromTo('#s2-world', { x: p.x, y: p.y }, { x: p.x + 24, y: p.y + 4, duration: step(k) - 1.0, ease: 'none', immediateRender: false }, t);
+    const t0 = k === 9 ? T.s3 + 0.2 : (k ? t - 0.55 : t - 0.2);
+    tl.fromTo('#' + c.t, { opacity: 0, scale: 1.18, y: -40 }, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'power3.out', immediateRender: false }, t0);
+    stitch(c.t, t0 + 0.35, 0.8);
+    c.p.forEach((pid, j) => {
+      const tj = t0 + 0.2 + j * 0.3;
+      tl.fromTo('#' + pid, { opacity: 0, scale: 1.14, y: -70, rotation: (j - 1) * 2.5 }, { opacity: 1, scale: 1, y: 0, rotation: 0, duration: 0.7, ease: 'power3.out', immediateRender: false }, tj);
+      stitch(pid, tj + 0.35, 0.9);
+      tl.fromTo('#' + pid + '-img', { scale: 1.14 }, { scale: 1.0, duration: 6, ease: 'none', immediateRender: false }, tj);
+    });
+    tl.fromTo('#s2-sweep', { xPercent: 0, opacity: 0 }, { xPercent: 330, opacity: 1, duration: 1.3, ease: 'power1.inOut', immediateRender: false }, t + 0.9);
+    tl.to('#s2-sweep', { opacity: 0, duration: 0.3 }, t + 2.0);
+  });
+  // first pull back: the upper nine pieces
+  tl.to('#s2-tilt', { rotationX: 38, rotationZ: -8, scale: 0.3, duration: 3.4, ease: 'power3.inOut' }, T.pb);
+  tl.to('#s2-world', { ...half1, duration: 3.4, ease: 'power3.inOut' }, T.pb);
+  tl.to('#s2-tilt', { rotationZ: -10, scale: 0.32, duration: 1.5, ease: 'none' }, T.pb + 3.4);
+  leak('lk3', T.s2end - 1.6, 2.6, 0.45);
+  tl.to(['#s2-cam', '#s2-lamp', '.dof', '#s2-far'], { opacity: 0, duration: 1.2, ease: 'power1.in' }, T.s2end - 1.3);
+  // thread close-up between the halves
+  fadeIn('#v5-w', T.v5, 1.0); push('#v5-w', T.v5, T.v5d, 1, 1.08);
+  leak('lk3', T.s3 - 0.8, 2.4, 0.45);
+  tl.fromTo(['#s2-cam', '#s2-lamp', '.dof', '#s2-far'], { opacity: 0 }, { opacity: 1, duration: 1.0, ease: 'power1.inOut', immediateRender: false }, T.s3 - 0.3);
+  tl.to('#v5-w', { opacity: 0, duration: 1.0, ease: 'power1.inOut' }, T.s3 + 0.2);
+  // final pull back: all eighteen pieces form one quilt
+  tl.to('#s2-tilt', { rotationX: 30, rotationZ: -4, scale: 0.215, duration: 4.0, ease: 'power3.inOut' }, T.wide0);
+  tl.to('#s2-world', { ...whole, duration: 4.0, ease: 'power3.inOut' }, T.wide0);
+  tl.to('#s2-tilt', { rotationZ: -6, scale: 0.225, duration: T.throw - T.wide0 - 4.0, ease: 'none' }, T.wide0 + 4.0);
+  tl.fromTo('#s2-sweep', { xPercent: 0, opacity: 0 }, { xPercent: 330, opacity: 1, duration: 2.0, ease: 'power1.inOut', immediateRender: false }, T.wide0 + 3.0);
+  tl.to('#s2-sweep', { opacity: 0, duration: 0.4 }, T.wide0 + 4.9);
+  tl.to(['#s2-cam', '#s2-lamp', '.dof', '#s2-far'], { opacity: 0, duration: 1.0, ease: 'power1.in' }, T.throw + 0.4);
+}
+
+// ------------------------------------------------------------------ 결: throw -> 3 photos -> title
+fadeIn('#v11-w', T.throw, 0.9); push('#v11-w', T.throw, 12.0, 1, 1.06);
+leak('lk4', T.throw - 0.8, 2.4, 0.4);
+['#ph0', '#ph1', '#ph2'].forEach((id, k) => {
+  const a = T.ph + k * T.phd;
+  tl.fromTo(id, { opacity: 0 }, { opacity: 1, duration: 0.8, ease: 'sine.inOut', immediateRender: false }, a - 0.6);
+  tl.fromTo(id + ' .phfr', { scale: 1.0, y: 10 }, { scale: 1.04, y: 0, duration: T.phd + 1.2, ease: 'none', immediateRender: false }, a - 0.6);
+  tl.fromTo(id + ' .phbg', { scale: 1.08 }, { scale: 1.0, duration: T.phd + 1.2, ease: 'none', immediateRender: false }, a - 0.6);
+  if (k < 2) tl.to(id, { opacity: 0, duration: 0.8, ease: 'sine.inOut' }, a + T.phd - 0.2);
+});
+tl.to('#ph2', { opacity: 0, duration: 1.0, ease: 'sine.inOut' }, T.fin - 0.2);
+leak('lk6', T.fin - 0.8, 2.6, 0.4);
+// v20: the ending sits on the same ivory template (the AI island clip is gone)
+tl.fromTo('#s6bg', { opacity: 0 }, { opacity: 1, duration: 1.0, ease: 'power1.inOut', immediateRender: false }, T.fin - 0.2);
+for (let k = 0; k < 18; k++) {
+  const t = T.fin + 0.6 + k * 0.08;
+  tl.fromTo('#fq' + k, { opacity: 0, scale: 0.9, y: -14 }, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'power3.out', immediateRender: false }, t);
+  stitch('fq' + k, t + 0.25, 0.8);
+}
+// main title: a fine gold thread is drawn first, then the words rise; a single light sweep
+tl.set('#finline', { opacity: 1 }, T.fin + 1.2);
+tl.fromTo('#finline', { '--fx': 0 }, { '--fx': 1, duration: 1.4, ease: 'power1.inOut', immediateRender: false }, T.fin + 1.2);
+tl.fromTo('#finline .flt', { x: 0, opacity: 1 }, { x: 560, duration: 1.4, ease: 'power1.inOut', immediateRender: false }, T.fin + 1.2);
+tl.to('#finline .flt', { opacity: 0, duration: 0.4 }, T.fin + 2.6);
+tl.set('#fin2', { opacity: 1 }, T.fin + 2.4);
+tl.set('#fin2 .f2 .l1, #fin2 .f2 .l2', { opacity: 0, y: 20 }, 0);
+tl.fromTo('#fin2 .f2 .l1', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, T.fin + 2.4);
+tl.fromTo('#fin2 .f2 .l2', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, T.fin + 2.7);
+tl.fromTo('#fin3', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, T.fin + 3.6);
+tl.fromTo('#fin2 .f2s', { backgroundPosition: '100% 0' }, { backgroundPosition: '0% 0', duration: 1.6, ease: 'power1.inOut', immediateRender: false }, T.fin + 4.0);
+tl.fromTo('#gnlogo', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, T.fin + 5.4);
+
+window.__timelines['main'] = tl;
+
+</script>
+
+</body>
+</html>

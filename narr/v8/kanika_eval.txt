@@ -1,0 +1,97 @@
+L01a * stt=0.95 conf=-0.28 F0= 220(-0.3) move=4.12 pace=4.77 dur= 5.0 maxgap=0.58 | 새벽을 여는 손끝에서 오늘도 첫담이 시작됩니다
+L01b   stt=0.95 conf=-0.28 F0= 174(-4.3) move=4.11 pace=4.73 dur= 5.0 maxgap=0.54 | 새벽을 여는 손끝에서 오늘도 첫담이 시작됩니다
+L01c   stt=0.90 conf=-0.33 F0= 210(-1.1) move=4.29 pace=4.81 dur= 5.0 maxgap=0.58 | 새벽을 여는 솜 끝에서 오늘도 첫담이 시작됩니다
+L01f   stt=0.95 conf=-0.31 F0= 298(+5.0) move=5.68 pace=5.25 dur= 4.6 maxgap=0.45 | 새벽을 여는 손끝에서 오늘도 첫담이 시작됩니다.
+L01g   stt=0.95 conf=-0.27 F0= 314(+5.9) move=5.59 pace=5.17 dur= 4.6 maxgap=0.51 | 새벽을 여는 손끝에서 오늘도 첫담이 시작됩니다.
+L01h   stt=0.95 conf=-0.25 F0= 293(+4.7) move=7.07 pace=5.17 dur= 4.5 maxgap=0.51 | 새벽을 여는 손끝에서 오늘도 첫담이 시작됩니다.
+L02a   stt=1.00 conf=-0.14 F0= 197(-2.2) move=3.48 pace=5.34 dur= 5.8 maxgap=0.48 | 
+L02b   stt=1.00 conf=-0.16 F0= 193(-2.5) move=3.71 pace=5.05 dur= 5.9 maxgap=0.51 | 
+L02c   stt=1.00 conf=-0.16 F0= 199(-2.0) move=3.58 pace=5.11 dur= 5.9 maxgap=0.38 | 
+L02d   stt=1.00 conf=-0.17 F0= 191(-2.8) move=3.28 pace=5.21 dur= 5.8 maxgap=0.45 | 
+L02e   stt=1.00 conf=-0.15 F0= 195(-2.4) move=3.74 pace=5.08 dur= 5.8 maxgap=0.42 | 
+L02f * stt=1.00 conf=-0.17 F0= 238(+1.1) move=4.80 pace=5.62 dur= 5.1 maxgap=0.10 | 
+L02g   stt=1.00 conf=-0.17 F0= 267(+3.1) move=3.77 pace=5.78 dur= 5.2 maxgap=0.19 | 
+L02h   stt=1.00 conf=-0.16 F0= 261(+2.7) move=4.92 pace=5.78 dur= 5.2 maxgap=0.19 | 
+L03a   stt=0.97 conf=-0.24 F0= 220(-0.3) move=4.66 pace=4.93 dur= 7.8 maxgap=0.51 | 창원에서 의경까지 주민의 손으로 가꾼 하루하루가 한 조각씩 천위에 놓입니다.
+L03b   stt=1.00 conf=-0.24 F0= 213(-0.8) move=5.35 pace=4.85 dur= 7.8 maxgap=0.54 | 
+L03c * stt=1.00 conf=-0.26 F0= 222(-0.1) move=4.43 pace=4.93 dur= 7.8 maxgap=0.51 | 
+L03f   stt=1.00 conf=-0.28 F0= 285(+4.2) move=4.68 pace=5.18 dur= 6.7 maxgap=0.26 | 
+L03g   stt=0.97 conf=-0.32 F0= 277(+3.7) move=4.83 pace=5.46 dur= 6.7 maxgap=0.32 | 창원에서 의룡까지. 주민의 손으로 가꾼 하루하루가 한 조각씩 천 위에 놓입니다.
+L03h   stt=1.00 conf=-0.29 F0= 282(+4.0) move=4.65 pace=5.18 dur= 6.7 maxgap=0.26 | 
+L04a   stt=1.00 conf=-0.18 F0= 190(-2.9) move=4.77 pace=4.93 dur= 5.0 maxgap=0.03 | 
+L04b   stt=1.00 conf=-0.16 F0= 180(-3.8) move=4.57 pace=5.00 dur= 4.9 maxgap=0.03 | 
+L04c * stt=1.00 conf=-0.17 F0= 200(-1.9) move=4.27 pace=4.93 dur= 5.0 maxgap=0.03 | 
+L04f   stt=1.00 conf=-0.18 F0= 282(+4.0) move=4.12 pace=5.64 dur= 4.6 maxgap=0.00 | 
+L04g   stt=1.00 conf=-0.19 F0= 267(+3.0) move=4.38 pace=5.86 dur= 4.4 maxgap=0.00 | 
+L04h   stt=1.00 conf=-0.20 F0= 292(+4.6) move=4.79 pace=5.86 dur= 4.4 maxgap=0.00 | 
+L05a   stt=0.92 conf=-0.31 F0= 188(-3.0) move=3.42 pace=4.84 dur= 2.8 maxgap=0.00 | 그 마음이 모여 마을을 바꾭니다.
+L05b   stt=0.92 conf=-0.35 F0= 190(-2.9) move=4.09 pace=4.84 dur= 3.0 maxgap=0.00 | 그 마음이 모여 마을을 바꾭니다.
+L05c   stt=0.92 conf=-0.30 F0= 179(-3.8) move=3.49 pace=4.78 dur= 3.0 maxgap=0.00 | 그 마음이 모여 마을을 바꾭니다.
+L05f   stt=0.92 conf=-0.32 F0= 274(+3.5) move=4.67 pace=5.28 dur= 2.7 maxgap=0.00 | 그 마음이 모여 마을을 바꾭니다.
+L05g * stt=0.92 conf=-0.31 F0= 264(+2.9) move=4.66 pace=5.28 dur= 2.7 maxgap=0.00 | 그 마음이 모여 마을을 바꾭니다.
+L05h   stt=0.92 conf=-0.34 F0= 275(+3.6) move=4.05 pace=5.42 dur= 2.6 maxgap=0.00 | 그 마음이 모여 마을을 바꾭니다.
+L06a   stt=1.00 conf=-0.20 F0= 179(-3.8) move=3.88 pace=4.53 dur= 5.0 maxgap=0.54 | 
+L06b   stt=1.00 conf=-0.22 F0= 176(-4.1) move=4.08 pace=4.60 dur= 5.0 maxgap=0.54 | 
+L06c   stt=1.00 conf=-0.21 F0= 174(-4.3) move=4.29 pace=4.53 dur= 5.0 maxgap=0.54 | 
+L06f * stt=1.00 conf=-0.23 F0= 212(-0.9) move=5.33 pace=4.92 dur= 4.8 maxgap=0.48 | 
+L06g   stt=0.95 conf=-0.20 F0= 198(-2.1) move=5.02 pace=4.84 dur= 4.8 maxgap=0.38 | 골목을 바꾸고 함께 마주 앉아 머리를 맞댄 시간들
+L06h   stt=1.00 conf=-0.24 F0= 207(-1.3) move=5.20 pace=4.84 dur= 4.9 maxgap=0.45 | 
+L07a   stt=1.00 conf=-0.23 F0= 189(-2.9) move=3.92 pace=5.43 dur= 5.1 maxgap=0.32 | 
+L07b   stt=1.00 conf=-0.22 F0= 186(-3.2) move=3.87 pace=5.35 dur= 5.1 maxgap=0.22 | 
+L07c   stt=1.00 conf=-0.20 F0= 193(-2.5) move=3.81 pace=5.31 dur= 5.2 maxgap=0.29 | 
+L07d   stt=1.00 conf=-0.22 F0= 190(-2.8) move=3.77 pace=5.28 dur= 5.2 maxgap=0.26 | 
+L07e   stt=1.00 conf=-0.22 F0= 195(-2.4) move=3.70 pace=5.43 dur= 5.1 maxgap=0.32 | 
+L07f   stt=1.00 conf=-0.23 F0= 246(+1.6) move=4.20 pace=5.87 dur= 4.5 maxgap=0.00 | 
+L07g * stt=1.00 conf=-0.25 F0= 235(+0.8) move=4.68 pace=5.92 dur= 4.5 maxgap=0.00 | 
+L07h   stt=1.00 conf=-0.24 F0= 240(+1.2) move=4.98 pace=5.96 dur= 4.4 maxgap=0.00 | 
+L08a   stt=1.00 conf=-0.32 F0= 180(-3.8) move=4.77 pace=4.58 dur= 5.8 maxgap=0.54 | 
+L08b   stt=1.00 conf=-0.29 F0= 177(-4.0) move=5.56 pace=4.58 dur= 5.6 maxgap=0.48 | 
+L08c   stt=1.00 conf=-0.31 F0= 205(-1.5) move=5.06 pace=4.64 dur= 5.5 maxgap=0.48 | 
+L08f   stt=0.91 conf=-0.33 F0= 225(+0.1) move=5.60 pace=5.03 dur= 5.3 maxgap=0.42 | 하만에서 합천까지, 실 한 가닥이 마을과 마을을 잇습니다.
+L08g   stt=1.00 conf=-0.33 F0= 237(+1.0) move=5.69 pace=5.13 dur= 5.3 maxgap=0.42 | 
+L08h * stt=1.00 conf=-0.25 F0= 227(+0.2) move=4.82 pace=4.92 dur= 5.3 maxgap=0.42 | 
+L09a   stt=0.97 conf=-0.19 F0= 175(-4.2) move=3.72 pace=4.95 dur= 6.4 maxgap=0.42 | 그 안에서 우리는 서로의 온기를 나누며 마을의 내일을 함께 그려봅니다
+L09b   stt=1.00 conf=-0.20 F0= 178(-3.9) move=4.64 pace=5.01 dur= 6.3 maxgap=0.42 | 
+L09c   stt=1.00 conf=-0.19 F0= 169(-4.8) move=4.17 pace=5.03 dur= 6.3 maxgap=0.45 | 
+L09f * stt=1.00 conf=-0.20 F0= 227(+0.3) move=4.74 pace=5.39 dur= 5.6 maxgap=0.06 | 
+L09g   stt=1.00 conf=-0.19 F0= 239(+1.1) move=5.20 pace=5.33 dur= 5.7 maxgap=0.10 | 
+L09h   stt=1.00 conf=-0.20 F0= 240(+1.2) move=5.11 pace=5.63 dur= 5.6 maxgap=0.19 | 
+L10a   stt=1.00 conf=-0.17 F0= 196(-2.3) move=3.66 pace=4.89 dur= 6.3 maxgap=0.51 | 
+L10b   stt=1.00 conf=-0.17 F0= 195(-2.4) move=4.18 pace=4.94 dur= 6.3 maxgap=0.58 | 
+L10c   stt=1.00 conf=-0.17 F0= 195(-2.4) move=3.71 pace=4.97 dur= 6.2 maxgap=0.51 | 
+L10f   stt=1.00 conf=-0.17 F0= 231(+0.5) move=4.51 pace=5.47 dur= 5.8 maxgap=0.38 | 
+L10g * stt=1.00 conf=-0.18 F0= 221(-0.2) move=5.21 pace=5.40 dur= 5.9 maxgap=0.45 | 
+L10h   stt=1.00 conf=-0.17 F0= 216(-0.6) move=4.42 pace=5.30 dur= 5.8 maxgap=0.29 | 
+L11a   stt=1.00 conf=-0.22 F0= 198(-2.1) move=4.33 pace=4.82 dur= 7.6 maxgap=0.48 | 
+L11b   stt=1.00 conf=-0.21 F0= 199(-2.1) move=4.56 pace=4.75 dur= 7.6 maxgap=0.42 | 
+L11c   stt=1.00 conf=-0.21 F0= 199(-2.1) move=4.32 pace=4.69 dur= 7.8 maxgap=0.48 | 
+L11f   stt=1.00 conf=-0.18 F0= 258(+2.5) move=4.36 pace=5.40 dur= 6.7 maxgap=0.29 | 
+L11g * stt=1.00 conf=-0.18 F0= 247(+1.7) move=5.02 pace=5.16 dur= 7.0 maxgap=0.22 | 
+L11h   stt=1.00 conf=-0.18 F0= 248(+1.8) move=5.31 pace=4.98 dur= 7.0 maxgap=0.13 | 
+L12a   stt=0.80 conf=-0.25 F0= 235(+0.8) move=4.78 pace=4.89 dur= 5.8 maxgap=0.32 | 18개 시군의 18조각이 마침내 하나의 천이 되었습니다
+L12b * stt=0.80 conf=-0.24 F0= 230(+0.5) move=4.51 pace=4.89 dur= 5.8 maxgap=0.32 | 18개 시군의 18조각이 마침내 하나의 천이 되었습니다.
+L12c   stt=0.76 conf=-0.22 F0= 248(+1.8) move=4.08 pace=4.95 dur= 5.7 maxgap=0.38 | 18개 시군에 18조각이 마침내 하나의 천이 되었습니다.
+L12f   stt=0.80 conf=-0.24 F0= 300(+5.1) move=3.42 pace=5.11 dur= 5.3 maxgap=0.06 | 18개 시군의 18조각이 마침내 하나의 천이 되었습니다.
+L12g   stt=0.80 conf=-0.23 F0= 280(+3.9) move=4.62 pace=5.24 dur= 5.2 maxgap=0.03 | 18개 시군의 18조각이 마침내 하나의 천이 되었습니다
+L12h   stt=0.76 conf=-0.32 F0= 274(+3.5) move=4.34 pace=5.31 dur= 5.2 maxgap=0.06 | 18개 시군에 18조각이, 마침내 하나의 천이 되었습니다.
+L13a   stt=1.00 conf=-0.20 F0= 198(-2.1) move=4.39 pace=4.58 dur= 5.4 maxgap=0.26 | 
+L13b * stt=1.00 conf=-0.19 F0= 199(-2.0) move=4.48 pace=4.64 dur= 5.4 maxgap=0.38 | 
+L13c   stt=1.00 conf=-0.17 F0= 197(-2.2) move=4.33 pace=4.49 dur= 5.6 maxgap=0.38 | 
+L13f   stt=1.00 conf=-0.23 F0= 288(+4.4) move=5.33 pace=5.06 dur= 4.8 maxgap=0.06 | 
+L13g   stt=1.00 conf=-0.17 F0= 280(+3.9) move=5.34 pace=5.28 dur= 4.8 maxgap=0.16 | 
+L13h   stt=1.00 conf=-0.17 F0= 263(+2.8) move=5.05 pace=4.82 dur= 5.1 maxgap=0.10 | 
+L14a   stt=1.00 conf=-0.16 F0= 209(-1.2) move=4.83 pace=4.88 dur= 6.9 maxgap=0.48 | 
+L14b * stt=1.00 conf=-0.14 F0= 213(-0.9) move=5.03 pace=4.86 dur= 6.7 maxgap=0.45 | 
+L14c   stt=1.00 conf=-0.16 F0= 210(-1.1) move=4.88 pace=4.91 dur= 6.8 maxgap=0.45 | 
+L14f   stt=1.00 conf=-0.15 F0= 252(+2.0) move=4.98 pace=5.04 dur= 6.2 maxgap=0.10 | 
+L14g   stt=1.00 conf=-0.16 F0= 248(+1.8) move=4.82 pace=5.04 dur= 6.2 maxgap=0.10 | 
+L14h   stt=1.00 conf=-0.16 F0= 252(+2.1) move=5.02 pace=5.01 dur= 6.2 maxgap=0.13 | 
+L15a   stt=1.00 conf=-0.22 F0= 336(+7.0) move=3.69 pace=5.08 dur= 4.4 maxgap=0.38 | 
+L15b   stt=1.00 conf=-0.20 F0= 359(+8.2) move=3.79 pace=5.12 dur= 4.3 maxgap=0.38 | 
+L15c   stt=1.00 conf=-0.23 F0= 361(+8.3) move=3.91 pace=5.12 dur= 4.5 maxgap=0.35 | 
+L15d   stt=1.00 conf=-0.22 F0= 280(+3.9) move=4.67 pace=5.00 dur= 4.6 maxgap=0.48 | 
+L15e * stt=1.00 conf=-0.23 F0= 269(+3.2) move=5.59 pace=5.04 dur= 4.6 maxgap=0.48 | 
+L15f   stt=1.00 conf=-0.21 F0= 359(+8.2) move=3.94 pace=5.17 dur= 4.4 maxgap=0.22 | 
+L15g   stt=1.00 conf=-0.21 F0= 345(+7.5) move=4.13 pace=5.21 dur= 4.3 maxgap=0.32 | 
+L15h   stt=1.00 conf=-0.21 F0= 363(+8.4) move=3.78 pace=5.25 dur= 4.2 maxgap=0.16 | 
+kanika F0 median 224 Hz
