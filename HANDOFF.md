@@ -74,6 +74,19 @@ ElevenLabs·Grok은 새 담당자 본인 계정을 연결해서 씁니다.
 - 일부 구간만 볼 때는 `python scripts/render_part.py 1 14`를 씁니다(13초 분량에 약 3분).
 - 이 클라우드 환경(그래픽 카드 없음, 4코어)에서 전체를 렌더링하면 약 56분 걸립니다.
 
+### 담당자 PC(Windows, RTX 3070)에서 이어받기 (2026-11-02 결정)
+
+앞으로는 담당자 PC의 Claude Code에서 작업합니다. 클라우드 세션에는 그래픽 카드가 없어서 전체 렌더링에 약 56분이 걸렸습니다.
+
+1. 이 저장소를 클론하고 3장(작업 환경)대로 준비합니다. Node.js, ffmpeg, Python 패키지, 함초롬바탕(`fonts_dl/README.txt`)이 필요합니다.
+2. 환경변수 `ELEVENLABS_API_KEY`, `XAI_API_KEY`에 담당자 본인 키를 넣습니다.
+3. 저장소에 없는 것은 다시 만듭니다.
+   - v20 전체 렌더본: `video/renders/jumin-expo-v20.mp4`. `make_preview.py`가 가운데 21~161초를 여기서 잘라 씁니다. v20 빌드는 `git checkout 955c5c6 -- scripts video/index.html`로 되돌린 뒤 렌더링하고, 끝나면 `git checkout main -- scripts video/index.html`로 돌아옵니다.
+   - 완성 영상(`deliverables/`)은 100MB가 넘어서 담당자 PC에 따로 보관합니다.
+4. 그래픽 카드는 RTX 3070입니다. 오픈소스 영상 생성 모델을 쓸 때는 그래픽 메모리 한도 안에서 돌아가는 작은 모델이나 양자화 모델을 고르고, **설치 전에 담당자에게 사양과 용량을 먼저 확인받습니다.**
+5. 유료 API(Grok, ElevenLabs)는 쓰기 전에 담당자에게 묻습니다.
+6. 담당자는 시안을 결과물(미리보기 영상, 스냅샷)로 확인한 뒤 결정합니다. 수정을 반영할 때는 바뀐 구간만 `render_part.py`로 빠르게 보여 줍니다.
+
 ## 2. 폴더 구성
 
 | 경로 | 내용 |
