@@ -849,7 +849,7 @@ const tagIn = (id, t, d = 0.7) => {
   stitch(id, t + 0.35, 0.9);
 };
 const tagOut = (id, t) => tl.to('#' + id, { opacity: 0, y: 20, duration: 0.6, ease: 'power2.in' }, t);
-if (D.jv === 'a') {
+if (D.jv === 'a' || D.jv === 'g') {
   const { M, CW, CH, WW } = D;
   const P0 = D.intro.P0, P1 = D.intro.P1;
   const at = (x, y) => ({ x: 960 - x, y: 540 - y - 40 });
@@ -880,6 +880,13 @@ if (D.jv === 'a') {
   tl.fromTo('#it3', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', immediateRender: false }, 14.8);
   stitch('it3', 15.1, 0.9);
   tagOut('it3', 18.0);
+  if (D.jv === 'g') {
+    // Grok clips over the cloth: dawn + threaded needle (L01), drop -> golden stitch (L02); then reveal the quilt pull-back
+    tl.set(['#it1', '#it2', '#ip0', '#ip1', '#ip2', '.ith'], { visibility: 'hidden' }, 0);
+    tl.set('#g1-w', { opacity: 1 }, 0); push('#g1-w', 0, 7.8, 1.0, 1.06);
+    fadeIn('#g2-w', 7.0, 0.8); push('#g2-w', 7.0, 7.4, 1.0, 1.06);
+    tl.to('#g2-w', { opacity: 0, duration: 1.0, ease: 'power1.inOut' }, 13.4);
+  }
 } else {
   const o = D.intro.order;
   tl.set('#c-tilt', { rotationX: 18, rotationZ: -3, scale: 1.25 }, 0);
@@ -903,9 +910,9 @@ if (D.jv === 'a') {
   const half1 = { x: 960 - WW / 2, y: 540 - (M + 1.5 * CH) };
   const whole = { x: 960 - WW / 2, y: 540 - WH / 2 };
   const a = T.s2;
-  if (D.jv !== 'a') leak('lk2', a - 0.7, 2.4, 0.45);
+  if (D.jv === 'b') leak('lk2', a - 0.7, 2.4, 0.45);
   tl.set(['#s2-cam', '#s2 .dof', '#s2-lamp', '#s2-far'], { opacity: 0 }, 0);
-  tl.fromTo(['#s2-cam', '#s2 .dof', '#s2-lamp', '#s2-far'], { opacity: 0 }, { opacity: 1, duration: D.jv === 'a' ? 0.04 : 0.9, immediateRender: false }, a);
+  tl.fromTo(['#s2-cam', '#s2 .dof', '#s2-lamp', '#s2-far'], { opacity: 0 }, { opacity: 1, duration: D.jv !== 'b' ? 0.04 : 0.9, immediateRender: false }, a);
   tl.set('#s2-tilt', { rotationX: 40, rotationZ: -10, scale: 0.34 }, 0);
   document.querySelectorAll('.qcap span').forEach((sp) => { const box = sp.parentElement.clientWidth - 48; let f = 34; while (sp.scrollWidth > box && f > 22) { f -= 1; sp.style.fontSize = f + 'px'; } });
   tl.set('#s2-world', { x: half1.x + 300, y: half1.y + 200 }, 0);
@@ -978,7 +985,9 @@ tl.to('#ph2', { opacity: 0, duration: 1.0, ease: 'sine.inOut' }, T.fin - 0.2);
 leak('lk6', T.fin - 0.8, 2.6, 0.4);
 // v21: the ending sits on the finished quilt (a) or the photo wall (b)
 tl.fromTo('#s6bg', { opacity: 0 }, { opacity: 1, duration: 1.0, ease: 'power1.inOut', immediateRender: false }, T.fin - 0.2);
-if (D.jv === 'a') {
+if (D.jv === 'g') {
+  tl.set('#g9-w', { opacity: 1 }, T.fin - 0.2); push('#g9-w', T.fin - 0.2, T.end - T.fin + 0.2, 1.0, 1.05);
+} else if (D.jv === 'a') {
   tl.fromTo('#ebg', { scale: 1.08 }, { scale: 1.0, duration: T.end - T.fin + 0.2, ease: 'none', immediateRender: false }, T.fin - 0.2);
 } else {
   tl.fromTo('#ewall', { scale: 1.1 }, { scale: 1.0, duration: T.end - T.fin + 0.2, ease: 'none', immediateRender: false }, T.fin - 0.2);

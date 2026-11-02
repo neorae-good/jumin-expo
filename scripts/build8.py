@@ -203,7 +203,7 @@ def cframe(id_, x, y, w, h, photo, color):
     return f'<div class="cf" id="{id_}" style="left:{x}px;top:{y}px;width:{w}px;height:{h}px;--c:{color}"><img src="assets/photos/{photo}" alt=""><i></i></div>'
 
 ALLPH = [(k, j, regions[k]['photos'][j]['file']) for j in range(3) for k in range(18)]
-if JV == 'a':
+if JV in ('a', 'g'):
     # the camera glides over the very same quilt cloth the regions are later laid on (same image, light, tilt)
     P0, P1 = (3400, 1250), (6600, 1300)
     th_x0, th_y0 = 1800, 900
@@ -228,6 +228,11 @@ if JV == 'a':
 </div>'''
     INTRO_DATA = {'P0': P0, 'P1': P1}
     ENDBG = '<div id="s6bg" class="layer"><img id="ebg" src="assets/img/end_quilt.jpg" alt=""></div>'
+    if JV == 'g':
+        # v21g: Grok clips (no people) carry the narration L01/L02, then the camera pulls back over the quilt (from 13.4 s);
+        # the ending plays a clip of the finished jogakbo floating in the sky under the title
+        INTRO = INTRO.replace('<div class="dof top"></div>', vid('g1', 'v21_o1_dawn.mp4', 0, 7.8, 0, 'vw gv') + vid('g2', 'v21_o2_drop.mp4', 7.0, 7.4, 0, 'vw gv') + '<div class="dof top"></div>', 1)
+        ENDBG = '<div id="s6bg" class="layer">' + vid('g9', 'v21_e1_sky.mp4', T['fin'] - 0.2, T['end'] - T['fin'] + 0.2, 0, 'vw gve') + '</div>'
 else:
     # a wall of real photos in fabric frames, stitched in one by one on the same quilt cloth
     cw, chh, g = 300, 214, 22

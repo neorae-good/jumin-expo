@@ -13,3 +13,4 @@ render_*.log
 # 완성 영상(100MB 초과)은 저장소 대신 GitHub Release 첨부파일로 올림
 deliverables/**/*.mp4
 snap*/
+parts/
