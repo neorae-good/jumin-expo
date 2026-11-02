@@ -231,8 +231,10 @@ if JV in ('a', 'g'):
     if JV == 'g':
         # v21g: Grok clips (no people) carry the narration L01/L02, then the camera pulls back over the quilt (from 13.4 s);
         # the ending plays a clip of the finished jogakbo floating in the sky under the title
-        INTRO = INTRO.replace('<div class="dof top"></div>', vid('g1', 'v21_o1_dawn.mp4', 0, 7.8, 0, 'vw gv') + vid('g2', 'v21_o2_drop.mp4', 7.0, 7.4, 0, 'vw gv') + '<div class="dof top"></div>', 1)
-        ENDBG = '<div id="s6bg" class="layer">' + vid('g9', 'v21_e1_sky.mp4', T['fin'] - 0.2, T['end'] - T['fin'] + 0.2, 0, 'vw gve') + '</div>'
+        # Grok Imagine stills only (2k, no people), moved with slow push-ins and light in the timeline
+        gimg = lambda id_, f: f'<div class="vw gv" id="{id_}-w"><img id="{id_}" src="assets/img/{f}" alt=""></div>'
+        INTRO = INTRO.replace('<div class="dof top"></div>', gimg('g1', 'v21_o1_dawn.jpg') + gimg('g2', 'v21_o2_drop.jpg') + gimg('g3', 'v21_o2b_stitch.jpg') + '<div class="dof top"></div>', 1)
+        ENDBG = '<div id="s6bg" class="layer">' + gimg('g9', 'v21_e1_sky.jpg') + '</div>'
 else:
     # a wall of real photos in fabric frames, stitched in one by one on the same quilt cloth
     cw, chh, g = 300, 214, 22

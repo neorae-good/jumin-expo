@@ -100,9 +100,16 @@ if (D.jv === 'a' || D.jv === 'g') {
   if (D.jv === 'g') {
     // Grok clips over the cloth: dawn + threaded needle (L01), drop -> golden stitch (L02); then reveal the quilt pull-back
     tl.set(['#it1', '#it2', '#ip0', '#ip1', '#ip2', '.ith'], { visibility: 'hidden' }, 0);
-    tl.set('#g1-w', { opacity: 1 }, 0); push('#g1-w', 0, 7.8, 1.0, 1.06);
-    fadeIn('#g2-w', 7.0, 0.8); push('#g2-w', 7.0, 7.4, 1.0, 1.06);
-    tl.to('#g2-w', { opacity: 0, duration: 1.0, ease: 'power1.inOut' }, 13.4);
+    // stills: dawn light grows over the threaded needle; the drop, then the drop on a freshly stitched golden seam
+    tl.set('#g1-w', { opacity: 1 }, 0);
+    tl.fromTo('#g1', { scale: 1.0, xPercent: 0, yPercent: 0, filter: 'brightness(0.86)' }, { scale: 1.14, xPercent: -2.5, yPercent: 2.0, filter: 'brightness(1.06)', duration: 7.8, ease: 'sine.inOut', immediateRender: false }, 0);
+    leak('lk1', 0.6, 4.2, 0.30);
+    fadeIn('#g2-w', 7.0, 0.9);
+    tl.fromTo('#g2', { scale: 1.04, yPercent: -1.5 }, { scale: 1.12, yPercent: 1.0, duration: 4.4, ease: 'sine.inOut', immediateRender: false }, 7.0);
+    fadeIn('#g3-w', 10.6, 1.0);
+    tl.fromTo('#g3', { scale: 1.10 }, { scale: 1.02, duration: 3.8, ease: 'sine.out', immediateRender: false }, 10.6);
+    leak('lk2', 10.9, 2.4, 0.25);
+    tl.to(['#g2-w', '#g3-w'], { opacity: 0, duration: 1.0, ease: 'power1.inOut' }, 13.4);
   }
 } else {
   const o = D.intro.order;
@@ -203,7 +210,8 @@ leak('lk6', T.fin - 0.8, 2.6, 0.4);
 // v21: the ending sits on the finished quilt (a) or the photo wall (b)
 tl.fromTo('#s6bg', { opacity: 0 }, { opacity: 1, duration: 1.0, ease: 'power1.inOut', immediateRender: false }, T.fin - 0.2);
 if (D.jv === 'g') {
-  tl.set('#g9-w', { opacity: 1 }, T.fin - 0.2); push('#g9-w', T.fin - 0.2, T.end - T.fin + 0.2, 1.0, 1.05);
+  tl.set('#g9-w', { opacity: 1 }, T.fin - 0.2);
+  tl.fromTo('#g9', { scale: 1.02, yPercent: 1.5 }, { scale: 1.12, yPercent: -1.5, duration: T.end - T.fin + 0.2, ease: 'sine.inOut', immediateRender: false }, T.fin - 0.2);
 } else if (D.jv === 'a') {
   tl.fromTo('#ebg', { scale: 1.08 }, { scale: 1.0, duration: T.end - T.fin + 0.2, ease: 'none', immediateRender: false }, T.fin - 0.2);
 } else {

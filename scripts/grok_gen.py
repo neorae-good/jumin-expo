@@ -19,9 +19,10 @@ kind, name = sys.argv[1], sys.argv[2]
 if kind == 'image':
     n = int(sys.argv[3]) if len(sys.argv) > 3 else 2
     prompt = (ROOT / 'prompts' / 'v21' / f'{name}.txt').read_text(encoding='utf-8').strip()
-    d = call('https://api.x.ai/v1/images/generations', {'model': os.environ.get('XIMG', 'grok-imagine-image-quality'), 'prompt': prompt, 'n': n, 'aspect_ratio': '16:9', 'response_format': 'b64_json'})
+    d = call('https://api.x.ai/v1/images/generations', {'model': os.environ.get('XIMG', 'grok-imagine-image-2.0'), 'prompt': prompt, 'n': n, 'aspect_ratio': '16:9',
+                                                      'resolution': '2k', 'quality': 'medium', 'response_format': 'b64_json'})
     for i, x in enumerate(d['data'], 1):
-        (OUT / f'{name}_{i}.jpg').write_bytes(base64.b64decode(x['b64_json'])); print(OUT / f'{name}_{i}.jpg')
+        (OUT / f'{name}_hd{i}.jpg').write_bytes(base64.b64decode(x['b64_json'])); print(OUT / f'{name}_hd{i}.jpg')
 else:
     dur = int(sys.argv[3]) if len(sys.argv) > 3 else 8
     base = name.rsplit('_', 1)[0]

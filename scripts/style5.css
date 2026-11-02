@@ -176,3 +176,6 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0f0a0
 #s6bg { opacity: 0; }
 #ebg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(1.0) brightness(1.04); }
 #s6g { background: linear-gradient(to bottom, rgba(10, 30, 60, .55) 0%, rgba(10, 30, 60, .34) 44%, rgba(10, 30, 60, .04) 68%, rgba(10, 30, 60, .18) 100%) !important; height: auto !important; bottom: 0; }
+
+/* v21g: Grok stills */
+.gv img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }

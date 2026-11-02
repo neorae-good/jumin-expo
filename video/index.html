@@ -184,6 +184,9 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0f0a0
 #ebg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(1.0) brightness(1.04); }
 #s6g { background: linear-gradient(to bottom, rgba(10, 30, 60, .55) 0%, rgba(10, 30, 60, .34) 44%, rgba(10, 30, 60, .04) 68%, rgba(10, 30, 60, .18) 100%) !important; height: auto !important; bottom: 0; }
 
+/* v21g: Grok stills */
+.gv img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+
 </style>
 </head>
 <body>
@@ -231,7 +234,7 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0f0a0
 </svg>
 </div>
   </div></div></div>
-  <div class="vw gv" id="g1-w"><video id="g1" class="clip" src="assets/video/v21_o1_dawn.mp4" muted playsinline data-start="0" data-duration="7.8" data-media-start="0" data-track-index="1"></video></div><div class="vw gv" id="g2-w"><video id="g2" class="clip" src="assets/video/v21_o2_drop.mp4" muted playsinline data-start="7.0" data-duration="7.4" data-media-start="0" data-track-index="1"></video></div><div class="dof top"></div><div class="dof bot"></div>
+  <div class="vw gv" id="g1-w"><img id="g1" src="assets/img/v21_o1_dawn.jpg" alt=""></div><div class="vw gv" id="g2-w"><img id="g2" src="assets/img/v21_o2_drop.jpg" alt=""></div><div class="vw gv" id="g3-w"><img id="g3" src="assets/img/v21_o2b_stitch.jpg" alt=""></div><div class="dof top"></div><div class="dof bot"></div>
   <div id="i-far" class="layer"></div>
   <div id="i-lamp" class="lamp"></div>
   <div class="qt itag scr" id="it3" style="left:400px;top:330px;width:1120px;height:330px">
@@ -757,7 +760,7 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0f0a0
   <div class="phs" id="ph2"><div class="phbg" style="background-image:url('assets/photos/end-miryang.jpg')"></div><div class="phfr"><img src="assets/photos/end-miryang.jpg" alt=""><i class="phst"></i></div></div>
 </div>
 <div id="s6" class="layer clip" data-start="162.4" data-duration="15.599999999999994" data-track-index="6">
-  <div id="s6bg" class="layer"><div class="vw gve" id="g9-w"><video id="g9" class="clip" src="assets/video/v21_e1_sky.mp4" muted playsinline data-start="162.20000000000002" data-duration="15.799999999999994" data-media-start="0" data-track-index="1"></video></div></div>
+  <div id="s6bg" class="layer"><div class="vw gv" id="g9-w"><img id="g9" src="assets/img/v21_e1_sky.jpg" alt=""></div></div>
   <div id="s6g"></div>
   <div id="finline" class="fl"><i class="flt"></i></div>
   <div id="fin2" class="fin"><span class="f2"><span class="l1">주민의 힘으로,</span><span class="l2">경상남도가 <em>도약</em>하다</span></span><span class="f2s" aria-hidden="true"><span class="l1">주민의 힘으로,</span><span class="l2">경상남도가 도약하다</span></span></div>
@@ -883,9 +886,16 @@ if (D.jv === 'a' || D.jv === 'g') {
   if (D.jv === 'g') {
     // Grok clips over the cloth: dawn + threaded needle (L01), drop -> golden stitch (L02); then reveal the quilt pull-back
     tl.set(['#it1', '#it2', '#ip0', '#ip1', '#ip2', '.ith'], { visibility: 'hidden' }, 0);
-    tl.set('#g1-w', { opacity: 1 }, 0); push('#g1-w', 0, 7.8, 1.0, 1.06);
-    fadeIn('#g2-w', 7.0, 0.8); push('#g2-w', 7.0, 7.4, 1.0, 1.06);
-    tl.to('#g2-w', { opacity: 0, duration: 1.0, ease: 'power1.inOut' }, 13.4);
+    // stills: dawn light grows over the threaded needle; the drop, then the drop on a freshly stitched golden seam
+    tl.set('#g1-w', { opacity: 1 }, 0);
+    tl.fromTo('#g1', { scale: 1.0, xPercent: 0, yPercent: 0, filter: 'brightness(0.86)' }, { scale: 1.14, xPercent: -2.5, yPercent: 2.0, filter: 'brightness(1.06)', duration: 7.8, ease: 'sine.inOut', immediateRender: false }, 0);
+    leak('lk1', 0.6, 4.2, 0.30);
+    fadeIn('#g2-w', 7.0, 0.9);
+    tl.fromTo('#g2', { scale: 1.04, yPercent: -1.5 }, { scale: 1.12, yPercent: 1.0, duration: 4.4, ease: 'sine.inOut', immediateRender: false }, 7.0);
+    fadeIn('#g3-w', 10.6, 1.0);
+    tl.fromTo('#g3', { scale: 1.10 }, { scale: 1.02, duration: 3.8, ease: 'sine.out', immediateRender: false }, 10.6);
+    leak('lk2', 10.9, 2.4, 0.25);
+    tl.to(['#g2-w', '#g3-w'], { opacity: 0, duration: 1.0, ease: 'power1.inOut' }, 13.4);
   }
 } else {
   const o = D.intro.order;
@@ -986,7 +996,8 @@ leak('lk6', T.fin - 0.8, 2.6, 0.4);
 // v21: the ending sits on the finished quilt (a) or the photo wall (b)
 tl.fromTo('#s6bg', { opacity: 0 }, { opacity: 1, duration: 1.0, ease: 'power1.inOut', immediateRender: false }, T.fin - 0.2);
 if (D.jv === 'g') {
-  tl.set('#g9-w', { opacity: 1 }, T.fin - 0.2); push('#g9-w', T.fin - 0.2, T.end - T.fin + 0.2, 1.0, 1.05);
+  tl.set('#g9-w', { opacity: 1 }, T.fin - 0.2);
+  tl.fromTo('#g9', { scale: 1.02, yPercent: 1.5 }, { scale: 1.12, yPercent: -1.5, duration: T.end - T.fin + 0.2, ease: 'sine.inOut', immediateRender: false }, T.fin - 0.2);
 } else if (D.jv === 'a') {
   tl.fromTo('#ebg', { scale: 1.08 }, { scale: 1.0, duration: T.end - T.fin + 0.2, ease: 'none', immediateRender: false }, T.fin - 0.2);
 } else {
