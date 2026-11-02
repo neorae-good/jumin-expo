@@ -169,7 +169,8 @@ if (['a', 'g', 'gv', 'm'].includes(D.jv)) {
   const a = T.s2;
   if (D.jv === 'b') leak('lk2', a - 0.7, 2.4, 0.45);
   tl.set(['#s2-cam', '#s2 .dof', '#s2-lamp', '#s2-far'], { opacity: 0 }, 0);
-  tl.fromTo(['#s2-cam', '#s2 .dof', '#s2-lamp', '#s2-far'], { opacity: 0 }, { opacity: 1, duration: D.jv !== 'b' ? 0.04 : 0.9, immediateRender: false }, a);
+  if (D.jv === 'b') tl.fromTo(['#s2-cam', '#s2 .dof', '#s2-lamp', '#s2-far'], { opacity: 0 }, { opacity: 1, duration: 0.9, immediateRender: false }, a);
+  else tl.set(['#s2-cam', '#s2 .dof', '#s2-lamp', '#s2-far'], { opacity: 1 }, a);  // opening ends on this exact framing: switch on the first frame (no 1-frame flash of the bare background)
   tl.set('#s2-tilt', { rotationX: 40, rotationZ: -10, scale: 0.34 }, 0);
   document.querySelectorAll('.qcap span').forEach((sp) => { const box = sp.parentElement.clientWidth - 48; let f = 34; while (sp.scrollWidth > box && f > 22) { f -= 1; sp.style.fontSize = f + 'px'; } });
   tl.set('#s2-world', { x: half1.x + 300, y: half1.y + 200 }, 0);
