@@ -1,7 +1,7 @@
 {
   "version": 1,
   "historyId": "6cf5e19e-0631-470d-a694-a12dd9502466",
-  "currentRevision": "47562d9a-1a80-4e62-8ffd-a5f2935a8b5e",
+  "currentRevision": "54c3e68e-63bf-4de7-a5bb-b19975266bfc",
   "pendingChanges": false,
   "files": {
     "AGENTS.md": {
@@ -13,20 +13,20 @@
       "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/1d/1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
     },
     "assets/fonts/hcr-batang-bold.woff2": {
-      "hash": "467adf3b44b87bca998a16802a364499e39ecc3368726d73340f0935f074fb5e",
-      "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/46/467adf3b44b87bca998a16802a364499e39ecc3368726d73340f0935f074fb5e"
+      "hash": "94056124ef3d67638f264a6a32837b2316c65fb1a9afe3b5fc06a2235107a78a",
+      "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/94/94056124ef3d67638f264a6a32837b2316c65fb1a9afe3b5fc06a2235107a78a"
     },
     "assets/fonts/hcr-batang.woff2": {
-      "hash": "1946d292aaddfda3a93f5a6253324515bb1fd186d8e3e831c605372f7b27ad9e",
-      "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/19/1946d292aaddfda3a93f5a6253324515bb1fd186d8e3e831c605372f7b27ad9e"
+      "hash": "0bf85189c389cc86a9bd519f63a01767cba6f30449bc32d3f54cac1dfb75e77d",
+      "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/0b/0bf85189c389cc86a9bd519f63a01767cba6f30449bc32d3f54cac1dfb75e77d"
     },
     "assets/fonts/pretendard-bold.woff2": {
-      "hash": "ab5c8e9de0048cc50cb6ed7a57e3066bc60cfcc492dde7efd5ca06a0fb3b4651",
-      "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/ab/ab5c8e9de0048cc50cb6ed7a57e3066bc60cfcc492dde7efd5ca06a0fb3b4651"
+      "hash": "b483e41fca827e2aae9dbf684aa8c11f930f08c6b3b458c21ae2f5f5f628fe9f",
+      "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/b4/b483e41fca827e2aae9dbf684aa8c11f930f08c6b3b458c21ae2f5f5f628fe9f"
     },
     "assets/fonts/pretendard-semibold.woff2": {
-      "hash": "d80dd01c06958f320892441c518f9ddc2f139b43cc45b82a3e13347025cd27d8",
-      "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/d8/d80dd01c06958f320892441c518f9ddc2f139b43cc45b82a3e13347025cd27d8"
+      "hash": "fc4baf4be183c5062cb111b41b17b7c17016c574bc10e81d514e74560442b314",
+      "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/fc/fc4baf4be183c5062cb111b41b17b7c17016c574bc10e81d514e74560442b314"
     },
     "assets/gsap.min.js": {
       "hash": "c174bfce53a729418d57a8ad8625e7247c793a22fef8e2851e3cfa3de9cd8280",
@@ -269,8 +269,8 @@
       "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/f0/f0c68be29d1eae3daf60b15bfff1d258fd06ca8fe991ebd7f571a8b3753ef24b"
     },
     "index.html": {
-      "hash": "34daf5bdd36471cb6e10253855a93a97317eebb6cdef27d7f1051f538b0bca31",
-      "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/34/34daf5bdd36471cb6e10253855a93a97317eebb6cdef27d7f1051f538b0bca31"
+      "hash": "a67b30852d581dde7990de77c243c968d665168a4599fafc84277f7f5e84fa17",
+      "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/a6/a67b30852d581dde7990de77c243c968d665168a4599fafc84277f7f5e84fa17"
     },
     "meta.json": {
       "hash": "cd6100abf692259a79aa2453d61416e5f446b0520e5895d606aeb0498f5e4056",
@@ -582,6 +582,37 @@
         "index.html": {
           "before": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/50/50ca1cce94653ccfbfcb2ae0e16141ec1edbbbf4b6de2b94419d4c5a142097c7",
           "after": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/34/34daf5bdd36471cb6e10253855a93a97317eebb6cdef27d7f1051f538b0bca31"
+        }
+      }
+    },
+    "54c3e68e-63bf-4de7-a5bb-b19975266bfc": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793744846617,
+      "endedAt": 1793744846638,
+      "files": {
+        "assets/fonts/hcr-batang-bold.woff2": {
+          "before": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/46/467adf3b44b87bca998a16802a364499e39ecc3368726d73340f0935f074fb5e",
+          "after": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/94/94056124ef3d67638f264a6a32837b2316c65fb1a9afe3b5fc06a2235107a78a"
+        },
+        "assets/fonts/hcr-batang.woff2": {
+          "before": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/19/1946d292aaddfda3a93f5a6253324515bb1fd186d8e3e831c605372f7b27ad9e",
+          "after": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/0b/0bf85189c389cc86a9bd519f63a01767cba6f30449bc32d3f54cac1dfb75e77d"
+        },
+        "assets/fonts/pretendard-bold.woff2": {
+          "before": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/ab/ab5c8e9de0048cc50cb6ed7a57e3066bc60cfcc492dde7efd5ca06a0fb3b4651",
+          "after": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/b4/b483e41fca827e2aae9dbf684aa8c11f930f08c6b3b458c21ae2f5f5f628fe9f"
+        },
+        "assets/fonts/pretendard-semibold.woff2": {
+          "before": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/d8/d80dd01c06958f320892441c518f9ddc2f139b43cc45b82a3e13347025cd27d8",
+          "after": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/fc/fc4baf4be183c5062cb111b41b17b7c17016c574bc10e81d514e74560442b314"
+        },
+        "index.html": {
+          "before": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/34/34daf5bdd36471cb6e10253855a93a97317eebb6cdef27d7f1051f538b0bca31",
+          "after": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/a6/a67b30852d581dde7990de77c243c968d665168a4599fafc84277f7f5e84fa17"
         }
       }
     }
