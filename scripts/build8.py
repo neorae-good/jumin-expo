@@ -31,7 +31,10 @@ if JV0 == 'm':
         if x['id'] in _tm: x['t'] = _tm[x['id']]
 for x in narr:
     # one picture for both voices: captions hold until the longer of the two readings ends
-    x['d'] = round(max(dur(ROOT / 'narr' / 'v8p' / v / f"{x['id']}.wav") for v in ('bomi', 'kanika')), 2)
+    # v22: captions hold until the longest reading among the voices in CAPV (one picture for every voice version)
+    _cv = __import__('os').environ.get('CAPV', 'bomi,kanika').split(',')
+    x['d'] = round(max(dur(ROOT / 'narr' / 'v8p' / v / f"{x['id']}.wav") for v in _cv
+                       if (ROOT / 'narr' / 'v8p' / v / f"{x['id']}.wav").exists()), 2)
 
 TXT = {
     'k1': '기', 'k1s': '첫 바늘땀',
