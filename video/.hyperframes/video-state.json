@@ -1830,13 +1830,14 @@
   },
   "renders": {
     "latest": {
-      "id": "8e94b287-13c7-4e99-a06d-d3f6363d98b8",
-      "completedAt": 1793627290755,
-      "output": "/home/user/work/jumin-expo/video/renders/jumin-expo-v20.mp4",
+      "id": "8b75f72f-867a-4729-9b5b-125754d3cde9",
+      "completedAt": 1793746570500,
+      "output": "/home/user/work/jumin-expo/video/renders/jumin-expo-v22.mp4",
       "status": "completed",
-      "revision": "cbbf8a5f-9b74-4b83-8d5d-fd4f6ab750c7"
+      "revision": "54c3e68e-63bf-4de7-a5bb-b19975266bfc"
     },
     "retainedRevisions": [
+      "54c3e68e-63bf-4de7-a5bb-b19975266bfc",
       "cbbf8a5f-9b74-4b83-8d5d-fd4f6ab750c7"
     ]
   },

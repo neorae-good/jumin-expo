@@ -15,8 +15,8 @@
 - [x] 3. 테이크 고르기 (eval8) → prep_narr
 - [x] 4. 음악 178초 맞춤 (scripts/music_fit.py) → audio/bgm_v22_*.wav
 - [x] 5. 소리 섞기 (mix9, 에코 없음) → audio/master_v22_*.wav
-- [ ] 6. 화면 빌드(JV=gv) + 전체 렌더 1회
-- [ ] 7. 미리보기 3개 합치기 → deliverables/v22/
+- [x] 6. 화면 빌드(JV=gv) + 전체 렌더 1회
+- [x] 7. 미리보기 3개 합치기 → deliverables/v22/
 - [ ] 8. 검수: 화면 튐, 받아쓰기, 스냅샷
 
 ### 4단계 메모 (음악 맞춤)
@@ -28,3 +28,9 @@
 ### 3·5단계 메모
 - Dennis L03은 "창원"이 "장원"으로 들려 3번 더 녹음(d~f)하고 e를 씀. L05는 "모여"가 "뭐여"로 들리는 b 대신 c를 씀
 - 소리: audio/master_mix9_v22_1.wav(Yohan+스포츠중계), _v22_2(Dennis+Bright New Dawn), _v22_3(David+포크), 음량 -13.6~-14.0 LUFS
+
+### 6·7단계 메모
+- 화면: `CAPV=yohan,dennis,david JV=gv python3 scripts/build8.py` → video/renders/jumin-expo-v22.mp4 (전체 렌더, 3 workers)
+- 소리를 섞을 때 남자 목소리가 음악에 묻혀 몇 단어가 다르게 들려서, 말소리 대역 줄이기 목표를 11dB에서 14dB로 올림(`CARVE_TARGET=14`)
+- 테이크 교체: Dennis L05 → a, David L06 → c, L12 → b
+- 결과: deliverables/v22/주민자치박람회_주제영상_v22_{1_Yohan_스포츠중계,2_Dennis_BrightNewDawn,3_David_포크}_미리보기.mp4
