@@ -12,9 +12,9 @@
 - [x] 0. 음악 원본 복사
 - [x] 1. L12 A안 문장 반영 (script6.json, caplines6.json)
 - [x] 2. 녹음 3명 × 15줄 × 3테이크 (scripts/tts_voice.py)
-- [ ] 3. 테이크 고르기 (eval8) → prep_narr
+- [x] 3. 테이크 고르기 (eval8) → prep_narr
 - [x] 4. 음악 178초 맞춤 (scripts/music_fit.py) → audio/bgm_v22_*.wav
-- [ ] 5. 소리 섞기 (mix9, 에코 없음) → audio/master_v22_*.wav
+- [x] 5. 소리 섞기 (mix9, 에코 없음) → audio/master_v22_*.wav
 - [ ] 6. 화면 빌드(JV=gv) + 전체 렌더 1회
 - [ ] 7. 미리보기 3개 합치기 → deliverables/v22/
 - [ ] 8. 검수: 화면 튐, 받아쓰기, 스냅샷
@@ -24,3 +24,7 @@
 - Bright New Dawn 124 BPM: 42.6초에 4마디×3, 85.5초에 8마디, 117.9초에 1마디 반복. 끝 178.1초
 - 포크 130 BPM: 원래 18.8초 구간 전환이 본편 시작(19초)과 거의 일치. 147.3초에서 5마디, 163.4초에서 3마디를 잘라냄. 끝 177.7초
 - 늘리거나 줄이는 처리(타임 스트레치)는 하지 않았고, 마디 단위 반복·잘라내기만 함
+
+### 3·5단계 메모
+- Dennis L03은 "창원"이 "장원"으로 들려 3번 더 녹음(d~f)하고 e를 씀. L05는 "모여"가 "뭐여"로 들리는 b 대신 c를 씀
+- 소리: audio/master_mix9_v22_1.wav(Yohan+스포츠중계), _v22_2(Dennis+Bright New Dawn), _v22_3(David+포크), 음량 -13.6~-14.0 LUFS
