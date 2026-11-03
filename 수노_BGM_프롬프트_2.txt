@@ -1,0 +1,72 @@
+[수노(Suno) BGM 프롬프트 2] "Bright New Dawn"과 비슷한 곡 2개
+- 기준 곡 분석: 약 2분 18초, 123 BPM(처음부터 끝까지 일정), 다장조/사장조 계열 밝은 장조,
+  음량이 처음부터 끝까지 거의 같음(쉬어 가는 구간·절정 없이 평평함)
+- 영상은 178초라 길이가 더 필요하고, 75~83초 숨 고르는 구간과 후반 절정이 있으면 맞추기 좋음
+- 가장 비슷하게 만들려면: 수노에서 "Bright New Dawn" 곡 메뉴의 Cover(또는 Remix)를 누르고
+  아래 Style을 넣으면 같은 분위기·선율을 유지한 채 변형됨
+
+
+========== 곡 1. 같은 분위기, 3분 길이 + 강약 있는 버전 ==========
+■ Title
+Bright New Dawn - Ceremony
+
+■ Style of Music
+Bright festive cinematic orchestral pop fused with Korean traditional instruments, instrumental, uplifting, celebratory, official ceremony opening film. 123 BPM, steady beat, C major, modulates up to D major in the second half. Gayageum and haegeum melodies, janggu and buk drums, pizzicato and staccato strings, piano, glockenspiel, handclaps, bright brass, wordless choir oohs at the climax. Clear dynamics: soft intro, a quiet breath in the middle, a bigger and brighter second half, grand finale. Joyful but dignified, crisp modern mix, no vocals.
+
+■ Exclude Styles
+slow, sad, melancholic, lo-fi, ambient, vocals, lyrics, rap, EDM drop, dubstep, trap, heavy metal
+
+■ Lyrics
+[Instrumental]
+
+[Intro - soft gayageum plucks and light strings, gentle morning feeling, quiet]
+
+[Build - janggu groove enters, pizzicato strings and piano]
+
+[Theme A - joyful gayageum and haegeum main melody, handclaps]
+
+[Theme A - fuller, glockenspiel and brass stabs]
+
+[Breath - drums stop, soft sustained strings and daegeum only, very quiet]
+
+[Key change to D major - big drum hit, main melody returns bigger, festive march]
+
+[Theme B - full orchestra and buk drums, wordless choir oohs, driving]
+
+[Climax - biggest moment, brass plays the main theme, massive drum hits]
+
+[Outro - grand warm ending, final sustained chord, clean ending]
+
+
+========== 곡 2. 후반부용 변주 (같은 빠르기, 처음부터 힘차게) ==========
+■ Title
+Bright New Dawn - Festival March
+
+■ Style of Music
+Festive Korean traditional orchestral march, instrumental, triumphant, celebratory, same world as a bright cinematic ceremony theme. 123 BPM, steady beat, D major. Starts strong right away: buk and janggu drums, bright brass fanfare, full strings, gayageum and haegeum countermelodies, handclaps, glockenspiel, wordless choir oohs building to a big climax. Energetic, joyful, proud, dignified, crisp modern mix, no vocals.
+
+■ Exclude Styles
+slow, sad, melancholic, lo-fi, ambient, soft intro, vocals, lyrics, rap, EDM drop, dubstep, trap, heavy metal
+
+■ Lyrics
+[Instrumental]
+
+[Intro - big drum hit, brass fanfare, full energy from the first second]
+
+[Theme - festive march melody on gayageum and haegeum, strong drums]
+
+[Theme - fuller with brass and strings, handclaps]
+
+[Build - rising strings, drum rolls]
+
+[Climax - full orchestra and wordless choir, brass main theme, massive drum hits]
+
+[Outro - grand final chord, clean ending]
+
+
+■ 만들 때 참고
+1. 곡 1은 3분 이상, 곡 2는 2분 이상 나오게 생성(짧으면 Extend)
+2. 곡마다 2~3개 생성해서 고르기
+3. 곡 1은 단독으로 영상 전체에 쓸 수 있고, "앞 75초 = Bright New Dawn, 83초 이후 = 곡 2"처럼 두 곡을 나눠 쓸 수도 있음
+   (같은 123 BPM이라 이어 붙이기 쉬움. 편집은 Claude가 함)
+4. 유료 요금제로 생성, 가능하면 WAV로 받아서 전달

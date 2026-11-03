@@ -1,0 +1,39 @@
+[수노(Suno) BGM 프롬프트] 2026 제8회 경상남도 주민자치 박람회 주제영상
+- 커스텀 모드(Custom)에 아래 칸별로 붙여 넣기
+- 한 곡 안에서 약 75초 뒤 조가 바뀌며 변주처럼 들리도록 구성
+
+■ Title
+Gyeongnam Patchwork Festival
+
+■ Style of Music
+Bright festive cinematic orchestral pop fused with Korean traditional instruments, instrumental, uplifting, celebratory, official ceremony opening film. 124 BPM, D major, modulates up to E major in the second half. Gayageum and haegeum melodies, janggu and buk drum grooves, pizzicato and staccato strings, piano, glockenspiel, handclaps, bright brass section, wordless choir oohs at climaxes. Energetic and joyful but dignified, clear steady beat, crisp modern mix, no vocals.
+
+■ Exclude Styles (화면에 있으면)
+slow, sad, melancholic, lo-fi, ambient, vocals, lyrics, rap, EDM drop, dubstep, trap, heavy metal
+
+■ Lyrics (가사 칸에는 구간 표시만)
+[Instrumental]
+
+[Intro - bright gayageum plucks, light strings, morning feeling]
+
+[Build - janggu groove enters, pizzicato strings and piano, light accent every two bars]
+
+[Theme A - joyful gayageum and haegeum main melody, handclaps]
+
+[Theme A - fuller, glockenspiel and brass stabs]
+
+[Breath - drums drop out, soft sustained strings and daegeum, 8 seconds]
+
+[Key change to E major - big drum hit, Theme B variation of the main melody, festive march, brass and buk drums]
+
+[Theme B - fuller orchestra, wordless choir oohs, driving and triumphant]
+
+[Climax - biggest moment, full choir, brass main theme, massive drum hits]
+
+[Outro - grand warm ending on the main theme, final sustained chord, clean ending]
+
+■ 만들 때 참고
+1. 3분 이상 나오게 생성. 짧으면 Extend로 이어 붙이기 (영상 178초에 맞추는 편집은 Claude가 함)
+2. 3~4개 생성해서 고르기: 처음 75초가 밝고 경쾌한지, 중간에 조가 바뀌며 확 살아나는지 위주로
+3. 124 BPM은 장면 전환 간격(5.4초·5초)과 맞추기 좋은 빠르기. 다르게 나와도 편집으로 맞출 수 있음
+4. 유료 요금제로 생성(공식 행사용 상업적 이용 권리는 수노 약관에서 꼭 확인), 가능하면 WAV로 받아서 전달
