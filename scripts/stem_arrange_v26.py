@@ -8,20 +8,24 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 SR = 48000
-STEMS = ROOT / 'audio' / 'stems' / 'htdemucs' / 'bgm_v25'
+import sys
+STEMS = ROOT / 'audio' / 'stems' / 'htdemucs' / (sys.argv[1] if len(sys.argv) > 1 else 'bgm_v25')
+OUTN = sys.argv[2] if len(sys.argv) > 2 else 'bgm_v26_arr.wav'
 OFF = -60
+import os
+MID = float(os.environ.get('MID_LIFT', '1'))   # scale of the 1:24-2:10 lift (0 = leave the song as is there)
 KEYS = {  # (film second, dB) with smooth ramps between points
     'drums': [(0, OFF), (16.5, OFF), (18.0, -3), (19.5, 0),
-              (74.6, 0), (75.6, OFF), (83.4, OFF), (84.0, 2),
-              (129.5, 2), (130.5, -3), (132.5, -3), (133.2, 3.5),
+              (74.6, 0), (75.6, OFF), (83.4, OFF), (84.0, 2 * MID),
+              (129.5, 2 * MID), (130.5, -3), (132.5, -3), (133.2, 3.5),
               (161.5, 3.5), (163.5, -10), (166.0, OFF)],
     'bass':  [(0, OFF), (16.0, OFF), (18.0, 0),
-              (74.6, 0), (75.8, OFF), (83.4, OFF), (84.0, 1.5),
-              (129.5, 1.5), (130.5, -2), (132.5, -2), (133.2, 2.5),
+              (74.6, 0), (75.8, OFF), (83.4, OFF), (84.0, 1.5 * MID),
+              (129.5, 1.5 * MID), (130.5, -2), (132.5, -2), (133.2, 2.5),
               (161.5, 2.5), (164.0, -6)],
     'other': [(0, -5), (15.5, -5), (17.5, 0),
-              (74.6, 0), (75.6, -3), (83.4, -3), (84.0, 1),
-              (129.5, 1), (130.5, -1.5), (132.5, -1.5), (133.2, 2),
+              (74.6, 0), (75.6, -3), (83.4, -3), (84.0, 1 * MID - 2 * (1 - MID)),
+              (129.5, 1 * MID - 2 * (1 - MID)), (130.5, -1.5), (132.5, -1.5), (133.2, 2),
               (161.5, 2), (164.0, -3)],
     'vocals': [(0, 0)],
 }
@@ -56,7 +60,7 @@ mix[i0:i1] *= (0.5 + 0.5 * np.cos(np.pi * np.linspace(0, 1, i1 - i0)))[:, None].
 mix[i1:] = 0
 peak = np.abs(mix).max()
 if peak > 0.98: mix *= 0.98 / peak               # the lifted sections must not clip
-with wave.open(str(ROOT / 'audio' / 'bgm_v26_arr.wav'), 'wb') as w:
+with wave.open(str(ROOT / 'audio' / OUTN), 'wb') as w:
     w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
     w.writeframes((np.clip(mix, -1, 1) * 32767).astype(np.int16).tobytes())
-print('ok bgm_v26_arr.wav peak', round(float(peak), 3))
+print('ok', OUTN, 'peak', round(float(peak), 3))
