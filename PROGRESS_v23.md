@@ -4,6 +4,8 @@
 - 0 현재 / 1 압축 약하게(NARR_LIGHT=1: 압축 1.6:1, 줄 음량 범위 넓힘) / 2 전부 [warm][proud] 안정도 0.6 + 압축 약하게 / 3 안정도 0.35 + 압축 약하게
 - 녹음 원본 narr/v23dyn/, 시험용 성우 폴더 narr/v8p/juan_wp, juan_s35
 - 내레이션 강약(큰 소리-보통 소리 차이): 4.9 / 5.5 / 4.6 / 5.2 dB → 수치 차이는 작음
+- Henry, Haechan도 같은 4종: Henry 4.6 / 7.8 / 6.7 / 7.5 dB, Haechan 5.4 / 6.8 / 6.7 / 6.6 dB
+  (0번은 지난번 평균 속도 녹음 narr/v8p/{henry,haechan}_test, 2·3번 원본 narr/v23dyn/{henry,haechan}_*)
 - 목소리: Juan (8lidWTlnwgjObqCImnE2), 평균 속도(태그 없음, 안정도 0.5). 쉼표는 그대로 보냄(숨소리 줄이기)
 - 강조 줄: L03, L08, L12, LT(15초 타이틀), L15 → [confident] / L15는 [powerful]도 시험, 4테이크
 - 음악: 3안 포크, 전체 -3dB (MUSIC_DB=-3)
