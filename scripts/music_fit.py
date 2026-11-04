@@ -20,6 +20,8 @@ SONGS = {
     '1_sports': {'beat': 0.44776, 'minj': 34.0, 'anchors': [(0, 0), (103.0, 133.0), (147.96, 178.0)]},
     '2_dawn':   {'beat': 0.48387, 'minj': 20.0, 'anchors': [(0, 0), (92.6, 133.0), (137.6, 178.0)]},
     '3_folk':   {'beat': 0.46020, 'minj': 30.0, 'anchors': [(0, 0), (18.76, 19.0), (147.56, 133.0), (192.56, 178.0)]},
+    # v24: "Our Shared Neighborhood" (Suno, 112 BPM, 157.6 s) for the Juan / Henry versions
+    '4_new':    {'beat': 0.53400, 'minj': 28.0, 'anchors': [(0, 0), (112.6, 133.0), (157.6, 178.0)]},
 }
 XF = int(0.06 * SR)
 
