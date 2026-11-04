@@ -1,0 +1,54 @@
+L01a  * stt=1.00  4.2s F0= 115 (-0.2st) breath= -90.0dB rms= -24.0 | 
+L01b    stt=1.00  4.1s F0= 108 (-1.3st) breath= -90.0dB rms= -24.2 | 
+L01c    stt=1.00  4.1s F0= 103 (-2.1st) breath= -90.0dB rms= -24.4 | 
+L02a  * stt=1.00  4.9s F0= 119 (+0.3st) breath= -90.0dB rms= -22.5 | 
+L02b    stt=1.00  4.8s F0= 118 (+0.2st) breath= -90.0dB rms= -22.6 | 
+L02c    stt=1.00  4.8s F0= 123 (+0.9st) breath= -50.5dB rms= -22.1 | 
+LTa     stt=1.00  2.1s F0= 168 (+6.3st) breath= -54.8dB rms= -21.3 | 
+LTb   * stt=1.00  2.2s F0= 163 (+5.8st) breath= -90.0dB rms= -21.8 | 
+LTc     stt=1.00  2.2s F0= 167 (+6.2st) breath= -90.0dB rms= -21.8 | 
+LTd     stt=1.00  2.2s F0= 165 (+6.0st) breath= -90.0dB rms= -21.7 | 
+L03a  * stt=1.00  6.2s F0= 152 (+4.6st) breath= -90.0dB rms= -20.8 | 
+L03b    stt=1.00  6.1s F0= 160 (+5.5st) breath= -90.0dB rms= -21.4 | 
+L03c    stt=0.97  6.3s F0= 159 (+5.4st) breath= -90.0dB rms= -21.7 | 창원에서 의령까지 주민의 손으로 가뿐 하루하루가 한조각씩 천위에 놓입니다
+L03d    stt=1.00  6.1s F0= 164 (+5.9st) breath= -90.0dB rms= -20.6 | 
+L04a  * stt=1.00  4.3s F0= 117 (+0.0st) breath= -90.0dB rms= -22.9 | 
+L04b    stt=1.00  4.4s F0= 118 (+0.2st) breath= -90.0dB rms= -22.8 | 
+L04c    stt=1.00  4.3s F0= 119 (+0.3st) breath= -90.0dB rms= -22.9 | 
+L05a  * stt=1.00  2.5s F0= 119 (+0.4st) breath= -90.0dB rms= -21.8 | 
+L05b    stt=1.00  2.4s F0= 120 (+0.5st) breath= -90.0dB rms= -21.1 | 
+L05c    stt=1.00  2.5s F0= 112 (-0.7st) breath= -90.0dB rms= -21.9 | 
+L06a  * stt=1.00  4.0s F0= 105 (-1.8st) breath= -90.0dB rms= -22.7 | 
+L06b    stt=1.00  4.0s F0= 108 (-1.3st) breath= -90.0dB rms= -22.8 | 
+L06c    stt=1.00  4.1s F0= 106 (-1.6st) breath= -90.0dB rms= -23.3 | 
+L07a  * stt=1.00  4.3s F0= 110 (-1.0st) breath= -90.0dB rms= -22.4 | 
+L07b    stt=1.00  4.2s F0= 113 (-0.6st) breath= -90.0dB rms= -22.0 | 
+L07c    stt=1.00  4.3s F0= 119 (+0.3st) breath= -90.0dB rms= -22.2 | 
+L08a    stt=1.00  4.4s F0= 145 (+3.8st) breath= -90.0dB rms= -21.3 | 
+L08b    stt=0.91  4.5s F0= 143 (+3.6st) breath= -90.0dB rms= -21.1 | 함암에서 합천까지 실 한가닥이 마을과 마을을 있습니다.
+L08c    stt=0.96  4.5s F0= 156 (+5.1st) breath= -90.0dB rms= -21.0 | 함암에서 합천까지 실 한가닥이 마을과 마을을 잇습니다.
+L08d  * stt=0.96  4.5s F0= 129 (+1.8st) breath= -90.0dB rms= -21.1 | 함암에서 합천까지 실 한 가닥이 마을과 마을을 잇습니다
+L09a    stt=0.95  5.2s F0= 105 (-1.8st) breath= -90.0dB rms= -23.1 | 그 안에서 우린 서로의 온기를 나누며 마을의 내일을 함께 그려갑니다.
+L09b  * stt=1.00  5.4s F0= 103 (-2.1st) breath= -90.0dB rms= -22.8 | 
+L09c    stt=1.00  5.4s F0= 104 (-2.0st) breath= -90.0dB rms= -22.9 | 
+L10a  * stt=1.00  5.6s F0= 108 (-1.3st) breath= -90.0dB rms= -23.8 | 
+L10b    stt=1.00  5.5s F0= 109 (-1.2st) breath= -90.0dB rms= -23.9 | 
+L10c    stt=1.00  5.7s F0= 107 (-1.5st) breath= -90.0dB rms= -23.9 | 
+L11a  * stt=1.00  6.6s F0= 114 (-0.3st) breath= -90.0dB rms= -23.5 | 
+L11b    stt=1.00  6.5s F0= 121 (+0.6st) breath= -90.0dB rms= -22.9 | 
+L11c    stt=1.00  6.7s F0= 117 (+0.0st) breath= -90.0dB rms= -23.2 | 
+L12a    stt=1.00  5.0s F0= 163 (+5.8st) breath= -51.1dB rms= -19.7 | 
+L12b  * stt=1.00  5.0s F0= 149 (+4.3st) breath= -90.0dB rms= -19.2 | 
+L12c    stt=1.00  5.1s F0= 159 (+5.4st) breath= -58.2dB rms= -19.9 | 
+L12d    stt=1.00  5.0s F0= 152 (+4.6st) breath= -53.9dB rms= -20.0 | 
+L13a  * stt=1.00  4.5s F0= 129 (+1.8st) breath= -90.0dB rms= -21.8 | 
+L13b    stt=1.00  4.7s F0= 131 (+2.0st) breath= -90.0dB rms= -22.0 | 
+L13c    stt=1.00  4.7s F0= 143 (+3.5st) breath= -90.0dB rms= -21.4 | 
+L14a  * stt=1.00  5.8s F0= 133 (+2.3st) breath= -90.0dB rms= -22.9 | 
+L14b    stt=1.00  5.8s F0= 129 (+1.8st) breath= -90.0dB rms= -22.9 | 
+L14c    stt=1.00  5.6s F0= 132 (+2.2st) breath= -90.0dB rms= -22.5 | 
+L15a    stt=1.00  3.7s F0= 260 (+13.9st) breath= -90.0dB rms= -19.7 | 
+L15b    stt=1.00  3.8s F0= 256 (+13.6st) breath= -90.0dB rms= -19.1 | 
+L15c  * stt=1.00  3.8s F0= 251 (+13.3st) breath= -90.0dB rms= -19.5 | 
+L15d    stt=1.00  3.7s F0= 268 (+14.4st) breath= -90.0dB rms= -19.8 | 
+Juan normal pitch 117 Hz
