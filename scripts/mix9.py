@@ -34,6 +34,9 @@ bgm = bgm * db(float(os.environ.get('MUSIC_DB', '0')))  # v22 test: overall musi
 # narration: present, punchy, a touch of hall
 # v17: natural, unprocessed-sounding voice (no slap echo); a soft synthetic room is added below
 NAF = 'highpass=f=75,equalizer=f=200:t=q:w=1:g=1.0,equalizer=f=3000:t=q:w=1.2:g=2.5,equalizer=f=9000:t=q:w=1:g=0.5,deesser=i=0.3,acompressor=threshold=-20dB:ratio=3:attack=10:release=150:makeup=2.5,loudnorm=I=-15:TP=-1.5:LRA=7'
+if os.environ.get('NARR_LIGHT'):
+    # v23: keep more of the voice's own loud/soft contrast (gentle 1.6:1 compressor, wider loudness range per line)
+    NAF = NAF.replace('acompressor=threshold=-20dB:ratio=3:attack=10:release=150:makeup=2.5', 'acompressor=threshold=-16dB:ratio=1.6:attack=15:release=200:makeup=1.2').replace('LRA=7', 'LRA=14')
 nar = np.zeros((N, 2), np.float32)
 for x in _narr_lines(R + '/narr/script6.json'):
     _p = R + '/narr/v8p/' + VN + '/' + x['id'] + '.wav'
