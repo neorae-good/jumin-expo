@@ -30,6 +30,7 @@ TOTAL = 178.0
 N = int(TOTAL * SR)
 bgm = load(os.path.join(R, 'audio', BGM))[:N]
 bgm = np.pad(bgm, ((0, N - len(bgm)), (0, 0)))
+bgm = bgm * db(float(os.environ.get('MUSIC_DB', '0')))  # v22 test: overall music level (dB)
 # narration: present, punchy, a touch of hall
 # v17: natural, unprocessed-sounding voice (no slap echo); a soft synthetic room is added below
 NAF = 'highpass=f=75,equalizer=f=200:t=q:w=1:g=1.0,equalizer=f=3000:t=q:w=1.2:g=2.5,equalizer=f=9000:t=q:w=1:g=0.5,deesser=i=0.3,acompressor=threshold=-20dB:ratio=3:attack=10:release=150:makeup=2.5,loudnorm=I=-15:TP=-1.5:LRA=7'
