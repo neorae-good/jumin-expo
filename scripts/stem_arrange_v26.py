@@ -13,20 +13,21 @@ STEMS = ROOT / 'audio' / 'stems' / 'htdemucs' / (sys.argv[1] if len(sys.argv) > 
 OUTN = sys.argv[2] if len(sys.argv) > 2 else 'bgm_v26_arr.wav'
 OFF = -60
 import os
-MID = float(os.environ.get('MID_LIFT', '1'))   # scale of the 1:24-2:10 lift (0 = leave the song as is there)
+MID = float(os.environ.get('MID_LIFT', '1'))
+TOP = float(os.environ.get('CLIMAX', '1'))       # scale of the 2:13-2:42 lift   # scale of the 1:24-2:10 lift (0 = leave the song as is there)
 KEYS = {  # (film second, dB) with smooth ramps between points
     'drums': [(0, OFF), (16.5, OFF), (18.0, -3), (19.5, 0),
               (74.6, 0), (75.6, OFF), (83.4, OFF), (84.0, 2 * MID),
-              (129.5, 2 * MID), (130.5, -3), (132.5, -3), (133.2, 3.5),
-              (161.5, 3.5), (163.5, -10), (166.0, OFF)],
+              (129.5, 2 * MID), (130.5, -3), (132.5, -3), (133.2, 3.5 * TOP),
+              (161.5, 3.5 * TOP), (163.5, -10), (166.0, OFF)],
     'bass':  [(0, OFF), (16.0, OFF), (18.0, 0),
               (74.6, 0), (75.8, OFF), (83.4, OFF), (84.0, 1.5 * MID),
-              (129.5, 1.5 * MID), (130.5, -2), (132.5, -2), (133.2, 2.5),
-              (161.5, 2.5), (164.0, -6)],
+              (129.5, 1.5 * MID), (130.5, -2), (132.5, -2), (133.2, 2.5 * TOP),
+              (161.5, 2.5 * TOP), (164.0, -6)],
     'other': [(0, -5), (15.5, -5), (17.5, 0),
               (74.6, 0), (75.6, -3), (83.4, -3), (84.0, 1 * MID - 2 * (1 - MID)),
-              (129.5, 1 * MID - 2 * (1 - MID)), (130.5, -1.5), (132.5, -1.5), (133.2, 2),
-              (161.5, 2), (164.0, -3)],
+              (129.5, 1 * MID - 2 * (1 - MID)), (130.5, -1.5), (132.5, -1.5), (133.2, 2 * TOP),
+              (161.5, 2 * TOP), (164.0, -3)],
     'vocals': [(0, 0)],
 }
 FADE = (174.0, 178.0)
@@ -59,7 +60,9 @@ i0, i1 = int(FADE[0] * SR), int(FADE[1] * SR)
 mix[i0:i1] *= (0.5 + 0.5 * np.cos(np.pi * np.linspace(0, 1, i1 - i0)))[:, None].astype(np.float32)
 mix[i1:] = 0
 peak = np.abs(mix).max()
-if peak > 0.98: mix *= 0.98 / peak               # the lifted sections must not clip
+HR = os.environ.get('HEADROOM_DB')
+if HR: mix *= 10 ** (-float(HR) / 20)                 # fixed headroom keeps the section contrasts; mix9's limiter catches rare peaks
+elif peak > 0.98: mix *= 0.98 / peak               # the lifted sections must not clip
 with wave.open(str(ROOT / 'audio' / OUTN), 'wb') as w:
     w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
     w.writeframes((np.clip(mix, -1, 1) * 32767).astype(np.int16).tobytes())
