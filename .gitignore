@@ -23,3 +23,6 @@ audio/bgm_v22_*.wav
 render_v22.log
 stt_v22.txt
 stt_v22_final.txt
+audio/stems/
+audio/bgm_v2*.wav
+audio/src_v2*.mp3

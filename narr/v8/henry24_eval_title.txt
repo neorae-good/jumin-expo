@@ -1,0 +1,5 @@
+LTe   * stt=1.00  2.0s  +4.8st (band +1.5..+5.0) spread=7.2 rms=-17.7 breath= -35.6 | 
+LTf     stt=1.00  2.0s  +7.4st (band +1.5..+5.0) spread=5.0 rms=-16.7 breath= -37.0 | 
+LTg     stt=1.00  2.1s +10.6st (band +1.5..+5.0) spread=1.1 rms=-17.1 breath= -39.7 | 
+LTh     stt=1.00  2.1s  +9.9st (band +1.5..+5.0) spread=0.7 rms=-17.0 breath= -41.3 | 
+henry24 normal pitch 124 Hz (title)

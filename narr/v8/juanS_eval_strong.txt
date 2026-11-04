@@ -1,0 +1,49 @@
+L01a  * stt=1.00  4.0s  +3.2st (band -1.0..+3.0) spread=5.4 rms=-22.1 breath= -90.0 len x0.97 | 
+L01b    stt=1.00  3.9s  +3.4st (band -1.0..+3.0) spread=4.8 rms=-22.1 breath= -90.0 len x0.94 | 
+L01c    stt=1.00  4.0s  +3.7st (band -1.0..+3.0) spread=5.5 rms=-21.8 breath= -90.0 len x0.97 | 
+L02a    stt=1.00  4.6s  +3.0st (band -1.0..+3.0) spread=4.1 rms=-21.7 breath= -90.0 len x0.96 | 
+L02b  * stt=1.00  4.5s  +2.9st (band -1.0..+3.0) spread=4.2 rms=-21.6 breath= -90.0 len x0.96 | 
+L02c    stt=0.93  4.5s  +2.9st (band -1.0..+3.0) spread=4.6 rms=-21.4 breath= -90.0 len x0.94 | 이마에 외친 땀 한 방울은 우리 마을을 잇는 첫 바늘 땀이 되었습니다
+LTa     stt=1.00  2.1s  +6.8st (band +1.5..+6.0) spread=1.3 rms=-21.5 breath= -41.2 len x0.98 | 
+LTb   * stt=1.00  2.1s  +6.5st (band +1.5..+6.0) spread=1.4 rms=-20.6 breath= -90.0 len x0.98 | 
+LTc     stt=1.00  2.1s  +7.4st (band +1.5..+6.0) spread=1.2 rms=-21.5 breath= -90.0 len x0.98 | 
+L03a    stt=0.94  6.3s  +4.7st (band +1.0..+6.0) spread=4.6 rms=-21.2 breath= -90.0 len x0.98 | 창원에서 의령까지 주민의 손으로 가꾼 하루하루가 한 조각씩 청유에 놓입니다.
+L03b    stt=0.94  6.0s  +6.6st (band +1.0..+6.0) spread=5.4 rms=-21.0 breath= -90.0 len x0.93 | 창원에서 의령까지 주민의 손으로 가꾼 하루하루가 한 조각씩 청유에 놓입니다.
+L03c  * stt=1.00  6.2s  +6.0st (band +1.0..+6.0) spread=6.0 rms=-20.8 breath= -90.0 len x0.97 | 
+L04a    stt=1.00  4.0s  +7.3st (band -1.0..+4.5) spread=5.0 rms=-19.9 breath= -90.0 len x0.92 | 
+L04b  * stt=1.00  4.1s  +5.7st (band -1.0..+4.5) spread=4.6 rms=-20.6 breath= -90.0 len x0.95 | 
+L04c    stt=1.00  4.2s  +7.8st (band -1.0..+4.5) spread=4.9 rms=-21.1 breath= -90.0 len x0.97 | 
+L05a    stt=1.00  2.3s  +4.3st (band -1.0..+4.5) spread=3.0 rms=-19.4 breath= -90.0 len x0.89 | 
+L05b    stt=1.00  2.3s  +4.2st (band -1.0..+4.5) spread=4.6 rms=-18.7 breath= -90.0 len x0.87 | 
+L05c  * stt=1.00  2.4s  +4.2st (band -1.0..+4.5) spread=4.2 rms=-19.6 breath= -90.0 len x0.90 | 
+L06a    stt=1.00  3.9s  +0.8st (band -1.0..+4.5) spread=4.9 rms=-21.4 breath= -90.0 len x0.98 | 
+L06b    stt=1.00  3.9s  +2.8st (band -1.0..+4.5) spread=4.7 rms=-20.9 breath= -90.0 len x0.97 | 
+L06c  * stt=1.00  3.9s  +1.0st (band -1.0..+4.5) spread=5.2 rms=-21.0 breath= -90.0 len x0.97 | 
+L07a  * stt=1.00  4.1s  +5.7st (band -1.0..+4.5) spread=5.1 rms=-19.9 breath= -90.0 len x0.95 | 
+L07b    stt=1.00  4.0s  +6.1st (band -1.0..+4.5) spread=5.4 rms=-19.9 breath= -90.0 len x0.92 | 
+L07c    stt=1.00  4.1s  +6.3st (band -1.0..+4.5) spread=5.6 rms=-20.3 breath= -90.0 len x0.95 | 
+L08a    stt=0.96  4.5s  +4.4st (band +1.0..+6.0) spread=6.4 rms=-20.1 breath= -90.0 len x0.96 | 함안에서 합천까지 실 한가닥이 마을과 마을을 있습니다
+L08b    stt=1.00  4.4s  +4.8st (band +1.0..+6.0) spread=6.3 rms=-20.5 breath= -90.0 len x0.95 | 
+L08c  * stt=1.00  4.5s  +4.5st (band +1.0..+6.0) spread=6.3 rms=-20.7 breath= -90.0 len x0.97 | 
+L09a  * stt=1.00  5.2s  +1.1st (band -1.0..+4.5) spread=4.6 rms=-21.8 breath= -90.0 len x0.94 | 
+L09b    stt=1.00  5.0s  +0.6st (band -1.0..+4.5) spread=4.6 rms=-21.3 breath= -90.0 len x0.91 | 
+L09c    stt=1.00  5.1s  +0.6st (band -1.0..+4.5) spread=4.4 rms=-21.5 breath= -90.0 len x0.94 | 
+L10a    stt=1.00  5.2s  +2.5st (band -1.0..+4.5) spread=6.0 rms=-22.2 breath= -90.0 len x0.94 | 
+L10b  * stt=1.00  5.3s  +0.4st (band -1.0..+4.5) spread=5.7 rms=-22.5 breath= -90.0 len x0.95 | 
+L10c    stt=1.00  5.2s  +4.1st (band -1.0..+4.5) spread=5.7 rms=-21.9 breath= -90.0 len x0.94 | 
+L11a    stt=1.00  6.0s  +4.7st (band -1.0..+4.5) spread=4.9 rms=-20.8 breath= -90.0 len x0.91 | 
+L11b  * stt=1.00  6.2s  +5.2st (band -1.0..+4.5) spread=5.1 rms=-21.0 breath= -90.0 len x0.94 | 
+L11c    stt=1.00  6.0s  +5.1st (band -1.0..+4.5) spread=4.7 rms=-20.3 breath= -36.4 len x0.92 | 
+L12a    stt=1.00  5.0s  +6.0st (band +2.0..+6.5) spread=4.7 rms=-19.5 breath= -62.5 len x0.92 | 
+L12b  * stt=1.00  5.1s  +6.0st (band +2.0..+6.5) spread=5.2 rms=-18.9 breath= -52.8 len x0.95 | 
+L12c    stt=1.00  5.1s  +4.4st (band +2.0..+6.5) spread=4.3 rms=-18.9 breath= -43.5 len x0.94 | 
+L13a    stt=1.00  4.3s  +9.9st (band +1.0..+5.0) spread=2.7 rms=-20.0 breath= -34.0 len x0.91 | 
+L13b  * stt=1.00  4.4s  +8.5st (band +1.0..+5.0) spread=4.8 rms=-19.9 breath= -90.0 len x0.93 | 
+L13c    stt=1.00  4.4s  +9.8st (band +1.0..+5.0) spread=4.3 rms=-19.2 breath= -90.0 len x0.91 | 
+L14a    stt=1.00  5.5s  +6.0st (band +1.0..+5.0) spread=4.5 rms=-20.8 breath= -90.0 len x0.97 | 
+L14b    stt=1.00  5.4s  +6.4st (band +1.0..+5.0) spread=4.2 rms=-20.5 breath= -90.0 len x0.95 | 
+L14c  * stt=1.00  5.4s  +5.2st (band +1.0..+5.0) spread=4.9 rms=-20.7 breath= -90.0 len x0.94 | 
+L15a    stt=0.95  3.6s +13.2st (band +3.0..+10.0) spread=2.6 rms=-19.4 breath= -90.0 len x0.93 | 주민의 하나된 힘으로 경남이 힘차게 도략합니다.
+L15b  * stt=1.00  3.9s +13.8st (band +3.0..+10.0) spread=3.4 rms=-19.5 breath= -90.0 len x0.99 | 
+L15c    stt=1.00  3.8s +13.9st (band +3.0..+10.0) spread=2.8 rms=-19.3 breath= -90.0 len x0.96 | 
+juanS normal pitch 111 Hz (strong)
