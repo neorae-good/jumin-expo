@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(awk:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(mkdir:*)",
+      "Bash(du:*)",
+      "Bash(wc:*)",
+      "Bash(pwd)",
+      "Bash(date:*)",
+      "Bash(python3:*)",
+      "Bash(ffmpeg:*)",
+      "Bash(ffprobe:*)",
+      "Bash(npx --yes hyperframes@0.8.164:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git show:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git -c user.name=\"neorae-good\" -c user.email=\"dkqnwl519@gmail.com\" commit:*)",
+      "Bash(git push -q origin main:*)",
+      "Bash(git push origin main:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(timeout:*)",
+      "Bash(curl -sS https://api.elevenlabs.io/:*)",
+      "Bash(curl -sS \"$HTTPS_PROXY/__agentproxy/status\":*)"
+    ]
+  }
+}
