@@ -164,7 +164,7 @@ caps = []
 CAPL = json.load(open(ROOT / 'narr' / 'caplines6.json', encoding='utf-8'))
 def hl(s):
     return re.sub(r'\[([^\]]+)\]', r'<em>\1</em>', s)
-for x in [n for n in narr if n['id'] != 'L15']:
+for x in [n for n in narr if n['id'] != 'L15' and not n.get('nocap')]:
     lines = ''.join('<div class="cl">' + ' '.join(f'<span class="cu">{hl(u)}</span>' for u in line) + '</div>' for line in CAPL[x['id']])
     lt = ''  # v21: opening/ending are photo/cloth scenes again -> normal light captions
     x['lt'] = False
@@ -351,7 +351,7 @@ html = f'''<!doctype html>
 </div>
 </div>
 <script>
-const DATA = {json.dumps({'cells': s2_cells, 'M': M, 'CW': CW, 'CH': CH, 'WW': WW, 'WH': WH, 'narr': [{k: v for k, v in x.items() if k != 'tts'} for x in narr if x['id'] != 'L15'], 'T': T, 'map': map_regs, 'opts': outline_pts, 'dust': DUST, 'jv': JV, 'intro': INTRO_DATA, 'mapW': MAP_W, 'mapH': MAP_H}, ensure_ascii=False)};
+const DATA = {json.dumps({'cells': s2_cells, 'M': M, 'CW': CW, 'CH': CH, 'WW': WW, 'WH': WH, 'narr': [{k: v for k, v in x.items() if k != 'tts'} for x in narr if x['id'] != 'L15' and not x.get('nocap')], 'T': T, 'map': map_regs, 'opts': outline_pts, 'dust': DUST, 'jv': JV, 'intro': INTRO_DATA, 'mapW': MAP_W, 'mapH': MAP_H}, ensure_ascii=False)};
 </script>
 <script>
 {{MAINJS}}

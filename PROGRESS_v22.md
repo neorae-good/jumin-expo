@@ -34,3 +34,12 @@
 - 소리를 섞을 때 남자 목소리가 음악에 묻혀 몇 단어가 다르게 들려서, 말소리 대역 줄이기 목표를 11dB에서 14dB로 올림(`CARVE_TARGET=14`)
 - 테이크 교체: Dennis L05 → a, David L06 → c, L12 → b
 - 결과: deliverables/v22/주민자치박람회_주제영상_v22_{1_Yohan_스포츠중계,2_Dennis_BrightNewDawn,3_David_포크}_미리보기.mp4
+
+## v22b 수정 (2026-11-04)
+- 15.2초에 타이틀 읽기 추가: "한 조각씩, 하나의 천으로" (`LT`, 자막 없음 `nocap`, [slowly, with gravitas] 방식, 약 3초)
+- 마지막 구호 L15를 더 힘 있게 다시 녹음(Yohan [energetic] / Dennis [powerful] / David [energetic]). 녹음 원본은 narr/v22b/
+- 음악: 마지막 45초(영상 133초 이후)는 원곡 그대로, 길이 조정은 본론에서만 함. 스포츠중계는 29초에 시작 음악으로 되돌아가던 이음매를 없앰.
+  이음매 고르기에 화음·음색 비교를 더함
+- 섞기: `CARVE_TARGET=14 CARVE_MAX=12` (낮게 읽는 타이틀 줄은 음악을 최대 12dB까지 줄임)
+- 화면은 v22와 같음(빌드 결과 동일 확인) → 재렌더 없이 소리만 교체
+- 결과: deliverables/v22/주민자치박람회_주제영상_v22b_*_미리보기.mp4, 받아쓰기 narr/stt_v22b_final.txt

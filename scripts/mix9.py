@@ -77,7 +77,7 @@ for x in _narr_lines(R + '/narr/script6.json'):
     if not os.path.exists(_p): continue
     i0 = int(x['t'] * SR); i1 = min(N, i0 + int((float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', _p], capture_output=True, text=True).stdout) + 0.45) * SR))
     v, mu = rmsdb(nmid[i0:i1]), rmsdb(bmid[i0:i1] * gmid[i0:i1, None])
-    need = min(8.0, max(0.0, float(os.environ.get('CARVE_TARGET', '11')) - (v - mu)))  # v22: CARVE_TARGET=14 keeps the male voices clearer
+    need = min(float(os.environ.get('CARVE_MAX', '8')), max(0.0, float(os.environ.get('CARVE_TARGET', '11')) - (v - mu)))  # v22: CARVE_TARGET=14 keeps the male voices clearer
     print(f"{x['id']} speech-band voice-music {v - mu:5.1f} dB, extra carve {need:.1f} dB")
     if need > 0: extra[i0:i1] = np.maximum(extra[i0:i1], need)
 extra = movavg(extra, int(0.3 * SR)).astype(np.float32)
