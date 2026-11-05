@@ -26,11 +26,15 @@ db = lambda x: 10 ** (x / 20)
 def movavg(x, w):
     c = np.cumsum(np.r_[0, x]); y = (c[w:] - c[:-w]) / w
     return np.r_[np.full(w // 2, y[0]), y, np.full(len(x) - len(y) - w // 2, y[-1])]
-TOTAL = 178.0
+TOTAL = float(os.environ.get('TOTAL', '178'))   # other films: TOTAL, NARR_SCRIPT, NARR_DIR, NO_SFX=1, BGM_FADE='start,end'
+SCRIPT = os.environ.get('NARR_SCRIPT', 'narr/script6.json'); NDIR = os.environ.get('NARR_DIR', 'narr/v8p')
 N = int(TOTAL * SR)
 bgm = load(os.path.join(R, 'audio', BGM))[:N]
 bgm = np.pad(bgm, ((0, N - len(bgm)), (0, 0)))
-bgm = bgm * db(float(os.environ.get('MUSIC_DB', '0')))  # v22 test: overall music level (dB)
+bgm = bgm * db(float(os.environ.get('MUSIC_DB', '0')))
+if os.environ.get('BGM_FADE'):
+    f0, f1 = (int(float(v) * SR) for v in os.environ['BGM_FADE'].split(','))
+    bgm[f0:f1] *= (0.5 + 0.5 * np.cos(np.pi * np.linspace(0, 1, f1 - f0)))[:, None].astype(np.float32); bgm[f1:] = 0  # v22 test: overall music level (dB)
 # narration: present, punchy, a touch of hall
 # v17: natural, unprocessed-sounding voice (no slap echo); a soft synthetic room is added below
 NAF = 'highpass=f=75,equalizer=f=200:t=q:w=1:g=1.0,equalizer=f=3000:t=q:w=1.2:g=2.5,equalizer=f=9000:t=q:w=1:g=0.5,deesser=i=0.3,acompressor=threshold=-20dB:ratio=3:attack=10:release=150:makeup=2.5,loudnorm=I=-15:TP=-1.5:LRA=7'
@@ -38,8 +42,8 @@ if os.environ.get('NARR_LIGHT'):
     # v23: keep more of the voice's own loud/soft contrast (gentle 1.6:1 compressor, wider loudness range per line)
     NAF = NAF.replace('acompressor=threshold=-20dB:ratio=3:attack=10:release=150:makeup=2.5', 'acompressor=threshold=-16dB:ratio=1.6:attack=15:release=200:makeup=1.2').replace('LRA=7', 'LRA=14')
 nar = np.zeros((N, 2), np.float32)
-for x in _narr_lines(R + '/narr/script6.json'):
-    _p = R + '/narr/v8p/' + VN + '/' + x['id'] + '.wav'
+for x in _narr_lines(os.path.join(R, SCRIPT)):
+    _p = os.path.join(R, NDIR) + '/' + VN + '/' + x['id'] + '.wav'
     if not os.path.exists(_p): print('SKIP', x['id']); continue
     a = load(_p, NAF)
     i = int(x['t'] * SR); nar[i:i + len(a)] += a[:N - i] * db(2.5)
@@ -76,8 +80,8 @@ gmid = 1 - 0.72 * gate
 rmsdb = lambda a: 10 * np.log10((a.astype(np.float64) ** 2).mean() + 1e-12)
 nmid = band(nar)
 extra = np.zeros(N, np.float32)
-for x in _narr_lines(R + '/narr/script6.json'):
-    _p = R + '/narr/v8p/' + VN + '/' + x['id'] + '.wav'
+for x in _narr_lines(os.path.join(R, SCRIPT)):
+    _p = os.path.join(R, NDIR) + '/' + VN + '/' + x['id'] + '.wav'
     if not os.path.exists(_p): continue
     i0 = int(x['t'] * SR); i1 = min(N, i0 + int((float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', _p], capture_output=True, text=True).stdout) + 0.45) * SR))
     v, mu = rmsdb(nmid[i0:i1]), rmsdb(bmid[i0:i1] * gmid[i0:i1, None])
@@ -109,6 +113,7 @@ put(wh, T['pb'] + 1.6, -9, WPK)
 put(wh, T['wide0'] + 1.5, -8, WPK)
 put(wh, T['b0'] - 0.8, -9, WPK)
 put(wh, T['throw'] + 1.2, -6, WPK)
+if os.environ.get('NO_SFX'): sfx[:] = 0
 mix = bgm + nar + wet + sfx
 tmp = os.path.join(R, 'audio', 'mix3_raw.wav')
 pcm = (np.clip(mix * 0.7, -1, 1) * 32767).astype(np.int16)
