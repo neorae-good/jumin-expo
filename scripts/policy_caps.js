@@ -22,6 +22,10 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: transp
 .ncap .cu { display: inline-block; font-family: "Pretendard", sans-serif; font-size: 46px; font-weight: 600; line-height: 1.5; color: var(--cw);
   letter-spacing: -.005em; word-break: keep-all; text-shadow: 0 1px 3px rgba(0, 0, 0, .55), 0 0 12px rgba(0, 0, 0, .3); }
 .ncap em { font-style: normal; color: var(--cg); }
+/* bright footage: a soft dark scrim baked into each caption (it fades with the caption) */
+.scrim { position: absolute; left: 0; right: 0; bottom: 0; height: 360px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .28) 45%, rgba(0, 0, 0, .5) 100%); }
+.ncap .cu { text-shadow: 0 1px 3px rgba(0, 0, 0, .7), 0 0 14px rgba(0, 0, 0, .45); }
 #bg { position: absolute; inset: 0; background:
   radial-gradient(ellipse 70% 60% at 62% 38%, rgba(222, 170, 104, .30), transparent 70%),
   radial-gradient(ellipse 50% 45% at 22% 70%, rgba(150, 110, 160, .16), transparent 70%),
@@ -32,7 +36,7 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: transp
   const p = await b.newPage({ viewport: { width: 1920, height: 1080 } });
   const tmp = path.join(ROOT, 'video', '_policy_cap.html');
   for (const [id, ls] of Object.entries(CAPS)) {
-    const html = `<!doctype html><meta charset="utf-8"><style>${CSS}</style><div class="ncap">${ls.map(l => `<span class="cl"><span class="cu">${l}</span></span>`).join('')}</div>`;
+    const html = `<!doctype html><meta charset="utf-8"><style>${CSS}</style><div class="scrim"></div><div class="ncap">${ls.map(l => `<span class="cl"><span class="cu">${l}</span></span>`).join('')}</div>`;
     fs.writeFileSync(tmp, html);
     await p.goto('file://' + tmp); await p.evaluate(() => document.fonts.ready);
     await p.screenshot({ path: path.join(OUT, `cap_${id}.png`), omitBackground: true });
