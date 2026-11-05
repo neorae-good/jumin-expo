@@ -1040,7 +1040,8 @@ leak('lk6', T.fin - 0.8, 2.6, 0.4);
 // v21: the ending sits on the finished quilt (a) or the photo wall (b)
 tl.fromTo('#s6bg', { opacity: 0 }, { opacity: 1, duration: 1.0, ease: 'power1.inOut', immediateRender: false }, T.fin - 0.2);
 if (D.jv === 'gv') {
-  tl.set('#g9-w', { opacity: 1 }, T.fin - 0.2); push('#g9-w', T.fin - 0.2, T.end - T.fin + 0.2, 1.0, 1.05);
+  // the sky clip now sits at top level (not inside #s6bg), so it needs its own 1 s crossfade like #s6bg had
+  tl.fromTo('#g9-w', { opacity: 0 }, { opacity: 1, duration: 1.0, ease: 'power1.inOut', immediateRender: false }, T.fin - 0.2); push('#g9-w', T.fin - 0.2, T.end - T.fin + 0.2, 1.0, 1.05);
 } else if (D.jv === 'm') {
   tl.set('#m9-w', { opacity: 1 }, T.fin - 0.2);
   tl.fromTo('#m9', { scale: 1.0 }, { scale: 1.08, duration: T.end - T.fin + 0.2, ease: 'sine.inOut', immediateRender: false }, T.fin - 0.2);
