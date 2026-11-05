@@ -1,7 +1,7 @@
 {
   "version": 1,
   "historyId": "6cf5e19e-0631-470d-a694-a12dd9502466",
-  "currentRevision": "54c3e68e-63bf-4de7-a5bb-b19975266bfc",
+  "currentRevision": "25c570ca-d7f9-4634-a264-7e8c46d72a03",
   "pendingChanges": false,
   "files": {
     "AGENTS.md": {
@@ -269,8 +269,8 @@
       "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/f0/f0c68be29d1eae3daf60b15bfff1d258fd06ca8fe991ebd7f571a8b3753ef24b"
     },
     "index.html": {
-      "hash": "a67b30852d581dde7990de77c243c968d665168a4599fafc84277f7f5e84fa17",
-      "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/a6/a67b30852d581dde7990de77c243c968d665168a4599fafc84277f7f5e84fa17"
+      "hash": "f34464f1cfe81e462fd9641b33a7346e46401dbbe7398b2b006b61912be6d6b0",
+      "content": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/f3/f34464f1cfe81e462fd9641b33a7346e46401dbbe7398b2b006b61912be6d6b0"
     },
     "meta.json": {
       "hash": "cd6100abf692259a79aa2453d61416e5f446b0520e5895d606aeb0498f5e4056",
@@ -613,6 +613,21 @@
         "index.html": {
           "before": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/34/34daf5bdd36471cb6e10253855a93a97317eebb6cdef27d7f1051f538b0bca31",
           "after": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/a6/a67b30852d581dde7990de77c243c968d665168a4599fafc84277f7f5e84fa17"
+        }
+      }
+    },
+    "25c570ca-d7f9-4634-a264-7e8c46d72a03": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793853616621,
+      "endedAt": 1793853616622,
+      "files": {
+        "index.html": {
+          "before": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/a6/a67b30852d581dde7990de77c243c968d665168a4599fafc84277f7f5e84fa17",
+          "after": "/root/.cache/hyperframes/history/6cf5e19e-0631-470d-a694-a12dd9502466/blobs/f3/f34464f1cfe81e462fd9641b33a7346e46401dbbe7398b2b006b61912be6d6b0"
         }
       }
     }
@@ -1830,15 +1845,15 @@
   },
   "renders": {
     "latest": {
-      "id": "8b75f72f-867a-4729-9b5b-125754d3cde9",
-      "completedAt": 1793746570500,
-      "output": "/home/user/work/jumin-expo/video/renders/jumin-expo-v22.mp4",
+      "id": "be041c46-dfdb-45d3-b4f0-927a9825e38a",
+      "completedAt": 1793855018379,
+      "output": "/home/user/work/jumin-expo/video/renders/jumin-expo-v29-juan.mp4",
       "status": "completed",
-      "revision": "54c3e68e-63bf-4de7-a5bb-b19975266bfc"
+      "revision": "25c570ca-d7f9-4634-a264-7e8c46d72a03"
     },
     "retainedRevisions": [
-      "54c3e68e-63bf-4de7-a5bb-b19975266bfc",
-      "cbbf8a5f-9b74-4b83-8d5d-fd4f6ab750c7"
+      "25c570ca-d7f9-4634-a264-7e8c46d72a03",
+      "54c3e68e-63bf-4de7-a5bb-b19975266bfc"
     ]
   },
   "pendingArtifactCleanup": []

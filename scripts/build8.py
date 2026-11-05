@@ -198,6 +198,7 @@ def flare(id_, x, y):
 def leak(id_):
     return f'<div class="leak" id="{id_}"><i class="la"></i><i class="lr"></i><i class="lg"></i></div>'
 
+ENDVID = ''
 def itag(id_, x, y, w, h, title, sub, cls=''):
     """linen name-tag patch (same look as the region tags) carrying the opening words"""
     sub_html = f'<span class="its">{sub}</span>' if sub else ''
@@ -239,7 +240,9 @@ if JV in ('a', 'g', 'gv', 'm'):
     if JV == 'gv':
         # 2안: Grok Imagine video clips (no people) for L01/L02; the ending clip floats the jogakbo in the sky
         INTRO = INTRO.replace('<div class="dof top"></div>', vid('g1', 'v21_o1_dawn.mp4', 0, 7.8, 0, 'vw gv') + vid('g2', 'v21_o2_drop.mp4', 7.0, 7.4, 0, 'vw gv') + '<div class="dof top"></div>', 1)
-        ENDBG = '<div id="s6bg" class="layer">' + vid('g9', 'v21_e1_sky.mp4', T['fin'] - 0.2, T['end'] - T['fin'] + 0.2, 0, 'vw gve') + '</div>'
+        # the sky clip must not sit inside the timed #s6 block (the frame extractor would freeze it): top-level, below #s6
+        ENDVID = vid('g9', 'v21_e1_sky.mp4', T['fin'] - 0.2, T['end'] - T['fin'] + 0.2, 0, 'vw gve')
+        ENDBG = '<div id="s6bg" class="layer"></div>'
     if JV == 'm':
         # 3안: "주민자치" letters as a window onto real region photos (after video-shotcraft text-as-mask, Apache-2.0),
         # then real photos for L01/L02, then the same quilt pull-back as 1안; the ending sits on one more real photo
@@ -329,6 +332,7 @@ html = f'''<!doctype html>
   <div class="phs" id="ph1"><div class="phbg" style="background-image:url('assets/photos/end-changwon.jpg')"></div><div class="phfr"><img src="assets/photos/end-changwon.jpg" alt=""><i class="phst"></i></div></div>
   <div class="phs" id="ph2"><div class="phbg" style="background-image:url('assets/photos/end-miryang.jpg')"></div><div class="phfr"><img src="assets/photos/end-miryang.jpg" alt=""><i class="phst"></i></div></div>
 </div>
+{ENDVID}
 <div id="s6" class="layer clip" data-start="{T['fin']}" data-duration="{T['end'] - T['fin']}" data-track-index="6">
   {ENDBG}
   <div id="s6g"></div>
