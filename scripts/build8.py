@@ -338,7 +338,7 @@ html = f'''<!doctype html>
   <div id="s6g"></div>
   <div id="finline" class="fl"><i class="flt"></i></div>
   <div id="fin2" class="fin"><span class="f2"><span class="l1">주민의 힘으로,</span><span class="l2">경상남도가 <em>도약</em>하다</span></span><span class="f2s" aria-hidden="true"><span class="l1">주민의 힘으로,</span><span class="l2">경상남도가 도약하다</span></span></div>
-  <div id="fin3" class="fin">{TXT['fin3']}</div>
+  <div id="fin3" class="fin"><span class="f3w"><span class="f3t">{TXT['fin3']}</span><i class="f3s"></i><i class="f3n"></i></span></div>
   <img id="gnlogo" src="assets/img/gn_logo_color.svg" alt="경상남도">
   {flare('fl6', 975, 360)}
 </div>

@@ -268,7 +268,12 @@ tl.set('#fin2', { opacity: 1 }, T.fin + 2.4);
 tl.set('#fin2 .f2 .l1, #fin2 .f2 .l2', { opacity: 0, y: 20 }, 0);
 tl.fromTo('#fin2 .f2 .l1', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, T.fin + 2.4);
 tl.fromTo('#fin2 .f2 .l2', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, T.fin + 2.7);
-tl.fromTo('#fin3', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, T.fin + 3.6);
+// v30: the event line is embroidered: a needle runs left to right, the letters (satin-stitch texture) and a gold running stitch appear behind it
+tl.set('#fin3', { opacity: 1 }, T.fin + 3.3);
+tl.fromTo('#fin3 .f3w', { '--p': 0 }, { '--p': 1, duration: 2.4, ease: 'sine.inOut', immediateRender: false }, T.fin + 3.3);
+tl.fromTo('#fin3 .f3n', { opacity: 0 }, { opacity: 1, duration: 0.25, immediateRender: false }, T.fin + 3.15);
+tl.fromTo('#fin3 .f3n', { y: -5 }, { y: 5, duration: 0.15, ease: 'sine.inOut', repeat: 15, yoyo: true, immediateRender: false }, T.fin + 3.3);
+tl.to('#fin3 .f3n', { opacity: 0, duration: 0.4 }, T.fin + 5.6);
 tl.fromTo('#fin2 .f2s', { backgroundPosition: '100% 0' }, { backgroundPosition: '0% 0', duration: 1.6, ease: 'power1.inOut', immediateRender: false }, T.fin + 4.0);
 tl.fromTo('#gnlogo', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, T.fin + 5.4);
 flare('fl6', T.fin + 0.4, T.end, 0.5);

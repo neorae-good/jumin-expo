@@ -188,3 +188,11 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0f0a0
 .mkcap { position: absolute; left: 0; right: 0; text-align: center; font-family: "Pretendard", sans-serif; color: #2a1a0c; opacity: 0; }
 #mk-eyebrow { top: 230px; font-size: 40px; font-weight: 600; letter-spacing: .32em; }
 #mk-sub { top: 800px; font-size: 52px; font-weight: 700; letter-spacing: .5em; color: #7a5420; }
+
+/* v30: embroidered event line */
+#fin3 { text-shadow: none; }
+#fin3 .f3w { position: relative; display: inline-block; padding: 4px 14px 16px; --p: 0; }
+#fin3 .f3t { display: inline-block; color: transparent; background: repeating-linear-gradient(115deg, #fbf4e4 0 2px, #dccaa2 2px 3.4px); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 1px 0 rgba(80, 52, 18, .6)) drop-shadow(0 2px 6px rgba(0, 0, 0, .45)); clip-path: inset(-12px calc((1 - var(--p)) * 100%) -12px -12px); }
+#fin3 .f3s { position: absolute; left: 14px; right: 14px; bottom: 3px; height: 3px; border-radius: 2px; background: repeating-linear-gradient(90deg, var(--cg) 0 12px, transparent 12px 20px); filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .5)); clip-path: inset(-4px calc((1 - var(--p)) * 100%) -4px 0); }
+#fin3 .f3n { position: absolute; top: -6px; left: calc(14px + var(--p) * (100% - 28px)); width: 3px; height: 54px; margin-left: -1px; opacity: 0; border-radius: 2px; transform-origin: 50% 100%; rotate: 18deg; background: linear-gradient(180deg, rgba(255, 255, 255, 0), #f4ecd8 30%, #fffaf0 92%, #ffffff); box-shadow: 0 0 8px rgba(255, 236, 190, .9); }
+#fin3 .f3n::after { content: ""; position: absolute; left: -3px; bottom: -4px; width: 9px; height: 9px; border-radius: 50%; background: #fff6dc; box-shadow: 0 0 10px 3px rgba(255, 228, 160, .75); }

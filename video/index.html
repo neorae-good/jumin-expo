@@ -196,6 +196,14 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0f0a0
 #mk-eyebrow { top: 230px; font-size: 40px; font-weight: 600; letter-spacing: .32em; }
 #mk-sub { top: 800px; font-size: 52px; font-weight: 700; letter-spacing: .5em; color: #7a5420; }
 
+/* v30: embroidered event line */
+#fin3 { text-shadow: none; }
+#fin3 .f3w { position: relative; display: inline-block; padding: 4px 14px 16px; --p: 0; }
+#fin3 .f3t { display: inline-block; color: transparent; background: repeating-linear-gradient(115deg, #fbf4e4 0 2px, #dccaa2 2px 3.4px); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 1px 0 rgba(80, 52, 18, .6)) drop-shadow(0 2px 6px rgba(0, 0, 0, .45)); clip-path: inset(-12px calc((1 - var(--p)) * 100%) -12px -12px); }
+#fin3 .f3s { position: absolute; left: 14px; right: 14px; bottom: 3px; height: 3px; border-radius: 2px; background: repeating-linear-gradient(90deg, var(--cg) 0 12px, transparent 12px 20px); filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .5)); clip-path: inset(-4px calc((1 - var(--p)) * 100%) -4px 0); }
+#fin3 .f3n { position: absolute; top: -6px; left: calc(14px + var(--p) * (100% - 28px)); width: 3px; height: 54px; margin-left: -1px; opacity: 0; border-radius: 2px; transform-origin: 50% 100%; rotate: 18deg; background: linear-gradient(180deg, rgba(255, 255, 255, 0), #f4ecd8 30%, #fffaf0 92%, #ffffff); box-shadow: 0 0 8px rgba(255, 236, 190, .9); }
+#fin3 .f3n::after { content: ""; position: absolute; left: -3px; bottom: -4px; width: 9px; height: 9px; border-radius: 50%; background: #fff6dc; box-shadow: 0 0 10px 3px rgba(255, 228, 160, .75); }
+
 </style>
 </head>
 <body>
@@ -774,7 +782,7 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0f0a0
   <div id="s6g"></div>
   <div id="finline" class="fl"><i class="flt"></i></div>
   <div id="fin2" class="fin"><span class="f2"><span class="l1">주민의 힘으로,</span><span class="l2">경상남도가 <em>도약</em>하다</span></span><span class="f2s" aria-hidden="true"><span class="l1">주민의 힘으로,</span><span class="l2">경상남도가 도약하다</span></span></div>
-  <div id="fin3" class="fin">2026년 제8회 경상남도 주민자치 박람회</div>
+  <div id="fin3" class="fin"><span class="f3w"><span class="f3t">2026년 제8회 경상남도 주민자치 박람회</span><i class="f3s"></i><i class="f3n"></i></span></div>
   <img id="gnlogo" src="assets/img/gn_logo_color.svg" alt="경상남도">
   <div class="flare" id="fl6" style="left:975px;top:360px"><i class="fcore"></i><i class="fstreak"></i><i class="fhalo h1"></i><i class="fhalo h2"></i><i class="fhalo h3"></i></div>
 </div>
@@ -1064,7 +1072,12 @@ tl.set('#fin2', { opacity: 1 }, T.fin + 2.4);
 tl.set('#fin2 .f2 .l1, #fin2 .f2 .l2', { opacity: 0, y: 20 }, 0);
 tl.fromTo('#fin2 .f2 .l1', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, T.fin + 2.4);
 tl.fromTo('#fin2 .f2 .l2', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, T.fin + 2.7);
-tl.fromTo('#fin3', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, T.fin + 3.6);
+// v30: the event line is embroidered: a needle runs left to right, the letters (satin-stitch texture) and a gold running stitch appear behind it
+tl.set('#fin3', { opacity: 1 }, T.fin + 3.3);
+tl.fromTo('#fin3 .f3w', { '--p': 0 }, { '--p': 1, duration: 2.4, ease: 'sine.inOut', immediateRender: false }, T.fin + 3.3);
+tl.fromTo('#fin3 .f3n', { opacity: 0 }, { opacity: 1, duration: 0.25, immediateRender: false }, T.fin + 3.15);
+tl.fromTo('#fin3 .f3n', { y: -5 }, { y: 5, duration: 0.15, ease: 'sine.inOut', repeat: 15, yoyo: true, immediateRender: false }, T.fin + 3.3);
+tl.to('#fin3 .f3n', { opacity: 0, duration: 0.4 }, T.fin + 5.6);
 tl.fromTo('#fin2 .f2s', { backgroundPosition: '100% 0' }, { backgroundPosition: '0% 0', duration: 1.6, ease: 'power1.inOut', immediateRender: false }, T.fin + 4.0);
 tl.fromTo('#gnlogo', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out', immediateRender: false }, T.fin + 5.4);
 flare('fl6', T.fin + 0.4, T.end, 0.5);
