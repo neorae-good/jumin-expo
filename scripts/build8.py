@@ -241,7 +241,8 @@ if JV in ('a', 'g', 'gv', 'm'):
         # 2안: Grok Imagine video clips (no people) for L01/L02; the ending clip floats the jogakbo in the sky
         INTRO = INTRO.replace('<div class="dof top"></div>', vid('g1', 'v21_o1_dawn.mp4', 0, 7.8, 0, 'vw gv') + vid('g2', 'v21_o2_drop.mp4', 7.0, 7.4, 0, 'vw gv') + '<div class="dof top"></div>', 1)
         # the sky clip must not sit inside the timed #s6 block (the frame extractor would freeze it): top-level, below #s6
-        ENDVID = vid('g9', 'v21_e1_sky.mp4', T['fin'] - 0.2, T['end'] - T['fin'] + 0.2, 0, 'vw gve')
+        ENDVID = vid('g9', os.environ.get('ENDCLIP', 'v30_e1_sky_text.mp4'),   # v30: cloth raised, 주민자치 rides the cloth (scripts/cloth_text_v30.py); ENDCLIP=v21_e1_sky.mp4 for the old one
+                      T['fin'] - 0.2, T['end'] - T['fin'] + 0.2, 0, 'vw gve')
         ENDBG = '<div id="s6bg" class="layer"></div>'
     if JV == 'm':
         # 3안: "주민자치" letters as a window onto real region photos (after video-shotcraft text-as-mask, Apache-2.0),

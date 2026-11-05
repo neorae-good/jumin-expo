@@ -41,6 +41,6 @@ else:
         st = s.get('status')
         if s.get('video', {}).get('url') or st in ('done', 'completed', 'succeeded'):
             url = s.get('video', {}).get('url') or s.get('url')
-            print('url', url, flush=True); fetch(url, OUT / f'{name}.mp4'); print(OUT / f'{name}.mp4'); break
+            print('meta', json.dumps({k: v for k, v in s.items() if k != 'video'})[:600], flush=True); print('url', url, flush=True); fetch(url, OUT / f'{name}.mp4'); print(OUT / f'{name}.mp4'); break
         if st in ('failed', 'error', 'expired'): sys.exit(json.dumps(s)[:500])
     else: sys.exit('timeout')
