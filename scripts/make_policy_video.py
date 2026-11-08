@@ -20,6 +20,13 @@ unit = free / sum(W.values())
 t = START
 for x in lines:
     x['t'] = round(t, 3); t += x['dur'] + W.get(x['id'], 0) * unit
+if os.environ.get('STARTS'):   # e.g. STARTS=P01:0.3,P02:4.4 : lines start on the video's scene cuts
+    for kv in os.environ['STARTS'].split(','):
+        k, v = kv.split(':'); next(x for x in lines if x['id'] == k)['t'] = float(v)
+    for a, b in zip(lines, lines[1:]):
+        if b['t'] - (a['t'] + a['dur']) < 0.3: sys.exit(f"{a['id']}->{b['id']}: pause {b['t'] - a['t'] - a['dur']:.2f} s too short")
+    if lines[-1]['t'] + lines[-1]['dur'] > total - 0.8: sys.exit('last line ends too late')
+    print('starts', ', '.join(f"{x['id']} {x['t']:.2f}-{x['t'] + x['dur']:.2f}" for x in lines))
 print(f"{vn}: speech {sum(x['dur'] for x in lines):.2f} s, pauses {', '.join(f'{W[k] * unit:.2f}' for k in W)} s")
 json.dump(lines, open(ROOT / 'narr' / 'policy' / f'lines_fit_{vn}.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 env = dict(os.environ, NARR_LIGHT='1', CARVE_TARGET='14', CARVE_MAX='12', MUSIC_DB='2', NO_SFX='1', TOTAL=str(total),
@@ -38,7 +45,7 @@ for i, x in enumerate(lines, 1):
     fc.append(f"[{i}:v]format=rgba,fade=t=in:st={a:.2f}:d=0.25:alpha=1,fade=t=out:st={b - 0.25:.2f}:d=0.25:alpha=1[c{i}]")
     fc.append(f'[{prev}][c{i}]overlay=eof_action=pass[o{i}]'); prev = f'o{i}'
 fc.append(f'[{prev}]fade=t=out:st={total - 0.6}:d=0.6,format=yuv420p[v]')
-out = ROOT / 'deliverables' / 'policy' / f'생활공감정책_인트로_영상_{vn}_미리보기.mp4'
+out = ROOT / 'deliverables' / 'policy' / (os.environ.get('OUTNAME') or f'생활공감정책_인트로_영상_{vn}_미리보기.mp4')
 subprocess.run(['ffmpeg', '-v', 'error', '-y', *inputs, '-i', str(ROOT / 'audio' / f'master_mix9_policyv_{vn}.wav'),
                 '-filter_complex', ';'.join(fc), '-map', '[v]', '-map', f'{len(lines) + 1}:a', '-t', str(total),
                 '-c:v', 'libx264', '-b:v', '8M', '-maxrate', '10M', '-bufsize', '16M', '-preset', 'medium',
