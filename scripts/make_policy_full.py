@@ -8,11 +8,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 V1, V2 = sys.argv[1], sys.argv[2]
+V3 = sys.argv[3] if len(sys.argv) > 3 else None   # scene 3: its own voices are kept (no narration, no captions)
 vn = 'kyle'
 dur = lambda f: float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', str(f)],
                                      capture_output=True, text=True).stdout)
 D1, D2 = dur(V1), dur(V2)
-total = round(D1 + D2, 3)
+D3 = dur(V3) if V3 else 0.0
+total = round(D1 + D2 + D3, 3)
 INTRO = {'P01': 0.3, 'P02': 4.4, 'P03': 10.5, 'P04': 13.85, 'P05': 19.57, 'P06': 24.66}
 SECT = [0, 10.2, 15.2, 25.2, 35.4, 45.0, 55.0, 65.5, 75.3, 85.3]      # scene 2 section starts (photo changes)
 LEAD = [0.8, 0.2, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]             # first: after the dip from the intro
@@ -29,12 +31,17 @@ for k in range(10):
         d = dur(ROOT / 'narr' / 'policy2_p' / vn / f"{x['id']}.wav")
         lines.append(dict(id=x['id'], dur=d, t=round(t, 3), src='policy2_p'))
         end = t + d; t = end + IN_GAP
-    nxt = D1 + SECT[k + 1] if k < 9 else total
+    nxt = D1 + SECT[k + 1] if k < 9 else D1 + D2
     print(f"Q{k + 1:02d}: {lines[-len(para)]['t']:.2f}-{end:.2f} s (section {D1 + SECT[k]:.2f}-{nxt:.2f}){'  runs over by %.2f' % (end - nxt) if end > nxt else ''}")
-if end > total - 1.0: sys.exit('last line ends too late')
+if end > D1 + D2 - 0.5: sys.exit('last line ends too late')
+nd0 = ROOT / 'narr' / 'policy_full_p' / vn; nd0.mkdir(parents=True, exist_ok=True)
+if V3:   # scene 3's own sound goes in as one 'line', so the music dips under its voices like under the narration
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', V3, '-vn', '-ac', '1', '-ar', '48000', str(nd0 / 'Z01.wav')], check=True)
+    lines.append(dict(id='Z01', dur=D3, t=round(D1 + D2, 3), src=None, nocap=True))
 # one folder of line wavs for mix9
 nd = ROOT / 'narr' / 'policy_full_p' / vn; nd.mkdir(parents=True, exist_ok=True)
 for x in lines:
+    if not x['src']: continue
     l = nd / f"{x['id']}.wav"
     if l.is_symlink() or l.exists(): l.unlink()
     l.symlink_to(Path('..') / '..' / x['src'] / vn / f"{x['id']}.wav")
@@ -47,19 +54,27 @@ P = ROOT / 'parts' / 'policy'
 inputs = ['-i', V1, '-i', V2]
 fc = [f'[0:v]fps=30,scale=-2:1080:flags=lanczos,crop=1920:1080,setsar=1,fade=t=out:st={D1 - 0.5:.3f}:d=0.5[a]',
       f'[1:v]fps=30,scale=-2:1080:flags=lanczos,pad=1920:1080:(ow-iw)/2:0:black,setsar=1,fade=t=in:st=0:d=0.5[b]',
-      '[a][b]concat=n=2:v=1:a=0,format=yuva420p[b0]']
+      ]
+if V3:
+    fc[1] = fc[1].replace('[b]', f',fade=t=out:st={D2 - 0.5:.3f}:d=0.5[b]')
+    fc.append('[2:v]fps=30,scale=-2:1080:flags=lanczos,crop=1920:1080,setsar=1,fade=t=in:st=0:d=0.5[c]')
+    fc.append('[a][b][c]concat=n=3:v=1:a=0,format=yuva420p[b0]'); inputs += ['-i', V3]
+else:
+    fc.append('[a][b]concat=n=2:v=1:a=0,format=yuva420p[b0]')
+NV = len(inputs) // 2
+cl = [x for x in lines if not x.get('nocap')]
 prev = 'b0'
-for i, x in enumerate(lines, 1):
+for i, x in enumerate(cl, 1):
     a = max(0.0, x['t'] - 0.1)
-    b = lines[i]['t'] - 0.08 if i < len(lines) else total - 0.5
+    b = cl[i]['t'] - 0.08 if i < len(cl) else D1 + D2 - 0.5
     b = min(b, x['t'] + x['dur'] + 0.6)
     inputs += ['-loop', '1', '-framerate', '30', '-t', str(total), '-i', str(P / f"cap_{x['id']}.png")]
-    fc.append(f"[{i + 1}:v]format=rgba,fade=t=in:st={a:.2f}:d=0.25:alpha=1,fade=t=out:st={b - 0.25:.2f}:d=0.25:alpha=1[c{i}]")
+    fc.append(f"[{i + NV - 1}:v]format=rgba,fade=t=in:st={a:.2f}:d=0.25:alpha=1,fade=t=out:st={b - 0.25:.2f}:d=0.25:alpha=1[c{i}]")
     fc.append(f'[{prev}][c{i}]overlay=eof_action=pass[o{i}]'); prev = f'o{i}'
 fc.append(f'[{prev}]fade=t=out:st={total - 1.0}:d=1.0,format=yuv420p[v]')
-out = ROOT / 'deliverables' / 'policy' / '생활공감정책_인트로+장면2_kyle_미리보기.mp4'
+out = ROOT / 'deliverables' / 'policy' / ('생활공감정책_인트로+장면2+장면3_kyle_미리보기.mp4' if V3 else '생활공감정책_인트로+장면2_kyle_미리보기.mp4')
 subprocess.run(['ffmpeg', '-v', 'error', '-y', *inputs, '-i', str(ROOT / 'audio' / 'master_mix9_policyfull_kyle.wav'),
-                '-filter_complex', ';'.join(fc), '-map', '[v]', '-map', f'{len(lines) + 2}:a', '-t', str(total),
+                '-filter_complex', ';'.join(fc), '-map', '[v]', '-map', f"{inputs.count('-i')}:a", '-t', str(total),
                 '-c:v', 'libx264', '-b:v', '8M', '-maxrate', '10M', '-bufsize', '16M', '-preset', 'medium',
                 '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', str(out)], check=True)
 print('ok', out, total, 's')
