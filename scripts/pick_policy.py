@@ -8,8 +8,9 @@ from faster_whisper import WhisperModel
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 vn = sys.argv[1]
-lines = json.load(open(f'{ROOT}/narr/policy/script.json', encoding='utf-8'))
-BAND = {'P03': (-1, 4), 'P06': (-0.5, 4)}
+PD = os.environ.get('PDIR', 'policy')
+lines = json.load(open(f'{ROOT}/narr/{PD}/script.json', encoding='utf-8'))
+BAND = {'P03': (-1, 4), 'P06': (-0.5, 4), 'Q10b': (-0.5, 4)}
 PLAIN = (-2, 2.5)
 GAP_AFTER = {'P01': 0.75, 'P02': 0.8, 'P03': 0.8, 'P04': 0.7, 'P05': 0.6}
 START, TAIL = 1.5, 3.5
@@ -34,8 +35,8 @@ def analyse(y, sr):
 
 
 data = {}
-for f in sorted(glob.glob(f'{ROOT}/narr/policy/{vn}/*.mp3')):
-    tk = os.path.basename(f)[:-4]; lid = tk[:3]
+for f in sorted(glob.glob(f'{ROOT}/narr/{PD}/{vn}/*.mp3')):
+    tk = os.path.basename(f)[:-4]; lid = tk[:-1]
     ref = next(x['text'] for x in lines if x['id'] == lid)
     t = ''.join(s.text for s in m.transcribe(f, language='ko', beam_size=5)[0]).strip()
     y, sr = librosa.load(f, sr=16000)
@@ -56,10 +57,10 @@ for x in lines:
                     f"spread={v['spread']:.1f} rms={v['rms']:.1f} breath={v['breath']:+6.1f} | {v['txt']}")
 rows.append(f'{vn} normal pitch {normal:.0f} Hz')
 # trim and lay out
-out = f'{ROOT}/narr/policy_p/{vn}'; os.makedirs(out, exist_ok=True)
+out = f'{ROOT}/narr/{PD}_p/{vn}'; os.makedirs(out, exist_ok=True)
 t, script = START, []
 for x in lines:
-    y, sr = librosa.load(f"{ROOT}/narr/policy/{vn}/{pick[x['id']]}.mp3", sr=48000)
+    y, sr = librosa.load(f"{ROOT}/narr/{PD}/{vn}/{pick[x['id']]}.mp3", sr=48000)
     it = librosa.effects.split(y, top_db=40)
     a, b = max(0, it[0][0] - int(0.05 * sr)), min(len(y), it[-1][1] + int(0.12 * sr))
     seg = y[a:b]; n = int(0.01 * sr); seg[:n] *= np.linspace(0, 1, n); seg[-n:] *= np.linspace(1, 0, n)
@@ -67,7 +68,7 @@ for x in lines:
     script.append(dict(x, t=round(t, 3), dur=round(len(seg) / sr, 3)))
     t += len(seg) / sr + GAP_AFTER.get(x['id'], 0)
 total = round(t + TAIL, 2)
-json.dump(dict(total=total, lines=script), open(f'{ROOT}/narr/policy/script_{vn}.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-json.dump(script, open(f'{ROOT}/narr/policy/lines_{vn}.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-open(f'{ROOT}/narr/policy/eval_{vn}.txt', 'w', encoding='utf-8').write('\n'.join(rows))
+json.dump(dict(total=total, lines=script), open(f'{ROOT}/narr/{PD}/script_{vn}.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+json.dump(script, open(f'{ROOT}/narr/{PD}/lines_{vn}.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+open(f'{ROOT}/narr/{PD}/eval_{vn}.txt', 'w', encoding='utf-8').write('\n'.join(rows))
 print('\n'.join(r for r in rows if '*' in r or 'normal' in r)); print(vn, 'total', total)

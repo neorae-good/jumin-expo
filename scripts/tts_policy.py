@@ -12,10 +12,11 @@ STYLE = {  # (cue, stability): lower stability = livelier stresses; no [energeti
     'P04': ('[warm] ', 0.38), 'P05': ('[warm] ', 0.4),
     'P06': ('[warm][confident] ', 0.45),       # closing line: firm
 }
-out = ROOT / 'narr' / 'policy' / name
+PDIR = os.environ.get('PDIR', 'policy')   # PDIR=policy2: scene-2 history narration
+out = ROOT / 'narr' / PDIR / name
 out.mkdir(parents=True, exist_ok=True)
-for x in json.load(open(ROOT / 'narr' / 'policy' / 'script.json', encoding='utf-8')):
-    tag, st = STYLE[x['id']]
+for x in json.load(open(ROOT / 'narr' / PDIR / 'script.json', encoding='utf-8')):
+    tag, st = STYLE.get(x['id'], ('[warm][confident] ', 0.45) if x['id'] == 'Q10b' else ('[warm] ', 0.4))
     text = tag + x['text'].replace('"', '')
     for k in 'abc':
         f = out / f"{x['id']}{k}.mp3"
