@@ -35,9 +35,26 @@ for k in range(10):
     print(f"Q{k + 1:02d}: {lines[-len(para)]['t']:.2f}-{end:.2f} s (section {D1 + SECT[k]:.2f}-{nxt:.2f}){'  runs over by %.2f' % (end - nxt) if end > nxt else ''}")
 if end > D1 + D2 - 0.5: sys.exit('last line ends too late')
 nd0 = ROOT / 'narr' / 'policy_full_p' / vn; nd0.mkdir(parents=True, exist_ok=True)
-if V3:   # scene 3's own sound goes in as one 'line', so the music dips under its voices like under the narration
-    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', V3, '-vn', '-ac', '1', '-ar', '48000', str(nd0 / 'Z01.wav')], check=True)
-    lines.append(dict(id='Z01', dur=D3, t=round(D1 + D2, 3), src=None, nocap=True))
+BGM = 'bgm_v29_arr.wav'
+if V3:   # scene 3: Kyle narration (narr/policy3) on the scene's beats; the scene's own dialogue is dropped and only its
+         # ambience (Demucs drums+bass+other of the scene audio) is laid under the music
+    R = {'R01': 0.5, 'R02': 4.95, 'R03': 10.35, 'R04': 15.65, 'R05': 18.95, 'R06': 27.25, 'R07': 31.8, 'R08': 36.2}
+    prev_end = end
+    for x in json.load(open(ROOT / 'narr' / 'policy3' / 'script.json', encoding='utf-8')):
+        d = dur(ROOT / 'narr' / 'policy3_p' / vn / f"{x['id']}.wav"); t = D1 + D2 + R[x['id']]
+        if t - prev_end < 0.3: sys.exit(f"{x['id']} starts {t - prev_end:.2f} s after the previous line")
+        lines.append(dict(id=x['id'], dur=d, t=round(t, 3), src='policy3_p')); prev_end = t + d
+        print(f"{x['id']}: scene3 {R[x['id']]:.2f}-{R[x['id']] + d:.2f} s")
+    if prev_end > total - 1.2: sys.exit('scene 3 narration ends too late')
+    import numpy as np, soundfile as sf
+    st = ROOT / 'audio' / 'stems' / 'htdemucs' / 'scene3_src'
+    amb = sum(sf.read(st / f'{k}.wav', dtype='float32')[0] for k in ('drums', 'bass', 'other'))
+    mus, sr = sf.read(ROOT / 'audio' / BGM, dtype='float32')
+    # Demucs stems are 44.1 kHz: resample to the music's 48 kHz
+    amb = np.stack([np.interp(np.arange(int(len(amb) * 48000 / 44100)) * 44100 / 48000, np.arange(len(amb)), amb[:, c]) for c in range(2)], 1)
+    i0 = int((D1 + D2) * 48000); n = min(len(amb), len(mus) - i0)
+    mus = mus.copy(); mus[i0:i0 + n] += amb[:n] * 0.7
+    BGM = 'bgm_policy_full.wav'; sf.write(ROOT / 'audio' / BGM, mus, 48000, subtype='PCM_16')
 # one folder of line wavs for mix9
 nd = ROOT / 'narr' / 'policy_full_p' / vn; nd.mkdir(parents=True, exist_ok=True)
 for x in lines:
@@ -48,7 +65,7 @@ for x in lines:
 json.dump(lines, open(ROOT / 'narr' / 'policy' / 'lines_full_kyle.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 env = dict(os.environ, NARR_LIGHT='1', CARVE_TARGET='14', CARVE_MAX='12', MUSIC_DB='2', NO_SFX='1', TOTAL=str(total),
            NARR_SCRIPT='narr/policy/lines_full_kyle.json', NARR_DIR='narr/policy_full_p', BGM_FADE=f'{total - 3.0},{total}')
-subprocess.run([sys.executable, str(ROOT / 'scripts' / 'mix9.py'), vn, 'policyfull_kyle', 'off', '0.4', 'bgm_v29_arr.wav'],
+subprocess.run([sys.executable, str(ROOT / 'scripts' / 'mix9.py'), vn, 'policyfull_kyle', 'off', '0.4', BGM],
                env=env, check=True, cwd=ROOT, stdout=subprocess.DEVNULL)
 P = ROOT / 'parts' / 'policy'
 inputs = ['-i', V1, '-i', V2]
@@ -63,10 +80,12 @@ else:
     fc.append('[a][b]concat=n=2:v=1:a=0,format=yuva420p[b0]')
 NV = len(inputs) // 2
 cl = [x for x in lines if not x.get('nocap')]
+SPLIT = D1 + D2   # scene-2 captions end before the dip into scene 3
 prev = 'b0'
 for i, x in enumerate(cl, 1):
     a = max(0.0, x['t'] - 0.1)
-    b = cl[i]['t'] - 0.08 if i < len(cl) else D1 + D2 - 0.5
+    b = cl[i]['t'] - 0.08 if i < len(cl) else total - 1.0
+    if x['t'] < SPLIT: b = min(b, SPLIT - 0.3)
     b = min(b, x['t'] + x['dur'] + 0.6)
     inputs += ['-loop', '1', '-framerate', '30', '-t', str(total), '-i', str(P / f"cap_{x['id']}.png")]
     fc.append(f"[{i + NV - 1}:v]format=rgba,fade=t=in:st={a:.2f}:d=0.25:alpha=1,fade=t=out:st={b - 0.25:.2f}:d=0.25:alpha=1[c{i}]")

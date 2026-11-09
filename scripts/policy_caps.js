@@ -13,7 +13,7 @@ const CAPS = {
   P06: ['<em>생활공감정책 참여단</em>의 이야기는', '바로 여기서 시작됩니다.'],
 };
 // scene 2 (history): captions from narr/policy2/script.json  ("\n" = line break, *word* = gold)
-for (const x of JSON.parse(fs.readFileSync(path.join(ROOT, 'narr', 'policy2', 'script.json'), 'utf8')))
+for (const x of ['policy2', 'policy3'].flatMap(d => JSON.parse(fs.readFileSync(path.join(ROOT, 'narr', d, 'script.json'), 'utf8'))))
   CAPS[x.id] = x.cap.split('\n').map(l => l.replace(/\*([^*]+)\*/g, '<em>$1</em>'));
 const CSS = `
 @font-face { font-family: "Pretendard"; src: url("assets/fonts/pretendard-semibold.woff2") format("woff2"); font-weight: 600; }

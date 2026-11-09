@@ -16,7 +16,7 @@ PDIR = os.environ.get('PDIR', 'policy')   # PDIR=policy2: scene-2 history narrat
 out = ROOT / 'narr' / PDIR / name
 out.mkdir(parents=True, exist_ok=True)
 for x in json.load(open(ROOT / 'narr' / PDIR / 'script.json', encoding='utf-8')):
-    tag, st = STYLE.get(x['id'], ('[warm][confident] ', 0.45) if x['id'] == 'Q10b' else ('[warm] ', 0.4))
+    tag, st = STYLE.get(x['id'], ('[warm][confident] ', 0.45) if x['id'] in ('Q10b', 'R08') else ('[warm] ', 0.4))
     text = tag + x['text'].replace('"', '')
     for k in 'abc':
         f = out / f"{x['id']}{k}.mp3"
