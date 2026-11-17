@@ -1,5 +1,6 @@
-# 생활공감정책 참여단: intro (30.2 s) + scene 2 history (95.6 s) in one film, Kyle narration, music, captions.
-#   python scripts/make_policy_full.py src_video/policy_intro_src2.mp4 src_video/policy_scene2.mp4
+# 생활공감정책 참여단: intro (30.2 s) + scene 2 history (95.6 s) [+ scene 3 activities (41.3 s) + 4 s end card] in one film,
+# Kyle narration, music, captions.
+#   python scripts/make_policy_full.py src_video/policy_intro_src2.mp4 src_video/policy_scene2.mp4 [src_video/policy_scene3.mp4]
 #   -> deliverables/policy/생활공감정책_인트로+장면2_kyle_미리보기.mp4
 # Intro lines keep their scene-cut starts. Scene 2 has one section per era (10 sections); each paragraph starts just
 # after its section begins (or after the previous paragraph if that one ran over). Recordings are never stretched.
@@ -8,13 +9,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 V1, V2 = sys.argv[1], sys.argv[2]
-V3 = sys.argv[3] if len(sys.argv) > 3 else None   # scene 3: its own voices are kept (no narration, no captions)
+V3 = sys.argv[3] if len(sys.argv) > 3 else None   # scene 3 (narr/policy3) + end card (parts/policy/endcard.png)
 vn = 'kyle'
 dur = lambda f: float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', str(f)],
                                      capture_output=True, text=True).stdout)
 D1, D2 = dur(V1), dur(V2)
 D3 = dur(V3) if V3 else 0.0
-total = round(D1 + D2 + D3, 3)
+CARD = 4.0 if V3 else 0.0          # end card: group name + 경상남도 logo (scripts/policy_endcard.js)
+FILM = D1 + D2 + D3
+total = round(FILM + CARD, 3)
 INTRO = {'P01': 0.3, 'P02': 4.4, 'P03': 10.5, 'P04': 13.85, 'P05': 19.57, 'P06': 24.66}
 SECT = [0, 10.2, 15.2, 25.2, 35.4, 45.0, 55.0, 65.5, 75.3, 85.3]      # scene 2 section starts (photo changes)
 LEAD = [0.8, 0.2, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]             # first: after the dip from the intro
@@ -45,7 +48,10 @@ if V3:   # scene 3: Kyle narration (narr/policy3) on the scene's beats; the scen
         if t - prev_end < 0.3: sys.exit(f"{x['id']} starts {t - prev_end:.2f} s after the previous line")
         lines.append(dict(id=x['id'], dur=d, t=round(t, 3), src='policy3_p')); prev_end = t + d
         print(f"{x['id']}: scene3 {R[x['id']]:.2f}-{R[x['id']] + d:.2f} s")
-    if prev_end > total - 1.2: sys.exit('scene 3 narration ends too late')
+    if prev_end > FILM - 1.2: sys.exit('scene 3 narration ends too late')
+    # music arranged for this film (no cuts): scripts/stem_arrange_policy.py
+    subprocess.run([sys.executable, str(ROOT / 'scripts' / 'stem_arrange_policy.py'), str(total)], check=True, cwd=ROOT)
+    BGM = 'bgm_policy_arr.wav'
     import numpy as np, soundfile as sf
     st = ROOT / 'audio' / 'stems' / 'htdemucs' / 'scene3_src'
     amb = sum(sf.read(st / f'{k}.wav', dtype='float32')[0] for k in ('drums', 'bass', 'other'))
@@ -75,23 +81,26 @@ fc = [f'[0:v]fps=30,scale=-2:1080:flags=lanczos,crop=1920:1080,setsar=1,fade=t=o
 if V3:
     fc[1] = fc[1].replace('[b]', f',fade=t=out:st={D2 - 0.5:.3f}:d=0.5[b]')
     fc.append('[2:v]fps=30,scale=-2:1080:flags=lanczos,crop=1920:1080,setsar=1,fade=t=in:st=0:d=0.5[c]')
-    fc.append('[a][b][c]concat=n=3:v=1:a=0,format=yuva420p[b0]'); inputs += ['-i', V3]
+    fc[-1] = fc[-1].replace('[c]', f',fade=t=out:st={D3 - 0.6:.3f}:d=0.6[c]')
+    fc.append(f'[3:v]fps=30,format=yuv420p,setsar=1,fade=t=in:st=0:d=0.8[e]')
+    fc.append('[a][b][c][e]concat=n=4:v=1:a=0,format=yuva420p[b0]')
+    inputs += ['-i', V3, '-loop', '1', '-framerate', '30', '-t', str(CARD), '-i', str(ROOT / 'parts' / 'policy' / 'endcard.png')]
 else:
     fc.append('[a][b]concat=n=2:v=1:a=0,format=yuva420p[b0]')
-NV = len(inputs) // 2
+NV = inputs.count('-i')
 cl = [x for x in lines if not x.get('nocap')]
 SPLIT = D1 + D2   # scene-2 captions end before the dip into scene 3
 prev = 'b0'
 for i, x in enumerate(cl, 1):
     a = max(0.0, x['t'] - 0.1)
-    b = cl[i]['t'] - 0.08 if i < len(cl) else total - 1.0
+    b = cl[i]['t'] - 0.08 if i < len(cl) else FILM - 0.8
     if x['t'] < SPLIT: b = min(b, SPLIT - 0.3)
     b = min(b, x['t'] + x['dur'] + 0.6)
     inputs += ['-loop', '1', '-framerate', '30', '-t', str(total), '-i', str(P / f"cap_{x['id']}.png")]
-    fc.append(f"[{i + NV - 1}:v]format=rgba,fade=t=in:st={a:.2f}:d=0.25:alpha=1,fade=t=out:st={b - 0.25:.2f}:d=0.25:alpha=1[c{i}]")
+    fc.append(f"[{NV + i - 1}:v]format=rgba,fade=t=in:st={a:.2f}:d=0.25:alpha=1,fade=t=out:st={b - 0.25:.2f}:d=0.25:alpha=1[c{i}]")
     fc.append(f'[{prev}][c{i}]overlay=eof_action=pass[o{i}]'); prev = f'o{i}'
 fc.append(f'[{prev}]fade=t=out:st={total - 1.0}:d=1.0,format=yuv420p[v]')
-out = ROOT / 'deliverables' / 'policy' / ('생활공감정책_인트로+장면2+장면3_kyle_미리보기.mp4' if V3 else '생활공감정책_인트로+장면2_kyle_미리보기.mp4')
+out = ROOT / 'deliverables' / 'policy' / ('생활공감정책_인트로+장면2+장면3_끝화면_kyle_미리보기.mp4' if V3 else '생활공감정책_인트로+장면2_kyle_미리보기.mp4')
 subprocess.run(['ffmpeg', '-v', 'error', '-y', *inputs, '-i', str(ROOT / 'audio' / 'master_mix9_policyfull_kyle.wav'),
                 '-filter_complex', ';'.join(fc), '-map', '[v]', '-map', f"{inputs.count('-i')}:a", '-t', str(total),
                 '-c:v', 'libx264', '-b:v', '8M', '-maxrate', '10M', '-bufsize', '16M', '-preset', 'medium',
