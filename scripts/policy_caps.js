@@ -14,7 +14,7 @@ const CAPS = {
 };
 // scene 2 (history): captions from narr/policy2/script.json  ("\n" = line break, *word* = gold)
 for (const x of ['policy2', 'policy3', 'policy4'].flatMap(d => JSON.parse(fs.readFileSync(path.join(ROOT, 'narr', d, 'script.json'), 'utf8'))))
-  CAPS[x.id] = x.cap.split('\n').map(l => l.replace(/\*([^*]+)\*/g, '<em>$1</em>'));
+  (x.caps || [x.cap]).forEach((c, k, all) => { CAPS[all.length > 1 ? `${x.id}_${k + 1}` : x.id] = c.split('\n').map(l => l.replace(/\*([^*]+)\*/g, '<em>$1</em>')); });
 const CSS = `
 @font-face { font-family: "Pretendard"; src: url("assets/fonts/pretendard-semibold.woff2") format("woff2"); font-weight: 600; }
 * { margin: 0; padding: 0; box-sizing: border-box; }

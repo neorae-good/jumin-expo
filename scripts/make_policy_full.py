@@ -17,6 +17,20 @@ dur = lambda f: float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries',
 D1, D2 = dur(V1), dur(V2)
 D3 = dur(V3) if V3 else 0.0
 D4 = dur(V4) if V4 else 0.0
+if V4:   # scene 4: three cases, one per footage section. When a case's narration is longer than its footage,
+         # only that footage plays slower (the recordings are never stretched)
+    SEC4 = [0.0, 15.1, 29.1, D4]
+    GRP4 = [['U01'], ['U02a', 'T02b'], ['T03a', 'U03']]
+    LEAD4, GAP4, TAIL4 = [0.8, 0.4, 0.4], 0.45, [1.0, 0.6, 1.3]
+    S4 = json.load(open(ROOT / 'narr' / 'policy4' / 'script.json', encoding='utf-8'))
+    SPL4 = json.load(open(ROOT / 'narr' / 'policy4' / 'splits_kyle.json'))
+    d4 = {x['id']: dur(ROOT / 'narr' / 'policy4_p' / vn / f"{x['id']}.wav") for x in S4}
+    SPD4, NEW4 = [], [0.0]
+    for k, g in enumerate(GRP4):
+        need = LEAD4[k] + sum(d4[i] for i in g) + GAP4 * (len(g) - 1) + TAIL4[k]
+        f = max(1.0, need / (SEC4[k + 1] - SEC4[k])); SPD4.append(round(f, 3)); NEW4.append(NEW4[-1] + (SEC4[k + 1] - SEC4[k]) * f)
+    print('scene 4 footage speed per case:', ', '.join(f'{1 / f:.2f}x' for f in SPD4), f'-> {D4:.2f} s becomes {NEW4[-1]:.2f} s')
+    D4 = NEW4[-1]
 CARD = 4.0 if V3 else 0.0          # end card: group name + 경상남도 logo (scripts/policy_endcard.js)
 FILM = D1 + D2 + D3 + D4
 total = round(FILM + CARD, 3)
@@ -51,13 +65,13 @@ if V3:   # scene 3: Kyle narration (narr/policy3) on the scene's beats; the scen
         lines.append(dict(id=x['id'], dur=d, t=round(t, 3), src='policy3_p')); prev_end = t + d
         print(f"{x['id']}: scene3 {R[x['id']]:.2f}-{R[x['id']] + d:.2f} s")
     if prev_end > D1 + D2 + D3 - 1.2: sys.exit('scene 3 narration ends too late')
-    if V4:   # scene 4: each case starts on its scene cut (walking path 0 / phone stand 15.1 / post office 29.1)
-        T4 = {'T01a': 0.8, 'T01b': 7.6, 'T02a': 15.5, 'T02b': 21.7, 'T03a': 29.5, 'T03b': 34.25}
-        for x in json.load(open(ROOT / 'narr' / 'policy4' / 'script.json', encoding='utf-8')):
-            d = dur(ROOT / 'narr' / 'policy4_p' / vn / f"{x['id']}.wav"); t = D1 + D2 + D3 + T4[x['id']]
-            if t - prev_end < 0.3: sys.exit(f"{x['id']} starts {t - prev_end:.2f} s after the previous line")
-            lines.append(dict(id=x['id'], dur=d, t=round(t, 3), src='policy4_p')); prev_end = t + d
-            print(f"{x['id']}: scene4 {T4[x['id']]:.2f}-{T4[x['id']] + d:.2f} s")
+    if V4:   # scene 4: each case starts just after its (possibly slowed) footage section begins
+        for k, g in enumerate(GRP4):
+            t = D1 + D2 + D3 + NEW4[k] + LEAD4[k]
+            for i in g:
+                if t - prev_end < 0.3: sys.exit(f'{i} starts {t - prev_end:.2f} s after the previous line')
+                lines.append(dict(id=i, dur=d4[i], t=round(t, 3), src='policy4_p', split=SPL4.get(i)))
+                print(f'{i}: scene4 {t - D1 - D2 - D3:.2f}-{t - D1 - D2 - D3 + d4[i]:.2f} s'); prev_end = t + d4[i]; t = prev_end + GAP4
         if prev_end > FILM - 1.2: sys.exit('scene 4 narration ends too late')
     # music arranged for this film (no cuts): scripts/stem_arrange_policy.py. With scene 4 the first song ends
     # (fading) in the dip into scene 4, because it is too short for the whole film
@@ -116,7 +130,9 @@ if V3:
     fc[-1] = fc[-1].replace('[c]', f',fade=t=out:st={D3 - 0.6:.3f}:d=0.6[c]')
     inputs += ['-i', V3]
     if V4:
-        fc.append(f'[3:v]fps=30,scale=-2:1080:flags=lanczos,crop=1920:1080,setsar=1,fade=t=in:st=0:d=0.5,fade=t=out:st={D4 - 0.6:.3f}:d=0.6[d4]')
+        parts = ''.join(f'[q{k}]trim=start={SEC4[k]}:end={SEC4[k + 1]},setpts=(PTS-STARTPTS)*{SPD4[k]}[r{k}];' for k in range(3))
+        fc.append(f'[3:v]split=3[q0][q1][q2];{parts}[r0][r1][r2]concat=n=3:v=1:a=0,fps=30,scale=-2:1080:flags=lanczos,crop=1920:1080,setsar=1,'
+                  f'fade=t=in:st=0:d=0.5,fade=t=out:st={D4 - 0.6:.3f}:d=0.6[d4]')
         inputs += ['-i', V4]
     ei = inputs.count('-i')
     fc.append(f'[{ei}:v]fps=30,format=yuv420p,setsar=1,fade=t=in:st=0:d=0.8[e]')
@@ -125,7 +141,12 @@ if V3:
 else:
     fc.append('[a][b]concat=n=2:v=1:a=0,format=yuva420p[b0]')
 NV = inputs.count('-i')
-cl = [x for x in lines if not x.get('nocap')]
+cl = []
+for x in lines:   # a long sentence shows as two captions, switching at a word boundary (narr/policy4/splits_kyle.json)
+    if x.get('split'):
+        cuts = [0.0] + x['split'] + [x['dur']]
+        cl += [dict(id=f"{x['id']}_{k + 1}", t=round(x['t'] + cuts[k], 3), dur=cuts[k + 1] - cuts[k]) for k in range(len(cuts) - 1)]
+    elif not x.get('nocap'): cl.append(x)
 SPLIT = D1 + D2   # scene-2 captions end before the dip into scene 3
 prev = 'b0'
 for i, x in enumerate(cl, 1):
