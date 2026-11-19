@@ -192,39 +192,42 @@
   "src": "policy3_p"
  },
  {
-  "id": "T01a",
-  "dur": 6.420667,
+  "id": "U01",
+  "dur": 12.525333,
   "t": 167.938,
-  "src": "policy4_p"
+  "src": "policy4_p",
+  "split": [
+   8.29
+  ]
  },
  {
-  "id": "T01b",
-  "dur": 4.159333,
-  "t": 174.738,
-  "src": "policy4_p"
- },
- {
-  "id": "T02a",
-  "dur": 5.780667,
+  "id": "U02a",
+  "dur": 9.546,
   "t": 182.638,
-  "src": "policy4_p"
+  "src": "policy4_p",
+  "split": null
  },
  {
   "id": "T02b",
   "dur": 3.967333,
-  "t": 188.838,
-  "src": "policy4_p"
+  "t": 192.634,
+  "src": "policy4_p",
+  "split": null
  },
  {
   "id": "T03a",
   "dur": 4.351333,
-  "t": 196.638,
-  "src": "policy4_p"
+  "t": 197.602,
+  "src": "policy4_p",
+  "split": null
  },
  {
-  "id": "T03b",
-  "dur": 6.754667,
-  "t": 201.388,
-  "src": "policy4_p"
+  "id": "U03",
+  "dur": 12.109333,
+  "t": 202.403,
+  "src": "policy4_p",
+  "split": [
+   6.91
+  ]
  }
 ]
