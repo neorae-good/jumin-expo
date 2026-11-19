@@ -18,7 +18,7 @@ KEYS = {
     'other': [(0, -5), (15.5, -5), (17.5, 0), (126.0, 0), (145.0, 1.5), (155.0, 1.5), (158.0, 3.0), (TOTAL, 3.0)],
     'vocals': [(0, 0)],
 }
-FADE = (TOTAL - 3.2, TOTAL)
+FADE = (TOTAL - float(os.environ.get('FADE_S', '3.2')), TOTAL)   # FADE_S: shorter fade when a second song takes over
 
 
 def load(f):

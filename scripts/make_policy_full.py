@@ -61,8 +61,12 @@ if V3:   # scene 3: Kyle narration (narr/policy3) on the scene's beats; the scen
         if prev_end > FILM - 1.2: sys.exit('scene 4 narration ends too late')
     # music arranged for this film (no cuts): scripts/stem_arrange_policy.py. With scene 4 the first song ends
     # (fading) in the dip into scene 4, because it is too short for the whole film
-    T1 = round(D1 + D2 + D3 + 0.45, 3) if V4 else total
-    subprocess.run([sys.executable, str(ROOT / 'scripts' / 'stem_arrange_policy.py'), str(T1)], check=True, cwd=ROOT)
+    # with scene 4 the film is longer than the first song: the second song takes over at the dip between scene 2
+    # (history) and scene 3 (today's activities), so the two songs share the film roughly half and half
+    SWITCH = D1 + D2 if V4 else None
+    T1 = round(SWITCH + 0.6, 3) if V4 else total
+    subprocess.run([sys.executable, str(ROOT / 'scripts' / 'stem_arrange_policy.py'), str(T1)], check=True, cwd=ROOT,
+                   env=dict(os.environ, FADE_S='1.8' if V4 else '3.2'))
     BGM = 'bgm_policy_arr.wav'
     import numpy as np, soundfile as sf
     st = ROOT / 'audio' / 'stems' / 'htdemucs' / 'scene3_src'
@@ -71,14 +75,15 @@ if V3:   # scene 3: Kyle narration (narr/policy3) on the scene's beats; the scen
     mus = np.pad(mus, ((0, max(0, int(total * 48000) - len(mus))), (0, 0)))
     rs = lambda a: np.stack([np.interp(np.arange(int(len(a) * 48000 / 44100)) * 44100 / 48000, np.arange(len(a)), a[:, c]) for c in range(2)], 1)
     rms = lambda a: float(np.sqrt((a.astype(np.float64) ** 2).mean()))
-    if V4:   # second song (Shared Dreams) from its own start: calm walking path, drums by the phone stand
+    if V4:   # second song (Shared Dreams) from its own start: calm scene-3 opening, drums as the volunteering begins
         s2, sr2 = sf.read(ROOT / 'audio' / 'src_v22_5_dreams.wav', dtype='float32')
         if sr2 != 48000: s2 = rs(s2)
-        L = int((D4 + CARD) * 48000); s2 = s2[:L].copy()
-        g = rms(mus[int(140 * 48000):int(160 * 48000)]) / rms(s2[int(18 * 48000):int(40 * 48000)]) * 10 ** (-1 / 20)
+        L = int((total - SWITCH) * 48000); s2 = s2[:L].copy()
+        g = rms(mus[int(100 * 48000):int(120 * 48000)]) / rms(s2[int(18 * 48000):int(40 * 48000)]) * 10 ** (-1 / 20)
         s2 *= g; fi, fo = int(0.8 * 48000), int(3.0 * 48000)
         s2[:fi] *= np.linspace(0, 1, fi)[:, None]; s2[-fo:] *= (0.5 + 0.5 * np.cos(np.pi * np.linspace(0, 1, fo)))[:, None]
-        j0 = int((D1 + D2 + D3) * 48000); mus[j0:j0 + len(s2)] += s2[:len(mus) - j0]
+        j0 = int(SWITCH * 48000); mus[j0:j0 + len(s2)] += s2[:len(mus) - j0]
+        j0 = int((D1 + D2 + D3) * 48000)   # scene 4 ambience below
         print(f'second song gain {20 * np.log10(g):+.1f} dB')
         st4 = ROOT / 'audio' / 'stems' / 'htdemucs' / 'scene4_src'
         amb4 = rs(sum(sf.read(st4 / f'{k}.wav', dtype='float32')[0] for k in ('drums', 'bass', 'other')))
