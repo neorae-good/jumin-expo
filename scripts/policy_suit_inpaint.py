@@ -27,7 +27,9 @@ def region_mask(img, box, clothing, mode):
     background behind the person is never redrawn; 'box' (logo) uses the whole box"""
     x0, y0, x1, y1 = box
     full = np.zeros((img.height, img.width), np.uint8)
-    if mode == 'box' or clothing == 'erase':
+    if isinstance(mode, list):                                      # hand-drawn outline (no face, no hands)
+        cv2.fillPoly(full, [np.array(mode, np.int32)], 255)
+    elif mode == 'box' or clothing == 'erase':
         full[y0:y1, x0:x1] = 255
     else:
         hsv = cv2.cvtColor(np.asarray(img.crop(box)), cv2.COLOR_RGB2HSV)

@@ -4,18 +4,73 @@
   "src_t": 13.77,
   "regions": [
    [
-    1100,
-    352,
-    1445,
-    640,
-    "dark navy casual zip-up jacket with a stand collar, over a light grey t-shirt"
-   ],
-   [
     935,
-    640,
-    1445,
+    340,
+    1450,
     1000,
-    "dark navy casual zip-up jacket with a stand collar, over a light grey t-shirt"
+    "dark navy casual zip-up jacket over a light grey round-neck t-shirt, no tie",
+    [
+     [
+      1185,
+      352
+     ],
+     [
+      1305,
+      345
+     ],
+     [
+      1400,
+      420
+     ],
+     [
+      1448,
+      600
+     ],
+     [
+      1448,
+      1000
+     ],
+     [
+      1010,
+      1000
+     ],
+     [
+      1000,
+      900
+     ],
+     [
+      948,
+      892
+     ],
+     [
+      945,
+      845
+     ],
+     [
+      1000,
+      822
+     ],
+     [
+      1008,
+      765
+     ],
+     [
+      965,
+      735
+     ],
+     [
+      965,
+      690
+     ],
+     [
+      1095,
+      560
+     ],
+     [
+      1140,
+      440
+     ]
+    ]
    ],
    [
     497,
@@ -36,28 +91,32 @@
     505,
     300,
     900,
-    "brown knit cardigan over a beige shirt"
+    "brown knit cardigan over a beige shirt",
+    "box"
    ],
    [
     600,
     600,
     765,
     985,
-    "dark grey casual padded jacket over a dark sweater"
+    "dark grey casual padded jacket over a dark sweater",
+    "box"
    ],
    [
     1272,
     505,
     1450,
     905,
-    "dark olive casual jacket over a grey sweater"
+    "dark olive casual jacket over a grey sweater",
+    "box"
    ],
    [
     332,
     500,
     410,
     600,
-    "beige knit sweater"
+    "beige knit sweater",
+    "box"
    ],
    [
     1212,
@@ -77,21 +136,24 @@
     662,
     770,
     985,
-    "dark grey casual padded jacket over a dark sweater"
+    "dark grey casual padded jacket over a dark sweater",
+    "box"
    ],
    [
     1425,
     500,
     1540,
     1000,
-    "dark olive casual jacket over a grey sweater"
+    "dark olive casual jacket over a grey sweater",
+    "box"
    ],
    [
     80,
     495,
     150,
     640,
-    "brown knit cardigan"
+    "brown knit cardigan",
+    "box"
    ],
    [
     1212,
@@ -111,14 +173,16 @@
     540,
     952,
     850,
-    "blue and white striped polo shirt team uniform and dark trousers"
+    "blue and white striped polo shirt team uniform and dark trousers",
+    "box"
    ],
    [
     952,
     548,
     1055,
     850,
-    "blue and white striped polo shirt team uniform and dark trousers"
+    "blue and white striped polo shirt team uniform and dark trousers",
+    "box"
    ]
   ]
  },
@@ -128,10 +192,11 @@
   "regions": [
    [
     1508,
-    372,
+    392,
     1588,
     515,
-    "red zip-up windbreaker jacket"
+    "red zip-up windbreaker jacket",
+    "box"
    ]
   ]
  },
@@ -144,7 +209,8 @@
     742,
     1042,
     945,
-    "dark navy casual zip-up jacket over a white t-shirt"
+    "dark navy casual zip-up jacket over a white t-shirt",
+    "box"
    ]
   ]
  },
@@ -153,25 +219,20 @@
   "src_t": 67.77,
   "regions": [
    [
-    865,
-    790,
-    1000,
-    1000,
-    "light blue volunteer vest over a white shirt"
-   ],
-   [
     1530,
     650,
     1620,
     1000,
-    "light blue volunteer vest over a white shirt"
+    "light blue volunteer vest over a white shirt",
+    "box"
    ],
    [
     762,
     640,
     852,
     1000,
-    "light blue volunteer vest over a white shirt"
+    "light blue volunteer vest over a white shirt",
+    "box"
    ]
   ]
  },
@@ -184,7 +245,8 @@
     695,
     875,
     965,
-    "light blue volunteer vest over a dark sweater"
+    "light blue volunteer vest over a dark sweater",
+    "box"
    ]
   ]
  }
