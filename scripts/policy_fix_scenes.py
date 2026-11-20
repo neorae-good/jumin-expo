@@ -23,15 +23,14 @@ MI = 'minterpolate=fps=30:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1'
 def shot(src, a, b, length, fit=CROP, extra=''):
     """footage src[a:b] shown for `length` s (slowed with motion interpolation when length > b - a)"""
     k = length / (b - a)
-    chain = f'trim=start={a}:end={b},setpts=(PTS-STARTPTS)*{k:.6f},' + (f'{MI},' if k > 1.01 else 'fps=30,')
-    return dict(src=str(src), chain=chain + f'{fit},setsar=1{extra},format=yuv420p', length=length)
+    chain = f'setpts=(PTS-STARTPTS)*{k:.6f},' + (f'{MI},' if k > 1.01 else 'fps=30,')
+    return dict(src=str(src), a=a, b=b, chain=chain + f'{fit},setsar=1{extra},format=yuv420p', length=length)
 
 
 def build(name, shots):
     """lay the shots on one timeline; each next shot fades in (alpha) over the held last frame of the previous one"""
     ins, fc, n = [], [], len(shots)
-    srcs = sorted({s['src'] for s in shots})
-    for s_ in srcs: ins += ['-i', s_]
+    for s_ in shots: ins += ['-ss', f"{s_['a']:.4f}", '-t', f"{s_['b'] - s_['a']:.4f}", '-i', s_['src']]   # one input per shot
     h = XF_IN / 2
     total = sum(s['length'] for s in shots)
     fc.append(f'color=c=black:s=1920x1080:r=30:d={total:.4f},format=yuva420p[base]')
@@ -43,7 +42,7 @@ def build(name, shots):
         opts = ([f'start_mode=clone:start_duration={pre}'] if pre else []) + ([f'stop_mode=clone:stop_duration={post}'] if post else [])
         pad = (',tpad=' + ':'.join(opts)) if opts else ''
         fade = f',fade=t=in:st=0:d={XF_IN}:alpha=1' if i else ''
-        fc.append(f"[{srcs.index(s['src'])}:v]{s['chain']}{pad},trim=duration={s['length'] + pre + post:.4f},format=yuva420p{fade},"
+        fc.append(f"[{i}:v]{s['chain']}{pad},trim=duration={s['length'] + pre + post:.4f},format=yuva420p{fade},"
                   f"setpts=PTS-STARTPTS+{t - pre:.4f}/TB[s{i}]")
         fc.append(f'[{prev}][s{i}]overlay=eof_action=pass[o{i}]'); prev = f'o{i}'
         t += s['length']
