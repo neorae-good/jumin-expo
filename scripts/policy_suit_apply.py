@@ -14,11 +14,12 @@ D = ROOT / 'parts' / 'policy' / 'suit'
 SPEC = json.loads((ROOT / 'scripts' / 'policy_suit_spec.json').read_text(encoding='utf-8'))
 PICK = json.loads((D / 'picks.json').read_text()) if (D / 'picks.json').exists() else {}
 W, H = 1620, 1080; S = 4                       # ECC on a 1/4-size grey image
-raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', str(SRC), '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], capture_output=True, check=True).stdout
-V = np.frombuffer(raw, np.uint8).reshape(-1, H, W, 3)
-N = len(V); fps = 30.0
+# pass 1: only small grey frames are kept in memory (the full video does not fit)
+raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', str(SRC), '-vf', f'scale={W // S}:{H // S}:flags=area', '-f', 'rawvideo', '-pix_fmt', 'gray', '-'],
+                     capture_output=True, check=True).stdout
+G = list(np.frombuffer(raw, np.uint8).reshape(-1, H // S, W // S).astype(np.float32) / 255)
+N = len(G); fps = 30.0
 small = lambda im: cv2.resize(cv2.cvtColor(im, cv2.COLOR_RGB2GRAY), (W // S, H // S), interpolation=cv2.INTER_AREA).astype(np.float32) / 255
-G = [small(f) for f in V]
 crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 60, 1e-5)
 plan = {}                                       # frame -> list of (edit k, alpha, 2x3 affine at full res)
 for k, sp in SPEC.items():
@@ -49,8 +50,11 @@ for k, sp in SPEC.items():
     print(f'photo {k}: frames {lo / fps:.2f}-{hi / fps:.2f} s, full {a0 / fps:.2f}-{a1 / fps:.2f} s, best match {cc.max():.3f}', flush=True)
 enc = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', '30', '-i', '-',
                         '-c:v', 'libx264', '-crf', '12', '-preset', 'medium', '-pix_fmt', 'yuv420p', str(OUT)], stdin=subprocess.PIPE)
-for i in range(N):
-    f = V[i].astype(np.float32)
+dec = subprocess.Popen(['ffmpeg', '-v', 'error', '-i', str(SRC), '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], stdout=subprocess.PIPE)
+for i in range(N):   # pass 2: stream full frames
+    buf = dec.stdout.read(W * H * 3)
+    if len(buf) < W * H * 3: break
+    f = np.frombuffer(buf, np.uint8).reshape(H, W, 3).astype(np.float32)
     for k, al, A in plan.get(i, []):
         diff, mask = globals()[f'diff{k}']
         wd = cv2.warpAffine(diff, A, (W, H), flags=cv2.INTER_LINEAR)
