@@ -34,5 +34,9 @@
   0
  ],
  "8": "edit8_c2 (clothes) + edit8_logo0 (logo erased again, larger area) -> edit8_final.png",
- "9": "edit9_c1 (regions 1, 2) + edit9_r0_2 (region 0 redone) -> edit9_final.png"
+ "9": "edit9_c1 (regions 1, 2) + edit9_r0_2 (region 0 redone) -> edit9_final.png",
+ "10": "edit10_c3 (box masks, blue striped polos)",
+ "11": "edit11_c1",
+ "12": "edit12_c0",
+ "13": "edit13_c1"
 }
