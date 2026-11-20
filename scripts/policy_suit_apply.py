@@ -23,7 +23,7 @@ crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 60, 1e-5)
 plan = {}                                       # frame -> list of (edit k, alpha, 2x3 affine at full res)
 for k, sp in SPEC.items():
     ref = cv2.cvtColor(cv2.imread(str(D / sp['ref'])), cv2.COLOR_BGR2RGB)
-    ed = cv2.cvtColor(cv2.imread(str(D / f"edit{k}_c{PICK.get(k, 0)}.png")), cv2.COLOR_BGR2RGB)
+    ed = cv2.cvtColor(cv2.imread(str(D / f"edit{k}_final.png")), cv2.COLOR_BGR2RGB)   # per-region picks (picks_region.json)
     diff = ed.astype(np.float32) - ref.astype(np.float32)
     m = (np.abs(diff).max(2) > 6).astype(np.uint8)
     m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((9, 9), np.uint8))
