@@ -249,5 +249,56 @@
     "box"
    ]
   ]
+ },
+ "8": {
+  "ref": "ref8.png",
+  "src_t": 33.8,
+  "regions": [
+   [
+    455,
+    595,
+    790,
+    1080,
+    "dark grey casual padded jacket over a dark sweater",
+    "dark"
+   ],
+   [
+    1212,
+    858,
+    1500,
+    1030,
+    "erase"
+   ]
+  ]
+ },
+ "9": {
+  "ref": "ref9.png",
+  "src_t": 73.5,
+  "regions": [
+   [
+    512,
+    588,
+    830,
+    660,
+    "light blue volunteer vest over a white round-neck t-shirt",
+    "box"
+   ],
+   [
+    372,
+    600,
+    455,
+    790,
+    "white round-neck t-shirt under a light blue vest, no necktie",
+    "box"
+   ],
+   [
+    1040,
+    385,
+    1112,
+    545,
+    "light blue volunteer vest over a white shirt",
+    "box"
+   ]
+  ]
  }
 }

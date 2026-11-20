@@ -34,8 +34,16 @@ for k, sp in SPEC.items():
     for direction in (1, -1):                   # walk out from the reference frame while the photo is recognisable
         A = np.eye(2, 3, dtype=np.float32); i = i0 if direction == 1 else i0 - 1
         while 0 <= i < N:
-            try: cc, A = cv2.findTransformECC(g0, G[i], A.copy(), cv2.MOTION_AFFINE, crit, None, 5)
-            except cv2.error: cc = 0.0
+            # strong zoom-ins leave much of the reference outside the frame, so also try the inverse direction
+            # (frame as template) and keep whichever matches better
+            try: cc, A1 = cv2.findTransformECC(g0, G[i], A.copy(), cv2.MOTION_AFFINE, crit, None, 5)
+            except cv2.error: cc, A1 = 0.0, A
+            try:
+                Ainv = cv2.invertAffineTransform(A)
+                cc2, B1 = cv2.findTransformECC(G[i], g0, Ainv.copy(), cv2.MOTION_AFFINE, crit, None, 5)
+                if cc2 > cc: cc, A1 = cc2, cv2.invertAffineTransform(B1)
+            except cv2.error: pass
+            A = A1.astype(np.float32)
             if cc < 0.6 or abs(i - i0) > 12 * fps: break   # stop once another photo has taken over
             res[i] = (cc, A.copy()); i += direction
     fr = sorted(res); cc = np.array([res[i][0] for i in fr])
