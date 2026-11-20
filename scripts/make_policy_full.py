@@ -21,7 +21,7 @@ D3 = dur(V3) if V3 else 0.0
 D4 = dur(V4) if V4 else 0.0
 if V4:   # scene 4: three cases, one per footage section. When a case's narration is longer than its footage,
          # only that footage plays slower (the recordings are never stretched)
-    SEC4 = [0.0, 15.1, 29.1, D4]
+    SEC4 = [0.0, 15.067, 29.067, D4]   # the footage's own cuts
     GRP4 = [['U01'], ['U02a', 'T02b'], ['T03a', 'U03']]
     LEAD4, GAP4, TAIL4 = [0.8, 0.4, 0.4], 0.45, [1.0, 0.6, 1.3]
     S4 = json.load(open(ROOT / 'narr' / 'policy4' / 'script.json', encoding='utf-8'))
@@ -144,6 +144,10 @@ fc = [f'[0:v]{FIT}[a]',
       f'[2:v]{FIT}[c]',
       f'[3:v]split=3[q0][q1][q2];{parts}[r0][r1][r2]concat=n=3:v=1:a=0,{FIT}[d4]',
       '[4:v]fps=30,setsar=1,format=yuv420p[e]']
+if os.environ.get('FIXED'):   # use the cleaned scenes from scripts/policy_fix_scenes.py (same lengths, in-scene dissolves)
+    for k in range(4): inputs[2 * k + 1] = str(P / f'fixed_s{k + 1}.mp4')
+    fc[:4] = ['[0:v]setsar=1,format=yuv420p[a]', '[1:v]setsar=1,format=yuv420p[b]', '[2:v]setsar=1,format=yuv420p[c]',
+              '[3:v]setsar=1,format=yuv420p[d4]']
 XT = 'fade' if TRANS == 'glow' else TRANS
 fc.append(f'[a][b]xfade=transition={XT}:duration={XF}:offset={B2:.3f}[x1]')
 fc.append(f'[x1][c]xfade=transition={XT}:duration={XF}:offset={B3:.3f}[x2]')
