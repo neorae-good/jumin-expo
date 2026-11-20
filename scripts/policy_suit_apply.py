@@ -75,9 +75,11 @@ for i in range(N):   # pass 2: stream full frames
         if logo:   # the newspaper logo is burned in at a fixed screen spot: there, show the moving photo(s) without it
             lg.append((al, cv2.warpAffine(ed, A, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)))
     if lg:   # weights normalised: the logo spot is always fully covered, also during the cross-fades
-        tot = sum(w for w, _ in lg)
-        if tot > 0:
-            mix = sum(w * we for w, we in lg) / tot
-            f = f * (1 - LOGO[..., None]) + mix * LOGO[..., None]
+        # per pixel, a photo only counts where its warped content is real picture (not the black side bars)
+        ws = [w * (cv2.GaussianBlur((we.max(2) > 18).astype(np.float32), (0, 0), 3)) for w, we in lg]
+        tot = sum(ws)
+        mix = sum(wk[..., None] * we for wk, (_, we) in zip(ws, lg)) / np.maximum(tot, 1e-6)[..., None]
+        cover = LOGO * np.clip(tot / max(1e-6, max(w for w, _ in lg)), 0, 1)
+        f = f * (1 - cover[..., None]) + mix * cover[..., None]
     enc.stdin.write(np.clip(f, 0, 255).astype(np.uint8).tobytes())
 enc.stdin.close(); enc.wait(); print('ok', OUT.name, N, 'frames')
