@@ -36,12 +36,14 @@ for k, sp in SPEC.items():
         while 0 <= i < N:
             try: cc, A = cv2.findTransformECC(g0, G[i], A.copy(), cv2.MOTION_AFFINE, crit, None, 5)
             except cv2.error: cc = 0.0
-            if cc < 0.35: break
+            if cc < 0.6 or abs(i - i0) > 12 * fps: break   # stop once another photo has taken over
             res[i] = (cc, A.copy()); i += direction
     fr = sorted(res); cc = np.array([res[i][0] for i in fr])
     full = cc >= 0.93 * cc.max()
     a0, a1 = fr[np.argmax(full)], fr[len(full) - 1 - np.argmax(full[::-1])]
     lo, hi = fr[0], fr[-1]
+    lo, hi = max(lo, a0 - int(1.2 * fps)), min(hi, a1 + int(1.2 * fps))   # cross-fades last about a second
+    fr = [i for i in fr if lo <= i <= hi]
     for i in fr:                                 # strength: 1 while shown, linear ramps through the cross-fades
         al = 1.0 if a0 <= i <= a1 else ((i - lo) / max(1, a0 - lo) if i < a0 else (hi - i) / max(1, hi - a1))
         A = res[i][1].copy(); A[:, 2] *= S
