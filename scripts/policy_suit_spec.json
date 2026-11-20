@@ -401,5 +401,35 @@
     "box"
    ]
   ]
+ },
+ "14": {
+  "ref": "ref14.png",
+  "src_t": 70.6,
+  "regions": [
+   [
+    728,
+    560,
+    965,
+    652,
+    "light blue volunteer vest over a plain white t-shirt, no necktie, no jacket",
+    "box"
+   ],
+   [
+    612,
+    598,
+    682,
+    712,
+    "white round-neck t-shirt under a light blue vest, no necktie",
+    "box"
+   ],
+   [
+    1105,
+    382,
+    1218,
+    535,
+    "light blue volunteer vest over a white shirt",
+    "box"
+   ]
+  ]
  }
 }
