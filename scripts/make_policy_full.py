@@ -146,8 +146,8 @@ fc = [f'[0:v]{FIT}[a]',
       '[4:v]fps=30,setsar=1,format=yuv420p[e]']
 if os.environ.get('FIXED'):   # use the cleaned scenes from scripts/policy_fix_scenes.py (same lengths, in-scene dissolves)
     for k in range(4): inputs[2 * k + 1] = str(P / f'fixed_s{k + 1}.mp4')
-    fc[:4] = ['[0:v]setsar=1,format=yuv420p[a]', '[1:v]setsar=1,format=yuv420p[b]', '[2:v]setsar=1,format=yuv420p[c]',
-              '[3:v]setsar=1,format=yuv420p[d4]']
+    fc[:4] = [f'[{k}:v]fps=30,settb=1/30,setsar=1,format=yuv420p[{n}]' for k, n in enumerate(('a', 'b', 'c', 'd4'))]
+    fc[4] = '[4:v]fps=30,settb=1/30,setsar=1,format=yuv420p[e]'
 XT = 'fade' if TRANS == 'glow' else TRANS
 fc.append(f'[a][b]xfade=transition={XT}:duration={XF}:offset={B2:.3f}[x1]')
 fc.append(f'[x1][c]xfade=transition={XT}:duration={XF}:offset={B3:.3f}[x2]')
