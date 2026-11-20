@@ -28,22 +28,29 @@ def shot(src, a, b, length, fit=CROP, extra=''):
 
 
 def build(name, shots):
+    """lay the shots on one timeline; each next shot fades in (alpha) over the held last frame of the previous one"""
     ins, fc, n = [], [], len(shots)
     srcs = sorted({s['src'] for s in shots})
     for s_ in srcs: ins += ['-i', s_]
     h = XF_IN / 2
-    for i, s in enumerate(shots):
-        pad = (f',tpad=start_mode=clone:start_duration={h}' if i else '') + (f',tpad=stop_mode=clone:stop_duration={h}' if i < n - 1 else '')
-        fc.append(f"[{srcs.index(s['src'])}:v]{s['chain']}{pad},trim=duration={s['length'] + (h if i else 0) + (h if i < n - 1 else 0):.4f},setpts=PTS-STARTPTS[s{i}]")
-    t, prev = 0.0, 's0'
-    for i in range(1, n):
-        t += shots[i - 1]['length']
-        fc.append(f'[{prev}][s{i}]xfade=transition=fade:duration={XF_IN}:offset={t - h:.4f}[j{i}]'); prev = f'j{i}'
     total = sum(s['length'] for s in shots)
+    fc.append(f'color=c=black:s=1920x1080:r=30:d={total:.4f},format=yuva420p[base]')
+    t, prev = 0.0, 'base'
+    for i, s in enumerate(shots):
+        pre = h if i else 0.0
+        post = h if i < n - 1 else 0.2      # the last shot holds a little so the final frame is never empty
+        # one tpad with both pads (two chained tpads lose frames)
+        opts = ([f'start_mode=clone:start_duration={pre}'] if pre else []) + ([f'stop_mode=clone:stop_duration={post}'] if post else [])
+        pad = (',tpad=' + ':'.join(opts)) if opts else ''
+        fade = f',fade=t=in:st=0:d={XF_IN}:alpha=1' if i else ''
+        fc.append(f"[{srcs.index(s['src'])}:v]{s['chain']}{pad},trim=duration={s['length'] + pre + post:.4f},format=yuva420p{fade},"
+                  f"setpts=PTS-STARTPTS+{t - pre:.4f}/TB[s{i}]")
+        fc.append(f'[{prev}][s{i}]overlay=eof_action=pass[o{i}]'); prev = f'o{i}'
+        t += s['length']
     out = P / f'fixed_{name}.mp4'
-    subprocess.run(['ffmpeg', '-v', 'error', '-y', *ins, '-filter_complex', ';'.join(fc), '-map', f'[{prev}]', '-t', f'{total:.4f}',
-                    '-c:v', 'libx264', '-crf', '14', '-preset', 'medium', '-pix_fmt', 'yuv420p', '-r', '30', str(out)], check=True)
-    print(f'ok {out.name}: {n} shots, {n - 1} dissolves, {total:.3f} s (target {dur(out):.3f})')
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', *ins, '-filter_complex', ';'.join(fc) + f';[{prev}]format=yuv420p[v]', '-map', '[v]',
+                    '-t', f'{total:.4f}', '-c:v', 'libx264', '-crf', '14', '-preset', 'medium', '-pix_fmt', 'yuv420p', '-r', '30', str(out)], check=True)
+    print(f'ok {out.name}: {n} shots, {n - 1} dissolves, {total:.3f} s (file {dur(out):.3f})')
 
 
 def cuts_to_shots(src, cuts, end, fit=CROP, extra=''):
