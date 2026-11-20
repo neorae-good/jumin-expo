@@ -21,6 +21,7 @@ G = list(np.frombuffer(raw, np.uint8).reshape(-1, H // S, W // S).astype(np.floa
 N = len(G); fps = 30.0
 small = lambda im: cv2.resize(cv2.cvtColor(im, cv2.COLOR_RGB2GRAY), (W // S, H // S), interpolation=cv2.INTER_AREA).astype(np.float32) / 255
 crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 60, 1e-5)
+LOGO = np.zeros((H, W), np.float32); LOGO[845:1055, 1200:1515] = 1; LOGO = cv2.GaussianBlur(LOGO, (0, 0), 6)
 plan = {}                                       # frame -> list of (edit k, alpha, 2x3 affine at full res)
 for k, sp in SPEC.items():
     ref = cv2.cvtColor(cv2.imread(str(D / sp['ref'])), cv2.COLOR_BGR2RGB)
@@ -56,7 +57,7 @@ for k, sp in SPEC.items():
         al = 1.0 if a0 <= i <= a1 else ((i - lo) / max(1, a0 - lo) if i < a0 else (hi - i) / max(1, hi - a1))
         A = res[i][1].copy(); A[:, 2] *= S
         plan.setdefault(i, []).append((k, float(np.clip(al, 0, 1)), A))
-    globals()[f'diff{k}'] = (diff, mask)
+    globals()[f'diff{k}'] = (diff, mask, ed.astype(np.float32), any(r[4] == 'erase' for r in sp['regions']))
     print(f'photo {k}: frames {lo / fps:.2f}-{hi / fps:.2f} s, full {a0 / fps:.2f}-{a1 / fps:.2f} s, best match {cc.max():.3f}', flush=True)
 enc = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', '30', '-i', '-',
                         '-c:v', 'libx264', '-crf', '12', '-preset', 'medium', '-pix_fmt', 'yuv420p', str(OUT)], stdin=subprocess.PIPE)
@@ -66,9 +67,12 @@ for i in range(N):   # pass 2: stream full frames
     if len(buf) < W * H * 3: break
     f = np.frombuffer(buf, np.uint8).reshape(H, W, 3).astype(np.float32)
     for k, al, A in plan.get(i, []):
-        diff, mask = globals()[f'diff{k}']
+        diff, mask, ed, logo = globals()[f'diff{k}']
         wd = cv2.warpAffine(diff, A, (W, H), flags=cv2.INTER_LINEAR)
         wm = cv2.warpAffine(mask, A, (W, H), flags=cv2.INTER_LINEAR)
         f += wd * (wm * al)[..., None]
+        if logo:   # the newspaper logo is burned in at a fixed screen spot: there, show the moving photo without it
+            we = cv2.warpAffine(ed, A, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+            f = f * (1 - LOGO[..., None] * al) + we * (LOGO[..., None] * al)
     enc.stdin.write(np.clip(f, 0, 255).astype(np.uint8).tobytes())
 enc.stdin.close(); enc.wait(); print('ok', OUT.name, N, 'frames')
