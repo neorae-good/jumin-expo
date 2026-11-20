@@ -19,7 +19,7 @@ SPEC = json.loads((ROOT / 'scripts' / 'policy_suit_spec.json').read_text(encodin
 pipe = StableDiffusionInpaintPipeline.from_pretrained('stable-diffusion-v1-5/stable-diffusion-inpainting', variant='fp16',
                                                       torch_dtype=torch.float32, safety_checker=None, requires_safety_checker=False)
 pipe.set_progress_bar_config(disable=True)
-N_CAND = int(__import__('os').environ.get('N_CAND', '2')); STEPS = int(__import__('os').environ.get('STEPS', '24'))
+N_CAND = int(__import__('os').environ.get('N_CAND', '2')); SEED0 = int(__import__('os').environ.get('SEED0', '0')); C0 = int(__import__('os').environ.get('C0', '0')); STEPS = int(__import__('os').environ.get('STEPS', '24'))
 
 
 def region_mask(img, box, clothing, mode):
@@ -29,6 +29,10 @@ def region_mask(img, box, clothing, mode):
     full = np.zeros((img.height, img.width), np.uint8)
     if isinstance(mode, list):                                      # hand-drawn outline (no face, no hands)
         cv2.fillPoly(full, [np.array(mode, np.int32)], 255)
+    elif isinstance(mode, dict):                                    # box minus keep-out ellipses (hands)
+        full[y0:y1, x0:x1] = 255
+        for ex0, ey0, ex1, ey1 in mode['keep']:
+            cv2.ellipse(full, ((ex0 + ex1) // 2, (ey0 + ey1) // 2), ((ex1 - ex0) // 2, (ey1 - ey0) // 2), 0, 0, 360, 0, -1)
     elif mode == 'box' or clothing == 'erase':
         full[y0:y1, x0:x1] = 255
     else:
@@ -57,7 +61,8 @@ def inpaint(img, box, clothing, seed, mode='dark'):
     s = 512 / max(crop.size); W8, H8 = (int(crop.width * s) // 8 * 8, int(crop.height * s) // 8 * 8)
     mask = region_mask(img, box, clothing, mode).crop((cx0, cy0, cx1, cy1))
     if clothing == 'erase':
-        prompt, neg = 'empty grey carpet floor and the lower part of people sitting on chairs, realistic photo', NEG + ', letters, sign'
+        prompt = mode if isinstance(mode, str) and mode not in ('box', 'dark', 'red') else 'empty grey carpet floor and the lower part of people sitting on chairs, realistic photo'
+        neg = NEG + ', letters, sign, object, device, keyboard'
     else:
         prompt, neg = CASUAL.format(c=clothing), NEG
     out = pipe(prompt=prompt, negative_prompt=neg, image=crop.resize((W8, H8), Image.LANCZOS), mask_image=mask.resize((W8, H8)),
@@ -72,8 +77,8 @@ ids = sys.argv[1:] or list(SPEC)
 for k in ids:
     ref, regions = SPEC[k]['ref'], SPEC[k]['regions']
     base = Image.open(D / ref).convert('RGB')
-    for n in range(N_CAND):
+    for n in range(C0, C0 + N_CAND):
         t = time.time(); img = base
         for j, r in enumerate(regions):
-            img = inpaint(img, tuple(r[:4]), r[4], seed=1000 * n + 17 * j + 3, mode=r[5] if len(r) > 5 else 'dark')
+            img = inpaint(img, tuple(r[:4]), r[4], seed=1000 * n + 17 * j + 3 + SEED0, mode=r[5] if len(r) > 5 else 'dark')
         img.save(D / f'edit{k}_c{n}.png'); print(f'{k} candidate {n}: {time.time() - t:.0f} s', flush=True)

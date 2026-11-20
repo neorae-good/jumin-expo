@@ -257,17 +257,39 @@
    [
     455,
     595,
-    790,
+    795,
     1080,
-    "dark grey casual padded jacket over a dark sweater",
-    "dark"
+    "dark grey casual padded jacket over a dark round-neck sweater, no tie, no collar shirt",
+    {
+     "keep": [
+      [
+       468,
+       655,
+       568,
+       790
+      ],
+      [
+       640,
+       680,
+       740,
+       800
+      ],
+      [
+       585,
+       470,
+       715,
+       598
+      ]
+     ]
+    }
    ],
    [
     1212,
     858,
     1500,
     1030,
-    "erase"
+    "erase",
+    "close-up of a light grey patterned lace coat fabric of a seated woman, wooden chair armrest, realistic photo"
    ]
   ]
  },
@@ -279,8 +301,8 @@
     512,
     588,
     830,
-    660,
-    "light blue volunteer vest over a white round-neck t-shirt",
+    662,
+    "light blue volunteer vest over a plain white t-shirt, no necktie, no jacket",
     "box"
    ],
    [
