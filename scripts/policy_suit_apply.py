@@ -81,5 +81,8 @@ for i in range(N):   # pass 2: stream full frames
         mix = sum(wk[..., None] * we for wk, (_, we) in zip(ws, lg)) / np.maximum(tot, 1e-6)[..., None]
         cover = LOGO * np.clip(tot / max(1e-6, max(w for w, _ in lg)), 0, 1)
         f = f * (1 - cover[..., None]) + mix * cover[..., None]
+        rest = (LOGO > 0.5) & (cover < 0.6)            # spots no photo can cover: fill from the surroundings
+        if rest.any():
+            f = cv2.inpaint(np.clip(f, 0, 255).astype(np.uint8), rest.astype(np.uint8) * 255, 9, cv2.INPAINT_TELEA).astype(np.float32)
     enc.stdin.write(np.clip(f, 0, 255).astype(np.uint8).tobytes())
 enc.stdin.close(); enc.wait(); print('ok', OUT.name, N, 'frames')
