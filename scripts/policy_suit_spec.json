@@ -1,0 +1,191 @@
+{
+ "0": {
+  "ref": "ref0.png",
+  "src_t": 13.77,
+  "regions": [
+   [
+    1100,
+    352,
+    1445,
+    640,
+    "dark navy casual zip-up jacket with a stand collar, over a light grey t-shirt"
+   ],
+   [
+    935,
+    640,
+    1445,
+    1000,
+    "dark navy casual zip-up jacket with a stand collar, over a light grey t-shirt"
+   ],
+   [
+    497,
+    372,
+    618,
+    560,
+    "dark navy casual fleece jacket",
+    "red"
+   ]
+  ]
+ },
+ "1": {
+  "ref": "ref1.png",
+  "src_t": 25.77,
+  "regions": [
+   [
+    118,
+    505,
+    300,
+    900,
+    "brown knit cardigan over a beige shirt"
+   ],
+   [
+    600,
+    600,
+    765,
+    985,
+    "dark grey casual padded jacket over a dark sweater"
+   ],
+   [
+    1272,
+    505,
+    1450,
+    905,
+    "dark olive casual jacket over a grey sweater"
+   ],
+   [
+    332,
+    500,
+    410,
+    600,
+    "beige knit sweater"
+   ],
+   [
+    1212,
+    858,
+    1502,
+    1048,
+    "erase"
+   ]
+  ]
+ },
+ "2": {
+  "ref": "ref2.png",
+  "src_t": 30.77,
+  "regions": [
+   [
+    535,
+    662,
+    770,
+    985,
+    "dark grey casual padded jacket over a dark sweater"
+   ],
+   [
+    1425,
+    500,
+    1540,
+    1000,
+    "dark olive casual jacket over a grey sweater"
+   ],
+   [
+    80,
+    495,
+    150,
+    640,
+    "brown knit cardigan"
+   ],
+   [
+    1212,
+    878,
+    1495,
+    1045,
+    "erase"
+   ]
+  ]
+ },
+ "3": {
+  "ref": "ref3.png",
+  "src_t": 35.77,
+  "regions": [
+   [
+    848,
+    540,
+    952,
+    850,
+    "blue and white striped polo shirt team uniform and dark trousers"
+   ],
+   [
+    952,
+    548,
+    1055,
+    850,
+    "blue and white striped polo shirt team uniform and dark trousers"
+   ]
+  ]
+ },
+ "4": {
+  "ref": "ref4.png",
+  "src_t": 47.77,
+  "regions": [
+   [
+    1508,
+    372,
+    1588,
+    515,
+    "red zip-up windbreaker jacket"
+   ]
+  ]
+ },
+ "5": {
+  "ref": "ref5.png",
+  "src_t": 56.77,
+  "regions": [
+   [
+    885,
+    742,
+    1042,
+    945,
+    "dark navy casual zip-up jacket over a white t-shirt"
+   ]
+  ]
+ },
+ "6": {
+  "ref": "ref6.png",
+  "src_t": 67.77,
+  "regions": [
+   [
+    865,
+    790,
+    1000,
+    1000,
+    "light blue volunteer vest over a white shirt"
+   ],
+   [
+    1530,
+    650,
+    1620,
+    1000,
+    "light blue volunteer vest over a white shirt"
+   ],
+   [
+    762,
+    640,
+    852,
+    1000,
+    "light blue volunteer vest over a white shirt"
+   ]
+  ]
+ },
+ "7": {
+  "ref": "ref7.png",
+  "src_t": 77.77,
+  "regions": [
+   [
+    786,
+    695,
+    875,
+    965,
+    "light blue volunteer vest over a dark sweater"
+   ]
+  ]
+ }
+}

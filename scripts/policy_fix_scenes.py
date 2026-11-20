@@ -57,7 +57,7 @@ def cuts_to_shots(src, cuts, end, fit=CROP, extra=''):
     return [shot(src, a, b, b - a, fit, extra) for a, b in zip(e, e[1:])]
 
 
-which = sys.argv[1:] or ['1', '2', '3', '4']
+which = sys.argv[1:] or ['1', '2', '3', '4', '5']
 if '1' in which:   # intro: Grok re-take of the opening; the curb shot uses only its clean part, gently slowed
     v = V / 'policy_intro_src2.mp4'; D = dur(v)
     s = [shot(G / 'p_open_1.mp4', 0, 4.4, 4.4), shot(v, 4.4, 8.9, 10.467 - 4.4)]
@@ -65,7 +65,7 @@ if '1' in which:   # intro: Grok re-take of the opening; the curb shot uses only
     s += [shot(v, a, b, b - a) for a, b in zip(e, e[1:])]
     build('s1', s)
 if '2' in which:   # history photos: the era changes become dissolves (the photo changes inside an era already were)
-    v = V / 'policy_scene2.mp4'
+    v = V / 'policy_scene2_edit.mp4' if (V / 'policy_scene2_edit.mp4').exists() else V / 'policy_scene2.mp4'   # suits re-dressed
     build('s2', cuts_to_shots(v, [15.067, 25.133, 35.2, 45.267, 55.333, 65.4, 75.467, 85.533], dur(v), fit=PAD))
 if '3' in which:   # activities: the volunteers-walking shot is a Grok re-take
     v = V / 'policy_scene3.mp4'; D = dur(v)
@@ -89,3 +89,6 @@ if '4' in which:   # cases: Grok road-work shot, the three cases with their (nar
     tail = (D - 29.067) * f3 - sum(x['length'] for x in s[3:])
     s.append(shot(G / 'p_post_1.mp4', 0, 3.04, tail))
     build('s4', s)
+if '5' in which:   # thank-you scene: three shots, dissolves between them
+    v = V / 'policy_scene5.mp4'
+    build('s5', cuts_to_shots(v, [7.6, 15.067], dur(v)))
