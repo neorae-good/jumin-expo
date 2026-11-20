@@ -322,5 +322,114 @@
     "box"
    ]
   ]
+ },
+ "10": {
+  "ref": "ref10.png",
+  "src_t": 42.0,
+  "regions": [
+   [
+    826,
+    560,
+    937,
+    885,
+    "blue and white striped polo shirt team uniform and dark trousers",
+    {
+     "keep": [
+      [
+       790,
+       575,
+       860,
+       650
+      ],
+      [
+       880,
+       575,
+       940,
+       650
+      ]
+     ]
+    }
+   ],
+   [
+    928,
+    572,
+    1042,
+    885,
+    "blue and white striped polo shirt team uniform and dark trousers",
+    {
+     "keep": [
+      [
+       905,
+       575,
+       965,
+       650
+      ],
+      [
+       1000,
+       580,
+       1055,
+       650
+      ]
+     ]
+    }
+   ]
+  ]
+ },
+ "11": {
+  "ref": "ref11.png",
+  "src_t": 52.0,
+  "regions": [
+   [
+    1538,
+    372,
+    1602,
+    520,
+    "red zip-up windbreaker jacket",
+    "box"
+   ]
+  ]
+ },
+ "12": {
+  "ref": "ref12.png",
+  "src_t": 62.5,
+  "regions": [
+   [
+    800,
+    748,
+    1000,
+    945,
+    "casual navy blue zip-up jacket over a white t-shirt",
+    {
+     "keep": [
+      [
+       815,
+       695,
+       865,
+       780
+      ],
+      [
+       945,
+       712,
+       998,
+       795
+      ]
+     ]
+    }
+   ]
+  ]
+ },
+ "13": {
+  "ref": "ref13.png",
+  "src_t": 82.5,
+  "regions": [
+   [
+    790,
+    722,
+    885,
+    970,
+    "light blue volunteer vest over a white shirt",
+    "box"
+   ]
+  ]
  }
 }
