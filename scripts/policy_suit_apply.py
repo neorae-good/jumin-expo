@@ -66,13 +66,18 @@ for i in range(N):   # pass 2: stream full frames
     buf = dec.stdout.read(W * H * 3)
     if len(buf) < W * H * 3: break
     f = np.frombuffer(buf, np.uint8).reshape(H, W, 3).astype(np.float32)
+    lg = []
     for k, al, A in plan.get(i, []):
         diff, mask, ed, logo = globals()[f'diff{k}']
         wd = cv2.warpAffine(diff, A, (W, H), flags=cv2.INTER_LINEAR)
         wm = cv2.warpAffine(mask, A, (W, H), flags=cv2.INTER_LINEAR)
         f += wd * (wm * al)[..., None]
-        if logo:   # the newspaper logo is burned in at a fixed screen spot: there, show the moving photo without it
-            we = cv2.warpAffine(ed, A, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
-            f = f * (1 - LOGO[..., None] * al) + we * (LOGO[..., None] * al)
+        if logo:   # the newspaper logo is burned in at a fixed screen spot: there, show the moving photo(s) without it
+            lg.append((al, cv2.warpAffine(ed, A, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)))
+    if lg:   # weights normalised: the logo spot is always fully covered, also during the cross-fades
+        tot = sum(w for w, _ in lg)
+        if tot > 0:
+            mix = sum(w * we for w, we in lg) / tot
+            f = f * (1 - LOGO[..., None]) + mix * LOGO[..., None]
     enc.stdin.write(np.clip(f, 0, 255).astype(np.uint8).tobytes())
 enc.stdin.close(); enc.wait(); print('ok', OUT.name, N, 'frames')
