@@ -44,8 +44,18 @@ mix = np.zeros((N, 2), np.float32)
 for s, keys in KEYS.items():
     x = load(STEMS / f'{s}.wav')[:N]
     mix += np.pad(x, ((0, N - len(x)), (0, 0))) * curve(keys, N)
-i0, i1 = int(FADE[0] * SR), N
-mix[i0:i1] *= (0.5 + 0.5 * np.cos(np.pi * np.linspace(0, 1, i1 - i0)))[:, None].astype(np.float32)
+END_AT = os.environ.get('END_AT')   # a clear ending: stop on this downbeat (film s) and let the hit ring out
+if END_AT:
+    e0 = int(float(END_AT) * SR); mix[:] = 0
+    RING = {'drums': 0.35, 'bass': 0.6, 'other': 2.2, 'vocals': 2.2}     # seconds for each stem to die away after the hit
+    for s_, keys in KEYS.items():
+        x = load(STEMS / f'{s_}.wav')[:N]; x = np.pad(x, ((0, N - len(x)), (0, 0))) * curve(keys, N)
+        tail = np.arange(N - e0, dtype=np.float32) / SR
+        x[e0:] *= np.exp(-tail / (RING[s_] / 4.6))[:, None]          # ~-40 dB at the ring time
+        mix += x
+else:
+    i0, i1 = int(FADE[0] * SR), N
+    mix[i0:i1] *= (0.5 + 0.5 * np.cos(np.pi * np.linspace(0, 1, i1 - i0)))[:, None].astype(np.float32)
 mix *= 10 ** (-6 / 20)              # same fixed headroom as the expo arrangement (HEADROOM_DB=6)
 with wave.open(str(ROOT / 'audio' / 'bgm_policy_arr.wav'), 'wb') as w:
     w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)

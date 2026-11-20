@@ -81,10 +81,13 @@ if V3:   # scene 3: Kyle narration (narr/policy3) on the scene's beats; the scen
     # (fading) in the dip into scene 4, because it is too short for the whole film
     # with scene 4 the film is longer than the first song: the second song takes over at the dip between scene 2
     # (history) and scene 3 (today's activities), so the two songs share the film roughly half and half
-    SWITCH = B3 + XF * 0.5 - 0.4 if V4 else None      # music changes inside the picture transition
-    T1 = round(SWITCH + 0.6, 3) if V4 else total
+    # the first song ENDS on a strong downbeat (SONG1_END, film s; 128.01 = start of an 8-bar phrase at 112 BPM) and
+    # rings out; the second song starts just after it
+    SONG1_END = float(os.environ.get('SONG1_END', '128.01'))
+    SWITCH = SONG1_END + 0.45
+    T1 = round(SONG1_END + 2.6, 3)
     subprocess.run([sys.executable, str(ROOT / 'scripts' / 'stem_arrange_policy.py'), str(T1)], check=True, cwd=ROOT,
-                   env=dict(os.environ, FADE_S='1.8' if V4 else '3.2'))
+                   env=dict(os.environ, END_AT=str(SONG1_END)))
     BGM = 'bgm_policy_arr.wav'
     import numpy as np, soundfile as sf
     st = ROOT / 'audio' / 'stems' / 'htdemucs' / 'scene3_src'
@@ -124,6 +127,14 @@ env = dict(os.environ, NARR_LIGHT='1', CARVE_TARGET='14', CARVE_MAX='12', MUSIC_
 subprocess.run([sys.executable, str(ROOT / 'scripts' / 'mix9.py'), vn, 'policyfull_kyle', 'off', '0.4', BGM],
                env=env, check=True, cwd=ROOT, stdout=subprocess.DEVNULL)
 P = ROOT / 'parts' / 'policy'
+OUT = ROOT / 'deliverables' / 'policy' / '생활공감정책_인트로+장면2+장면3+장면4_끝화면_kyle_미리보기.mp4'
+if os.environ.get('AUDIO_ONLY'):
+    dst = Path(os.environ.get('AUDIO_ONLY_OUT', str(OUT)))
+    tmp = dst.with_suffix('.tmp.mp4')
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(OUT), '-i', str(ROOT / 'audio' / 'master_mix9_policyfull_kyle.wav'),
+                    '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-t', str(total),
+                    '-movflags', '+faststart', str(tmp)], check=True)
+    tmp.replace(dst); print('ok (new sound only)', dst); sys.exit(0)
 if not (V3 and V4): sys.exit('the overlapping-transition build needs all four scenes')
 inputs = ['-i', V1, '-i', V2, '-i', V3, '-i', V4, '-loop', '1', '-framerate', '30', '-t', str(CARD + XF), '-i', str(P / 'endcard.png')]
 FIT = 'fps=30,scale=-2:1080:flags=lanczos,crop=1920:1080,setsar=1,format=yuv420p'
