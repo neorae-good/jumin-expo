@@ -12,6 +12,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / 'src_video' / 'policy_scene2.mp4'; OUT = ROOT / 'src_video' / 'policy_scene2_edit.mp4'
 D = ROOT / 'parts' / 'policy' / 'suit'
 SPEC = json.loads((ROOT / 'scripts' / 'policy_suit_spec.json').read_text(encoding='utf-8'))
+import os
+LOGO_ONLY = os.environ.get('LOGO_ONLY') == '1'   # clothes left as they were; only the newspaper logo is removed
+if LOGO_ONLY: SPEC = {k: v for k, v in SPEC.items() if k in ('1', '2', '8')}
 PICK = json.loads((D / 'picks.json').read_text()) if (D / 'picks.json').exists() else {}
 W, H = 1620, 1080; S = 4                       # ECC on a 1/4-size grey image
 # pass 1: only small grey frames are kept in memory (the full video does not fit)
@@ -25,7 +28,7 @@ LOGO = np.zeros((H, W), np.float32); LOGO[845:1055, 1200:1515] = 1; LOGO = cv2.G
 plan = {}                                       # frame -> list of (edit k, alpha, 2x3 affine at full res)
 for k, sp in SPEC.items():
     ref = cv2.cvtColor(cv2.imread(str(D / sp['ref'])), cv2.COLOR_BGR2RGB)
-    ed = cv2.cvtColor(cv2.imread(str(D / f"edit{k}_final.png")), cv2.COLOR_BGR2RGB)   # per-region picks (picks_region.json)
+    ed = cv2.cvtColor(cv2.imread(str(D / (f"edit{k}_logo_only.png" if LOGO_ONLY else f"edit{k}_final.png"))), cv2.COLOR_BGR2RGB)   # per-region picks (picks_region.json)
     diff = ed.astype(np.float32) - ref.astype(np.float32)
     m = (np.abs(diff).max(2) > 6).astype(np.uint8)
     m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((9, 9), np.uint8))
