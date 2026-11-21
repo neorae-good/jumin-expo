@@ -30,7 +30,10 @@ def shot(src, a, b, length, fit=CROP, extra=''):
 def build(name, shots):
     """lay the shots on one timeline; each next shot fades in (alpha) over the held last frame of the previous one"""
     ins, fc, n = [], [], len(shots)
-    for s_ in shots: ins += ['-ss', f"{s_['a']:.4f}", '-t', f"{s_['b'] - s_['a']:.4f}", '-i', s_['src']]   # one input per shot
+    # one input per shot, seeked to a whole second before it; the shot itself is cut by frame number (exact)
+    for s_ in shots:
+        a0 = max(0, int(s_['a']) - 1); ins += ['-ss', str(a0), '-t', f"{s_['b'] - a0 + 1:.3f}", '-i', s_['src']]
+        s_['pre'] = f"fps=30,trim=start_frame={round((s_['a'] - a0) * 30)}:end_frame={round((s_['b'] - a0) * 30)},"
     h = XF_IN / 2
     total = sum(s['length'] for s in shots)
     fc.append(f'color=c=black:s=1920x1080:r=30:d={total:.4f},format=yuva420p[base]')
@@ -42,7 +45,7 @@ def build(name, shots):
         opts = ([f'start_mode=clone:start_duration={pre}'] if pre else []) + ([f'stop_mode=clone:stop_duration={post}'] if post else [])
         pad = (',tpad=' + ':'.join(opts)) if opts else ''
         fade = f',fade=t=in:st=0:d={XF_IN}:alpha=1' if i else ''
-        fc.append(f"[{i}:v]{s['chain']}{pad},trim=duration={s['length'] + pre + post:.4f},format=yuva420p{fade},"
+        fc.append(f"[{i}:v]{s['pre']}{s['chain']}{pad},trim=duration={s['length'] + pre + post:.4f},format=yuva420p{fade},"
                   f"setpts=PTS-STARTPTS+{t - pre:.4f}/TB[s{i}]")
         fc.append(f'[{prev}][s{i}]overlay=eof_action=pass[o{i}]'); prev = f'o{i}'
         t += s['length']
@@ -66,6 +69,8 @@ if '1' in which:   # intro: Grok re-take of the opening; the curb shot uses only
     build('s1', s)
 if '2' in which:   # history photos: the era changes become dissolves (the photo changes inside an era already were)
     v = V / 'policy_scene2_edit.mp4' if (V / 'policy_scene2_edit.mp4').exists() else V / 'policy_scene2.mp4'   # suits re-dressed
+    # cut times half a frame early: the edited file's frames sit exactly on the 1/30 s grid, so a cut on the grid
+    # would hand the new photo's first frame to the previous shot
     build('s2', cuts_to_shots(v, [15.067, 25.133, 35.2, 45.267, 55.333, 65.4, 75.467, 85.533], dur(v), fit=PAD))
 if '3' in which:   # activities: the volunteers-walking shot is a Grok re-take
     v = V / 'policy_scene3.mp4'; D = dur(v)
