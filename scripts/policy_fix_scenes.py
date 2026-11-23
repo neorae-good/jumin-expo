@@ -74,7 +74,9 @@ if '2' in which:   # history photos: the era changes become dissolves (the photo
     s2 = cuts_to_shots(v, [15.067, 25.133, 35.2, 45.267, 55.333, 65.4, 75.467, 85.533], dur(v), fit=PAD)
     # 4기 group photo (경남미래 50년) is replaced by the producer's moving version of it (Grok, 1376x656): same width as
     # the other photos (1620 px), letterboxed
-    RH = V / 'policy_s2_redhats.mp4'
+    # waving part (1-5.5 s) slowed to 1.4x length with motion interpolation, frozen heart pose trimmed (made with ffmpeg,
+    # see PROGRESS notes): src_video/policy_s2_redhats_retimed.mp4
+    RH = V / 'policy_s2_redhats_retimed.mp4'
     if RH.exists(): s2[1] = shot(RH, 0, dur(RH), 25.133 - 15.067, fit='scale=1620:-2:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black')
     build('s2', s2)
 if '3' in which:   # activities: the volunteers-walking shot is a Grok re-take

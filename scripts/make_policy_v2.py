@@ -70,6 +70,9 @@ for name, b in (('scene3_src', B3), ('scene4_src', B4), ('scene5_src', B5)):   #
     st = ROOT / 'audio' / 'stems' / 'htdemucs' / name
     a = rs(sum(sf.read(st / f'{k}.wav', dtype='float32')[0] for k in ('drums', 'bass', 'other')))
     i0 = int(b * 48000); n = min(len(a), len(mus) - i0); mus[i0:i0 + n] += a[:n] * 0.7
+for name, b in (('sfx_title_open.wav', B[0]), ('sfx_title_end.wav', BE)):   # pen / stamp sounds of the titles
+    fx, _ = sf.read(ROOT / 'audio' / name, dtype='float32'); i0 = int(b * 48000); n = min(len(fx), len(mus) - i0)
+    mus[i0:i0 + n] += fx[:n] * 1.4
 sf.write(ROOT / 'audio' / 'bgm_policy_v2.wav', mus, 48000, subtype='PCM_16')
 nd = ROOT / 'narr' / 'policy_full_p' / vn; nd.mkdir(parents=True, exist_ok=True)
 for x in lines:
