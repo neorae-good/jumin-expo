@@ -11,12 +11,14 @@ ROOT = Path(__file__).resolve().parents[1]; P = ROOT / 'parts' / 'policy'; vn = 
 dur = lambda f: float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', str(f)],
                                      capture_output=True, text=True).stdout)
 XF = 1.0
-CLIPS = [P / 'title_open.mp4'] + [P / f'fixed_s{k}.mp4' for k in range(1, 6)] + [P / 'title_end.mp4']
+TITLES = os.environ.get('TITLES', '0') == '1'   # 1: opening/closing title clips; 0 (default): the film starts and ends on its own scenes
+CLIPS = ([P / 'title_open.mp4'] if TITLES else []) + [P / f'fixed_s{k}.mp4' for k in range(1, 6)] + ([P / 'title_end.mp4'] if TITLES else [])
 DL = [dur(c) for c in CLIPS]
 B = [0.0]
 for d in DL[:-1]: B.append(B[-1] + d - XF)              # start of each clip on the film timeline
 total = round(B[-1] + DL[-1], 3)
-T0, B1, B2, B3, B4, B5, BE = B
+if TITLES: T0, B1, B2, B3, B4, B5, BE = B
+else: B1, B2, B3, B4, B5 = B; BE = total
 print('clip starts', ' '.join(f'{b:.2f}' for b in B), 'total', total)
 L = lambda d, i: dur(ROOT / 'narr' / d / vn / f'{i}.wav')
 lines, prev_end = [], 0.0
@@ -53,7 +55,7 @@ for i, t in {'V01': 1.1, 'V02': 8.3, 'V03': 15.9}.items(): put(i, B5 + t, L('pol
 if prev_end > BE + 0.3: sys.exit('thank-you narration ends too late')
 for x in lines: print(f"{x['id']:5s} {x['t']:7.2f}-{x['t'] + x['dur']:7.2f}")
 # music: song 1 (stems, arranged) ends on a downbeat early in the activities chapter; song 2 from its own start
-SONG1_END = float(os.environ.get('SONG1_END', '132.30'))     # 128.01 + 8 beats at 112 BPM (title adds ~4 s in front)
+SONG1_END = float(os.environ.get('SONG1_END', '132.30' if TITLES else '128.01'))     # 128.01 + 8 beats at 112 BPM (title adds ~4 s in front)
 subprocess.run([sys.executable, str(ROOT / 'scripts' / 'stem_arrange_policy.py'), str(round(SONG1_END + 2.6, 3))], check=True, cwd=ROOT,
                env=dict(os.environ, END_AT=str(SONG1_END)))
 mus, _ = sf.read(ROOT / 'audio' / 'bgm_policy_arr.wav', dtype='float32')
@@ -70,7 +72,7 @@ for name, b in (('scene3_src', B3), ('scene4_src', B4), ('scene5_src', B5)):   #
     st = ROOT / 'audio' / 'stems' / 'htdemucs' / name
     a = rs(sum(sf.read(st / f'{k}.wav', dtype='float32')[0] for k in ('drums', 'bass', 'other')))
     i0 = int(b * 48000); n = min(len(a), len(mus) - i0); mus[i0:i0 + n] += a[:n] * 0.7
-for name, b in (('sfx_title_open.wav', B[0]), ('sfx_title_end.wav', BE)):   # pen / stamp sounds of the titles
+for name, b in ((('sfx_title_open.wav', B[0]), ('sfx_title_end.wav', BE)) if TITLES else ()):   # pen / stamp sounds of the titles
     fx, _ = sf.read(ROOT / 'audio' / name, dtype='float32'); i0 = int(b * 48000); n = min(len(fx), len(mus) - i0)
     mus[i0:i0 + n] += fx[:n] * 1.4
 sf.write(ROOT / 'audio' / 'bgm_policy_v2.wav', mus, 48000, subtype='PCM_16')
