@@ -71,7 +71,12 @@ if '2' in which:   # history photos: the era changes become dissolves (the photo
     v = V / 'policy_scene2_edit.mp4' if (V / 'policy_scene2_edit.mp4').exists() else V / 'policy_scene2.mp4'   # suits re-dressed
     # cut times half a frame early: the edited file's frames sit exactly on the 1/30 s grid, so a cut on the grid
     # would hand the new photo's first frame to the previous shot
-    build('s2', cuts_to_shots(v, [15.067, 25.133, 35.2, 45.267, 55.333, 65.4, 75.467, 85.533], dur(v), fit=PAD))
+    s2 = cuts_to_shots(v, [15.067, 25.133, 35.2, 45.267, 55.333, 65.4, 75.467, 85.533], dur(v), fit=PAD)
+    # 4기 group photo (경남미래 50년) is replaced by the producer's moving version of it (Grok, 1376x656): same width as
+    # the other photos (1620 px), letterboxed
+    RH = V / 'policy_s2_redhats.mp4'
+    if RH.exists(): s2[1] = shot(RH, 0, dur(RH), 25.133 - 15.067, fit='scale=1620:-2:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black')
+    build('s2', s2)
 if '3' in which:   # activities: the volunteers-walking shot is a Grok re-take
     v = V / 'policy_scene3.mp4'; D = dur(v)
     build('s3', [shot(v, 0, 10.067, 10.067), shot(G / 'p_walk_1.mp4', 0, 14.367 - 10.067, 14.367 - 10.067),
